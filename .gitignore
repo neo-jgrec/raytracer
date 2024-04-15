@@ -30,3 +30,39 @@
 *.exe
 *.out
 *.app
+
+raytracer
+
+**/cmake-build-debug
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/install_manifest.txt
+**/CMakeFiles/
+**/CTestTestfile.cmake
+**/Makefile
+**/*.cbp
+**/CMakeScripts
+**/compile_commands.json
+
+## Local
+
+.idea/*.xml
+
+build/**/*
+
+include/*
+lib/*
+bin/*
+!bin/.*
+test/test_runner
+
+# tests
+unit_tests
+coverage.info
+*.gcno
+*.gcda
+
+# IDE files
+.vscode/
+.idea/
+.cache
