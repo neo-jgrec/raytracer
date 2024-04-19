@@ -15,6 +15,19 @@ target_include_directories(raytracer_parsing
         ${CMAKE_SOURCE_DIR}/includes
 )
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBCONFIG REQUIRED libconfig++)
+
+target_include_directories(raytracer_parsing
+    PRIVATE
+        ${LIBCONFIG_INCLUDE_DIRS}
+)
+
+target_link_libraries(raytracer_parsing
+    PRIVATE
+        ${LIBCONFIG_LIBRARIES}
+)
+
 set_target_properties(raytracer_parsing PROPERTIES PREFIX "")
 
 install(TARGETS raytracer_parsing LIBRARY DESTINATION lib)
