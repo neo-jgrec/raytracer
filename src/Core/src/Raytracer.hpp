@@ -12,16 +12,9 @@
 
 class Raytracer {
 private:
-    sf::RenderWindow _window;
-
-    void event();
-    void draw();
-
 public:
     Raytracer();
     ~Raytracer();
-
-    void run();
 };
 
 #endif //RAYTRACER_HPP

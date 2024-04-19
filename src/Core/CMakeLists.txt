@@ -15,11 +15,4 @@ target_include_directories(raytracer
     ${CMAKE_SOURCE_DIR}/includes
 )
 
-find_package(SFML COMPONENTS graphics REQUIRED)
-
-target_link_libraries(raytracer
-    PRIVATE
-        sfml-graphics
-)
-
 install(TARGETS raytracer)

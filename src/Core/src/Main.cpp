@@ -9,8 +9,5 @@
 
 int main()
 {
-    Raytracer raytracer;
-
-    raytracer.run();
     return 0;
 }
