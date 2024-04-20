@@ -55,8 +55,12 @@ add_compile_options(-Wall
 	-grecord-gcc-switches
 	-pipe
 	-pthread
-	-g3
 )
+
+# If in debug mode, enable debug flags
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	add_compile_options(-O0 -g3 -DDEBUG)
+endif()
 
 # Enable glibc assertions
 add_definitions(-D_GLIBCXX_ASSERTIONS)
