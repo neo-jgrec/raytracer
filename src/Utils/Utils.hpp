@@ -10,5 +10,6 @@
 
     #include "Color.hpp"
     #include "DLLoader.hpp"
+    #include "Exceptions.hpp"
 
 #endif //UTILS_HPP

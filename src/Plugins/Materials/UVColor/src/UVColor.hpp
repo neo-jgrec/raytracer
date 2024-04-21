@@ -14,6 +14,12 @@ namespace rt
 {
     class UVColor : public IMaterial {
     public:
+        class UVColorException final : public IMaterialException {
+        public:
+            UVColorException(const std::string &message) :
+                IMaterialException("UVColor", message) {}
+        };
+
         [[nodiscard]] utils::Color getColor(const math::Vector3<float> &point) const override;
     };
 } // namespace rt

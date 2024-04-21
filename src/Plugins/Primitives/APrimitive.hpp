@@ -17,12 +17,20 @@ namespace rt
         IMaterial *_material = nullptr;
 
     public:
+        class APrimitiveException : public IPrimitiveException {
+        public:
+            APrimitiveException(const std::string &name, const std::string &message) :
+                IPrimitiveException(name, message) {}
+        };
+
         void setMaterial(IMaterial *material) override
         {
             _material = material;
         }
         [[nodiscard]] IMaterial *getMaterial() const override
         {
+            if (!_material)
+                throw APrimitiveException("Primitive", "Material not set");
             return _material;
         }
     };

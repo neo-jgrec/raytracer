@@ -8,20 +8,18 @@
 #ifndef IPRIMITIVE_HPP
     #define IPRIMITIVE_HPP
 
-    #include <memory>
-
     #include "../Materials/IMaterial.hpp"
-    #include "../../Exceptions.hpp"
+    #include "../../Utils/Utils.hpp"
     #include "../../Math/Math.hpp"
 
 namespace rt
 {
     class IPrimitive {
     public:
-        class PrimitiveException : public Exception {
+        class IPrimitiveException : public utils::Exception {
         public:
-            PrimitiveException(const std::string &name, const std::string &message) :
-                Exception(name, message) {}
+            IPrimitiveException(const std::string &name, const std::string &message) :
+                Exception("[Primitive] " + name, message) {}
         };
 
         [[nodiscard]] virtual float hit(const math::Ray &ray) const = 0;

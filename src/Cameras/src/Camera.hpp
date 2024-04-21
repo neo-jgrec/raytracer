@@ -33,6 +33,12 @@ namespace rt
         static void writePixel(const utils::Color &color);
 
     public:
+        class CameraException final : public ICameraException {
+        public:
+            CameraException(const std::string &message) :
+                ICameraException("Camera", message) {}
+        };
+
         void setOrigin(const math::Vector3<float> &origin) override;
 
         void generateImage(std::list<IPrimitive *> primitives) override;

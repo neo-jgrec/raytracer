@@ -9,30 +9,24 @@
 #define IDISPLAY_HPP_
 
 #include <string>
-#include "../Camera/ICamera.hpp"
 
-class IDisplay {
+#include "../Utils/Utils.hpp"
+#include "../Cameras/ICamera.hpp"
+
+namespace rt
+{
+    class IDisplay {
     public:
-        IDisplay();
-        ~IDisplay();
-
-        class DisplayExeption : public std::exception {
-            public:
-                DisplayExeption(std::string const &message);
-                const char *what() const noexcept override;
-
-            private:
-                std::string _message;
+        class IDisplayException : public utils::Exception {
+        public:
+            IDisplayException(const std::string &name, const std::string &message) :
+                Exception("[Display] " + name, message) {}
         };
 
-        virtual void createWindow() = 0;
-        virtual void destroyWindow() = 0;
-        virtual void displayWindow() = 0;
-        virtual void clearWindow() = 0;
-        virtual void sendCamera(ICamera *camera) = 0;
+        virtual void createWindow(const int &width, const int &height, const std::string &title) = 0;
 
-    protected:
-    private:
-};
+        virtual void displayImage(const std::list<ICamera *> &cameras) = 0;
+    };
+} // namespace rt
 
 #endif /* !IDISPLAY_HPP_ */

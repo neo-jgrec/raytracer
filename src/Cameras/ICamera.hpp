@@ -16,6 +16,12 @@ namespace rt
 {
     class ICamera {
     public:
+        class ICameraException : public utils::Exception {
+        public:
+            ICameraException(const std::string &name, const std::string &message) :
+                Exception("[Camera] " + name, message) {}
+        };
+
         virtual ~ICamera() = default;
 
         virtual void setOrigin(const math::Vector3<float> &origin) = 0;

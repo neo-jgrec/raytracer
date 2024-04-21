@@ -13,6 +13,8 @@
     #include <string>
     #include <memory>
 
+    #include "Exceptions.hpp"
+
 namespace utils
 {
     enum LibraryType {
@@ -31,18 +33,24 @@ namespace utils
         T *_instance = nullptr;
 
     public:
+        class DLLoaderException final : public Exception {
+        public:
+            DLLoaderException(const std::string &message) :
+                Exception("DLLoader", message) {}
+        };
+
         DLLoader(const LibraryType type, const std::string &path)
         {
             _lib = std::shared_ptr<void>(dlopen(path.c_str(), RTLD_LAZY), [](void *lib) { dlclose(lib); });
             if (!_lib)
-                throw std::runtime_error(dlerror());
+                throw DLLoaderException(dlerror());
 
             void *getType = dlsym(_lib.get(), "getType");
             if (!getType)
-                throw std::runtime_error(dlerror());
+                throw DLLoaderException(dlerror());
             const LibraryType libType = reinterpret_cast<LibraryType (*)()>(getType)();
             if (libType != type)
-                throw std::runtime_error("Invalid library type");
+                throw DLLoaderException("Invalid library type");
 
             void *constructor = dlsym(_lib.get(), "create");
             if (!constructor)
@@ -55,7 +63,7 @@ namespace utils
         {
             void *destructor = dlsym(_lib.get(), "destroy");
             if (!destructor)
-                throw std::runtime_error(dlerror());
+                throw DLLoaderException(dlerror());
             reinterpret_cast<void (*)(T *)>(destructor)(_instance);
         }
 

@@ -8,10 +8,18 @@
 #ifndef RAYTRACER_HPP
 #define RAYTRACER_HPP
 
+#include "../Utils/Utils.hpp"
+
 namespace rt
 {
     class Raytracer {
     public:
+        class RaytracerException final : public utils::Exception {
+        public:
+            RaytracerException(const std::string &message) :
+                Exception("Raytracer", message) {}
+        };
+
         void run();
     };
 }

@@ -14,9 +14,15 @@ namespace rt
 {
     class FlatColor : public IMaterial {
     private:
-        utils::Color _color{0, 0, 0};
+        utils::Color _color;
 
     public:
+        class FlatColorException final : public IMaterialException {
+        public:
+            FlatColorException(const std::string &message) :
+                IMaterialException("FlatColor", message) {}
+        };
+
         [[nodiscard]] utils::Color getColor(const math::Vector3<float> &point) const override;
 
         void setColor(const utils::Color &color);

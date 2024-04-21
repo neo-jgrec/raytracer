@@ -15,7 +15,13 @@ namespace rt
 {
     class IMaterial {
     public:
-        virtual utils::Color getColor(const math::Vector3<float> &point) const = 0;
+        class IMaterialException : public utils::Exception {
+        public:
+            IMaterialException(const std::string &name, const std::string &message) :
+                Exception("[Material] " + name, message) {}
+        };
+
+        [[nodiscard]] virtual utils::Color getColor(const math::Vector3<float> &point) const = 0;
     };
 } // namespace rt
 

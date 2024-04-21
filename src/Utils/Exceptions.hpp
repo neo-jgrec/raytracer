@@ -11,7 +11,7 @@
     #include <exception>
     #include <string>
 
-namespace rt
+namespace utils
 {
     class Exception : public std::exception {
     public:

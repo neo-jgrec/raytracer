@@ -18,9 +18,10 @@ namespace rt
         float _radius = 0.5;
 
     public:
-        class SphereException final : public Exception {
-            SphereException(const std::string &message):
-                Exception("Sphere", message) {}
+        class SphereException final : public APrimitiveException {
+        public:
+            SphereException(const std::string &message) :
+                APrimitiveException("Sphere", message) {}
         };
 
         [[nodiscard]] float hit(const math::Ray &ray) const override;

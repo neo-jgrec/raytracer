@@ -9,7 +9,6 @@
 
 #include <list>
 
-#include "../Utils/Utils.hpp"
 #include "../Cameras/ICamera.hpp"
 
 namespace rt
@@ -23,9 +22,15 @@ namespace rt
         for (const auto &path : {
                  "./bin/lib/raytracer_sphere.so",
              }) {
-            loadersPrimitives.emplace_back(utils::PRIMITIVE, path);
-            loadersMaterials.emplace_back(utils::MATERIAL, "./bin/lib/raytracer_flatcolor.so");
-            loadersPrimitives.back().get()->setMaterial(loadersMaterials.back().get());
+            try {
+                loadersPrimitives.emplace_back(utils::PRIMITIVE, path);
+                loadersMaterials.emplace_back(utils::MATERIAL, "./bin/lib/raytracer_uvcolor.so");
+                loadersPrimitives.back().get()->setMaterial(loadersMaterials.back().get());
+            } catch (const utils::Exception &e) {
+                std::cerr << e.what() << std::endl;
+                continue;
+            }
+
             primitives.push_back(loadersPrimitives.back().get());
         }
 

@@ -71,9 +71,13 @@ namespace rt
                         t = tmp;
                 }
 
-                writePixel(t > 0
-                    ? primitives.front()->getMaterial()->getColor(ray.at(t))
-                    : getBackgroundPixel(direction));
+                try {
+                    writePixel(t > 0
+                        ? primitives.front()->getMaterial()->getColor(ray.at(t))
+                        : getBackgroundPixel(direction));
+                } catch (const utils::Exception &e) {
+                    std::cerr << e.what() << std::endl;
+                }
             }
         }
         std::cerr << "\nDone." << std::endl;
