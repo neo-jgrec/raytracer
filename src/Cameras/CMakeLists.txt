@@ -1,16 +1,17 @@
 add_library(raytracer_camera SHARED)
 
 file(GLOB_RECURSE SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp
 )
 
 target_sources(raytracer_camera
-    PRIVATE
+        PRIVATE
         ${SOURCES}
 )
 
 target_include_directories(raytracer_camera
-    PRIVATE
+        PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/includes
 )

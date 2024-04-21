@@ -6,15 +6,14 @@
 */
 
 #ifndef RAYTRACER_HPP
-    #define RAYTRACER_HPP
+#define RAYTRACER_HPP
 
-    #include <SFML/Graphics.hpp>
-
-class Raytracer {
-private:
-public:
-    Raytracer();
-    ~Raytracer();
-};
+namespace rt
+{
+    class Raytracer {
+    public:
+        void run();
+    };
+}
 
 #endif //RAYTRACER_HPP

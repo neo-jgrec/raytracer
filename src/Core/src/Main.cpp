@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2024
-** BS-Raytracer
+** Raytracer
 ** File description:
 ** Main
 */
@@ -9,5 +9,8 @@
 
 int main()
 {
+    rt::Raytracer raytracer;
+
+    raytracer.run();
     return 0;
 }

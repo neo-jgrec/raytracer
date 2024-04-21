@@ -61,6 +61,10 @@ unit_tests
 coverage.info
 *.gcno
 *.gcda
+vgcore.*
+
+# Images
+*.ppm
 
 # IDE files
 .vscode/
