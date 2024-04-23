@@ -6,10 +6,13 @@
 */
 
 #include "Parser.hpp"
+
 #include <filesystem>
 #include <functional>
 #include <iostream>
 #include <libconfig.h++>
+#include <string>
+
 using namespace rt;
 
 std::string Parser::getLibPathFromMainBinary(const std::string &path)
@@ -32,39 +35,56 @@ void Parser::parseCamera(libconfig::Setting &camera)
     _camera = createComponent(camera);
 }
 
+void Parser::parseMaterials(libconfig::Setting &materials)
+{
+    for (int i = 0; i < materials.getLength(); i++) {
+        std::string materialName = static_cast<std::string>(materials[i]["name"]);
+        if (materialLoaders.find(materialName) != materialLoaders.end()) {
+            throw std::runtime_error("Material with the same name already exists: " + materialName);
+        }
+        try {
+            materialLoaders.emplace(materialName, utils::DLLoader<IMaterial>(getLibPathFromMainBinary(materials[i]["lib"]), "createComponent"));
+        } catch (const utils::DLLoader<IMaterial>::DLLoaderException &e) {
+            std::cerr << e.what() << std::endl;
+            continue;
+        }
+        std::function<IMaterial *(libconfig::Setting &)> createComponent;
+        try {
+            createComponent = reinterpret_cast<IMaterial *(*)(libconfig::Setting &)>(materialLoaders.at(materialName).get());
+        } catch (const std::out_of_range &e) {
+            throw std::runtime_error("Material not found: " + materialName);
+        }
+
+        if (createComponent == nullptr)
+            throw std::runtime_error("Failed to load material component");
+
+        _materials.push_back(createComponent(materials[i]));
+    }
+}
+
 void Parser::parsePrimitives(libconfig::Setting &primitives)
 {
     for (int i = 0; i < primitives.getLength(); i++) {
+        IMaterial *usedMaterial = nullptr;
+
+        try {
+            usedMaterial = materialLoaders.at(static_cast<std::string>(primitives[i]["material"])).get();
+        } catch (const std::out_of_range &e) {
+            throw std::runtime_error("Material not found: " + static_cast<std::string>(primitives[i]["material"]));
+        }
+
         try {
             primitiveLoaders.emplace_back(getLibPathFromMainBinary(primitives[i]["lib"]), "createComponent");
         } catch (const utils::DLLoader<IPrimitive>::DLLoaderException &e) {
             std::cerr << e.what() << std::endl;
             continue;
         }
-        std::function<IPrimitive *(libconfig::Setting &)> createComponent = reinterpret_cast<IPrimitive *(*)(libconfig::Setting &)>(primitiveLoaders.back().get());
+        std::function<IPrimitive *(libconfig::Setting &, IMaterial *)> createComponent = reinterpret_cast<IPrimitive *(*)(libconfig::Setting &, IMaterial *)>(primitiveLoaders.back().get());
 
         if (createComponent == nullptr)
             throw std::runtime_error("Failed to load primitive component");
 
-        _primitives.push_back(createComponent(primitives[i]));
-    }
-}
-
-void Parser::parseMaterials(libconfig::Setting &materials)
-{
-    for (int i = 0; i < materials.getLength(); i++) {
-        try {
-            materialLoaders.emplace_back(getLibPathFromMainBinary(materials[i]["lib"]), "createComponent");
-        } catch (const utils::DLLoader<IMaterial>::DLLoaderException &e) {
-            std::cerr << e.what() << std::endl;
-            continue;
-        }
-        std::function<IMaterial *(libconfig::Setting &)> createComponent = reinterpret_cast<IMaterial *(*)(libconfig::Setting &)>(materialLoaders.back().get());
-
-        if (createComponent == nullptr)
-            throw std::runtime_error("Failed to load material component");
-
-        _materials.push_back(createComponent(materials[i]));
+        _primitives.push_back(createComponent(primitives[i], usedMaterial));
     }
 }
 
@@ -77,8 +97,8 @@ Parser *Parser::parseScene(const std::string &path)
         cfg.readFile(abs_path);
         libconfig::Setting &root = cfg.getRoot();
         parseCamera(root["camera"]);
-        parsePrimitives(root["primitives"]);
         parseMaterials(root["materials"]);
+        parsePrimitives(root["primitives"]);
         std::cout << "Scene parsed successfully" << std::endl;
     } catch(const libconfig::FileIOException &fioex) {
         std::cerr << "I/O error while reading file: " << fioex.what() << std::endl;

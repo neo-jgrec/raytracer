@@ -34,7 +34,7 @@ namespace rt
 } // namespace rt
 
 extern "C" {
-    rt::IPrimitive *createComponent(libconfig::Setting &sphere) {
+    rt::IPrimitive *createComponent(libconfig::Setting &sphere, rt::IMaterial *material) {
         auto *newSphere = new rt::Sphere();
 
         newSphere->setOrigin(math::Vector3<float>{
@@ -43,6 +43,9 @@ extern "C" {
             static_cast<float>(sphere["z"].operator int())
         });
         newSphere->setRadius(static_cast<float>(sphere["r"].operator int()));
+
+        newSphere->setMaterial(material);
+
         return newSphere;
     }
 

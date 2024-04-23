@@ -9,6 +9,7 @@
     #define PARSER_HPP_
 
     #include <libconfig.h++>
+    #include <map>
 
     #include "../../../Cameras/ICamera.hpp"
     #include "../../../Plugins/Primitives/IPrimitive.hpp"
@@ -20,7 +21,7 @@ namespace rt {
         public:
             Parser(std::list<utils::DLLoader<ICamera>> &cameraLoaders,
                    std::list<utils::DLLoader<IPrimitive>> &primitiveLoaders,
-                   std::list<utils::DLLoader<IMaterial>> &materialLoaders)
+                   std::map<std::string, utils::DLLoader<IMaterial>> &materialLoaders)
                 : cameraLoaders(cameraLoaders), primitiveLoaders(primitiveLoaders), materialLoaders(materialLoaders) {};
             ~Parser() {};
 
@@ -46,7 +47,7 @@ namespace rt {
 
             std::list<utils::DLLoader<ICamera>> cameraLoaders;
             std::list<utils::DLLoader<IPrimitive>> primitiveLoaders;
-            std::list<utils::DLLoader<IMaterial>> materialLoaders;
+            std::map<std::string, utils::DLLoader<IMaterial>> materialLoaders;
             // std::vector<utils::DLLoader<ILight>> lightLoaders;
     };
 }
