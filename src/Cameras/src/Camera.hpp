@@ -8,6 +8,8 @@
 #ifndef CAMERA_HPP_
 #define CAMERA_HPP_
 
+#include <iostream>
+#include <libconfig.h++>
 #include "../ICamera.hpp"
 
 namespace rt
@@ -42,7 +44,25 @@ namespace rt
         void setOrigin(const math::Vector3<float> &origin) override;
 
         void generateImage(std::list<IPrimitive *> primitives) override;
-    };;
+    };
 } // namespace rt
+
+extern "C" {
+    rt::ICamera *createComponent(libconfig::Setting &camera) {
+        auto *newCamera = new rt::Camera();
+
+        newCamera->setOrigin(math::Vector3<float>{
+            static_cast<float>(camera["position"]["x"].operator int()),
+            static_cast<float>(camera["position"]["y"].operator int()),
+            static_cast<float>(camera["position"]["z"].operator int())
+        });
+
+        return newCamera;
+    }
+
+    void destroy(const rt::ICamera *ptr) {
+        delete ptr;
+    }
+}
 
 #endif /* !CAMERA_HPP_ */

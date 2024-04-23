@@ -9,6 +9,7 @@
 #define FLATCOLOR_HPP
 
 #include "../IMaterial.hpp"
+#include <libconfig.h++>
 
 namespace rt
 {
@@ -28,5 +29,24 @@ namespace rt
         void setColor(const utils::Color &color);
     };
 } // rt
+
+extern "C" {
+    rt::FlatColor *createComponent([[maybe_unused]] libconfig::Setting &material) {
+        auto *newUVColor = new rt::FlatColor();
+        newUVColor->setColor(
+            utils::Color{
+                static_cast<float>(static_cast<unsigned char>(material["color"]["r"].operator int())),
+                static_cast<float>(static_cast<unsigned char>(material["color"]["g"].operator int())),
+                static_cast<float>(static_cast<unsigned char>(material["color"]["b"].operator int()))
+            }
+        );
+        return newUVColor;
+    }
+
+    void destroy(const rt::FlatColor *ptr) {
+        delete ptr;
+    }
+}
+
 
 #endif //FLATCOLOR_HPP

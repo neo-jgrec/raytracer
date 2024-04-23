@@ -9,6 +9,7 @@
 #define UVCOLOR_HPP
 
 #include "../IMaterial.hpp"
+#include <libconfig.h++>
 
 namespace rt
 {
@@ -23,5 +24,16 @@ namespace rt
         [[nodiscard]] utils::Color getColor(const math::Vector3<float> &point) const override;
     };
 } // namespace rt
+
+extern "C" {
+    rt::UVColor *createComponent([[maybe_unused]] libconfig::Setting &material) {
+        auto *newUVColor = new rt::UVColor();
+        return newUVColor;
+    }
+
+    void destroy(const rt::UVColor *ptr) {
+        delete ptr;
+    }
+}
 
 #endif //UVCOLOR_HPP

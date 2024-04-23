@@ -8,6 +8,8 @@
 #ifndef SPHERE_HPP
 #define SPHERE_HPP
 
+#include <iostream>
+#include <libconfig.h++>
 #include "../../APrimitive.hpp"
 
 namespace rt
@@ -30,5 +32,23 @@ namespace rt
         void setRadius(float radius);
     };
 } // namespace rt
+
+extern "C" {
+    rt::IPrimitive *createComponent(libconfig::Setting &sphere) {
+        auto *newSphere = new rt::Sphere();
+
+        newSphere->setOrigin(math::Vector3<float>{
+            static_cast<float>(sphere["x"].operator int()),
+            static_cast<float>(sphere["y"].operator int()),
+            static_cast<float>(sphere["z"].operator int())
+        });
+        newSphere->setRadius(static_cast<float>(sphere["r"].operator int()));
+        return newSphere;
+    }
+
+    void destroy(const rt::IPrimitive *ptr) {
+        delete ptr;
+    }
+}
 
 #endif //SPHERE_HPP

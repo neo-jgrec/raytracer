@@ -8,7 +8,6 @@
 #ifndef ARCADE_DLLOADER_HPP
     #define ARCADE_DLLOADER_HPP
 
-    #include <iostream>
     #include <dlfcn.h>
     #include <string>
     #include <memory>
@@ -17,15 +16,6 @@
 
 namespace utils
 {
-    enum LibraryType {
-        LIGHT     = 0,
-        MATERIAL  = 1,
-        PRIMITIVE = 2,
-        CAMERA    = 3,
-        PARSER    = 4,
-        DISPLAY   = 5,
-    };
-
     template <typename T>
     class DLLoader {
     private:
@@ -39,24 +29,20 @@ namespace utils
                 Exception("DLLoader", message) {}
         };
 
-        DLLoader(const LibraryType type, const std::string &path)
+        DLLoader(const std::string &path, const std::string &symbol)
         {
-            _lib = std::shared_ptr<void>(dlopen(path.c_str(), RTLD_LAZY), [](void *lib) { dlclose(lib); });
+            _lib = std::shared_ptr<void>(dlopen(path.c_str(), RTLD_LAZY), [](void *lib) {
+                if (lib)
+                    dlclose(lib);
+            });
             if (!_lib)
                 throw DLLoaderException(dlerror());
 
-            void *getType = dlsym(_lib.get(), "getType");
-            if (!getType)
-                throw DLLoaderException(dlerror());
-            const LibraryType libType = reinterpret_cast<LibraryType (*)()>(getType)();
-            if (libType != type)
-                throw DLLoaderException("Invalid library type");
-
-            void *constructor = dlsym(_lib.get(), "create");
+            void *constructor = dlsym(_lib.get(), symbol.c_str());
             if (!constructor)
                 throw std::runtime_error(dlerror());
 
-            _instance = reinterpret_cast<T *(*)()>(constructor)();
+            _instance = reinterpret_cast<T*>(constructor);
         }
 
         ~DLLoader() noexcept(false)

@@ -10,23 +10,6 @@
 #include <iomanip>
 #include <iostream>
 
-extern "C" {
-    utils::LibraryType getType()
-    {
-        return utils::LibraryType::CAMERA;
-    }
-
-    rt::ICamera *create()
-    {
-        return new rt::Camera();
-    }
-
-    void destroy(const rt::ICamera *ptr)
-    {
-        delete ptr;
-    }
-}
-
 namespace rt
 {
     utils::Color Camera::getBackgroundPixel(const math::Vector3<float> &direction)

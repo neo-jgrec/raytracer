@@ -7,26 +7,6 @@
 
 #include "Sphere.hpp"
 
-#include <complex>
-#include <vector>
-
-extern "C" {
-    utils::LibraryType getType()
-    {
-        return utils::LibraryType::PRIMITIVE;
-    }
-
-    rt::Sphere *create()
-    {
-        return new rt::Sphere();
-    }
-
-    void destroy(const rt::Sphere *ptr)
-    {
-        delete ptr;
-    }
-}
-
 namespace rt
 {
     float Sphere::hit(const math::Ray &ray) const
