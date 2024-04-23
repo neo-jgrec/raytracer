@@ -54,12 +54,12 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/social-card.png',
+      image: 'img/out.png',
       navbar: {
         title: 'Raytracer',
         logo: {
           alt: 'Raytracer',
-          src: 'img/logo.svg',
+          src: 'img/doom.png',
         },
         items: [
           {
