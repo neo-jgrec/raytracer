@@ -8,6 +8,8 @@
 #ifndef FLATCOLOR_HPP
 #define FLATCOLOR_HPP
 
+#include <iostream>
+
 #include "../IMaterial.hpp"
 #include <libconfig.h++>
 
@@ -26,12 +28,14 @@ namespace rt
 
         [[nodiscard]] utils::Color getColor(const math::Vector3<float> &point) const override;
 
+        [[nodiscard]] utils::Color getColor() const;
         void setColor(const utils::Color &color);
     };
 } // rt
 
 extern "C" {
-    rt::FlatColor *createComponent([[maybe_unused]] libconfig::Setting &material) {
+    rt::FlatColor *createComponent([[maybe_unused]] libconfig::Setting &material)
+    {
         auto *newUVColor = new rt::FlatColor();
         newUVColor->setColor(
             utils::Color{
@@ -39,11 +43,13 @@ extern "C" {
                 static_cast<float>(static_cast<unsigned char>(material["color"]["g"].operator int())),
                 static_cast<float>(static_cast<unsigned char>(material["color"]["b"].operator int()))
             }
-        );
+            );
+
         return newUVColor;
     }
 
-    void destroy(const rt::FlatColor *ptr) {
+    void destroy(const rt::FlatColor *ptr)
+    {
         delete ptr;
     }
 }

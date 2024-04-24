@@ -8,7 +8,6 @@
 #ifndef CAMERA_HPP_
 #define CAMERA_HPP_
 
-#include <iostream>
 #include <libconfig.h++>
 #include "../ICamera.hpp"
 
@@ -41,26 +40,36 @@ namespace rt
                 ICameraException("Camera", message) {}
         };
 
+        [[nodiscard]] std::pair<int, int> getResolution() const;
+        void setResolution(int width, int height);
+
+        [[nodiscard]] const math::Vector3<float> &getOrigin() const override;
         void setOrigin(const math::Vector3<float> &origin) override;
 
-        void generateImage(std::list<IPrimitive *> primitives) override;
+        std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(std::list<IPrimitive *> primitives) override;
     };
 } // namespace rt
 
 extern "C" {
-    rt::ICamera *createComponent(libconfig::Setting &camera) {
+    rt::ICamera *createComponent(libconfig::Setting &camera)
+    {
         auto *newCamera = new rt::Camera();
 
-        newCamera->setOrigin(math::Vector3<float>{
+        newCamera->setOrigin(math::Vector3{
             static_cast<float>(camera["position"]["x"].operator int()),
             static_cast<float>(camera["position"]["y"].operator int()),
             static_cast<float>(camera["position"]["z"].operator int())
         });
+        newCamera->setResolution(
+            camera["resolution"]["width"].operator int(),
+            camera["resolution"]["height"].operator int()
+            );
 
         return newCamera;
     }
 
-    void destroy(const rt::ICamera *ptr) {
+    void destroy(const rt::ICamera *ptr)
+    {
         delete ptr;
     }
 }

@@ -27,27 +27,31 @@ namespace rt
 
         [[nodiscard]] float hit(const math::Ray &ray) const override;
 
+        [[nodiscard]] const math::Vector3<float> &getOrigin() const;
+        [[nodiscard]] float getRadius() const;
+
         void setOrigin(const math::Vector3<float> &origin);
         void setRadius(float radius);
     };
 } // namespace rt
 
 extern "C" {
-    rt::IPrimitive *createComponent(libconfig::Setting &sphere, rt::IMaterial *material) {
+    rt::IPrimitive *createComponent(libconfig::Setting &sphere, rt::IMaterial *material)
+    {
         auto *newSphere = new rt::Sphere();
 
-        newSphere->setOrigin(math::Vector3<float>{
+        newSphere->setOrigin(math::Vector3{
             static_cast<float>(sphere["x"].operator int()),
             static_cast<float>(sphere["y"].operator int()),
             static_cast<float>(sphere["z"].operator int())
         });
-        newSphere->setRadius(static_cast<float>(sphere["r"].operator int()));
-
+        newSphere->setRadius((sphere["r"].operator float()));
         newSphere->setMaterial(material);
         return newSphere;
     }
 
-    void destroy(const rt::IPrimitive *ptr) {
+    void destroy(const rt::IPrimitive *ptr)
+    {
         delete ptr;
     }
 }

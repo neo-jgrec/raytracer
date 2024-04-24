@@ -27,13 +27,13 @@ std::string Parser::getLibPathFromMainBinary(const std::string &path)
 void Parser::parseCamera(libconfig::Setting &camera)
 {
     cameraLoaders.emplace_back(getLibPathFromMainBinary(camera["lib"]), "createComponent");
-    std::function<ICamera *(libconfig::Setting &)> createComponent = reinterpret_cast<ICamera *(*)(libconfig::Setting &)>(cameraLoaders.back().get());
+    std::function<ICamera *(libconfig::Setting &)> createComponent = reinterpret_cast<ICamera *(
+        *)(libconfig::Setting &)>(cameraLoaders.back().get());
 
     if (createComponent == nullptr)
         throw std::runtime_error("Failed to load camera component");
 
     _camera = createComponent(camera);
-    cameraLoaders.back().setPointer(_camera);
 }
 
 void Parser::parseMaterials(libconfig::Setting &materials)
@@ -42,7 +42,7 @@ void Parser::parseMaterials(libconfig::Setting &materials)
         std::string materialName = static_cast<std::string>(materials[i]["name"]);
         bool materialExists = false;
 
-        for (const auto& name : materialLoadersNames) {
+        for (const auto &name : materialLoadersNames) {
             if (name == materialName) {
                 materialExists = true;
                 break;
@@ -69,7 +69,6 @@ void Parser::parseMaterials(libconfig::Setting &materials)
             throw std::runtime_error("Failed to load material component");
 
         _materials.emplace(materialName, createComponent(materials[i]));
-        materialLoaders.back().setPointer(_materials.at(materialName));
     }
 }
 
@@ -90,13 +89,13 @@ void Parser::parsePrimitives(libconfig::Setting &primitives)
             std::cerr << e.what() << std::endl;
             continue;
         }
-        std::function<IPrimitive *(libconfig::Setting &, IMaterial *)> createComponent = reinterpret_cast<IPrimitive *(*)(libconfig::Setting &, IMaterial *)>(primitiveLoaders.back().get());
+        std::function<IPrimitive *(libconfig::Setting &, IMaterial *)> createComponent = reinterpret_cast<IPrimitive *(
+            *)(libconfig::Setting &, IMaterial *)>(primitiveLoaders.back().get());
 
         if (createComponent == nullptr)
             throw std::runtime_error("Failed to load primitive component");
 
         _primitives.emplace_back(createComponent(primitives[i], usedMaterial));
-        primitiveLoaders.back().setPointer(_primitives.back());
     }
 }
 
@@ -112,16 +111,16 @@ Parser *Parser::parseScene(const std::string &path)
         parseMaterials(root["materials"]);
         parsePrimitives(root["primitives"]);
         std::cout << "Scene parsed successfully" << std::endl;
-    } catch(const libconfig::FileIOException &fioex) {
+    } catch (const libconfig::FileIOException &fioex) {
         std::cerr << "I/O error while reading file: " << fioex.what() << std::endl;
-    } catch(const libconfig::ParseException &pex) {
+    } catch (const libconfig::ParseException &pex) {
         std::cerr << "Parse error at " << pex.getFile() << ":" << pex.getLine()
-                  << " - " << pex.getError() << std::endl;
-    } catch(const libconfig::SettingNotFoundException &nfex) {
+            << " - " << pex.getError() << std::endl;
+    } catch (const libconfig::SettingNotFoundException &nfex) {
         std::cerr << "Setting not found: " << nfex.getPath() << std::endl;
-    } catch(const libconfig::SettingTypeException &stex) {
+    } catch (const libconfig::SettingTypeException &stex) {
         std::cerr << "Setting type error: " << stex.getPath() << std::endl;
-    } catch(const std::exception &e) {
+    } catch (const std::exception &e) {
         std::cerr << "ERROR : " << e.what() << std::endl;
     }
 

@@ -7,34 +7,31 @@
 
 #include "Raytracer.hpp"
 
-#include <list>
+#include <fstream>
+#include <utility>
+#include <map>
 
 #include "../Cameras/ICamera.hpp"
+#include "Parser/Parser.hpp"
 
-using namespace rt;
+namespace rt
+{
+    Raytracer::Raytracer(std::string sceneName) :
+        _sceneName(std::move(sceneName))
+    {}
 
-// void Raytracer::run()
-// {
-//     std::list<utils::DLLoader<IPrimitive>> loadersPrimitives;
-//     std::list<utils::DLLoader<IMaterial>> loadersMaterials;
-//     std::list<IPrimitive *> primitives;
+    void Raytracer::run() const
+    {
+        Parser parser;
+        parser.parseScene(_sceneName);
 
-//     for (const auto &path : {
-//                 "./bin/lib/raytracer_sphere.so",
-//             }) {
-//         try {
-//             loadersPrimitives.emplace_back(utils::PRIMITIVE, path);
-//             loadersMaterials.emplace_back(utils::MATERIAL, "./bin/lib/raytracer_uvcolor.so");
-//             loadersPrimitives.back().get()->setMaterial(loadersMaterials.back().get());
-//         } catch (const utils::Exception &e) {
-//             std::cerr << e.what() << std::endl;
-//             continue;
-//         }
+        const auto image = parser.getCamera()->generateImage(parser.getPrimitives());
 
-//         primitives.push_back(loadersPrimitives.back().get());
-//     }
+        std::ofstream file("image.out.ppm");
+        file << "P6\n" << std::get<0>(image) << " " << std::get<1>(image) << "\n255\n";
+        file.write(reinterpret_cast<const char *>
+                   (std::get<2>(image).get()), std::get<0>(image) * std::get<1>(image) * 3);
+        file.close();
+    }
 
-//     const utils::DLLoader<ICamera> camera{utils::CAMERA, "./bin/lib/raytracer_camera.so"};
-//     camera.get()->generateImage(primitives);
-// }
-
+}

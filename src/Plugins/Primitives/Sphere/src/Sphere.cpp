@@ -22,9 +22,19 @@ namespace rt
             : (-b - std::sqrt(descriminant)) / (2 * a);
     }
 
+    const math::Vector3<float> &Sphere::getOrigin() const
+    {
+        return _origin;
+    }
     void Sphere::setOrigin(const math::Vector3<float> &origin)
     {
         _origin = origin;
+    }
+
+
+    float Sphere::getRadius() const
+    {
+        return _radius;
     }
     void Sphere::setRadius(const float radius)
     {

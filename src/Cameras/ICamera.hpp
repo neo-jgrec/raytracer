@@ -24,9 +24,10 @@ namespace rt
 
         virtual ~ICamera() = default;
 
+        [[nodiscard]] virtual const math::Vector3<float> &getOrigin() const = 0;
         virtual void setOrigin(const math::Vector3<float> &origin) = 0;
 
-        virtual void generateImage(std::list<IPrimitive *> primitives) = 0;
+        virtual std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(std::list<IPrimitive *> primitives) = 0;
     };
 }
 

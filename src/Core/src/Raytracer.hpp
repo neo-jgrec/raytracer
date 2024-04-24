@@ -13,6 +13,9 @@
 namespace rt
 {
     class Raytracer {
+    private:
+        std::string _sceneName;
+
     public:
         class RaytracerException final : public utils::Exception {
         public:
@@ -20,7 +23,9 @@ namespace rt
                 Exception("Raytracer", message) {}
         };
 
-        void run();
+        Raytracer(std::string sceneName);
+
+        void run() const;
     };
 }
 

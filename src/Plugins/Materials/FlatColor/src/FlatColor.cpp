@@ -14,6 +14,10 @@ namespace rt
         return _color;
     }
 
+    utils::Color FlatColor::getColor() const
+    {
+        return _color;
+    }
     void FlatColor::setColor(const utils::Color &color)
     {
         _color = color;
