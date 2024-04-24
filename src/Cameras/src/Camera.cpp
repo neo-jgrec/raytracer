@@ -71,7 +71,7 @@ namespace rt
                 const utils::Color color = closestPrimitive
                     ? closestPrimitive->getMaterial()->getColor(ray.at(t))
                     : getBackgroundPixel(ray.direction);
-                const int index = static_cast<int>(j * _width * 3 + i * 3);
+                const int index = static_cast<int>((_height - j - 1) * _width * 3 + i * 3);
                 pixels.get()[index] = static_cast<uint8_t>(255.999f * color.r);
                 pixels.get()[index + 1] = static_cast<uint8_t>(255.999f * color.g);
                 pixels.get()[index + 2] = static_cast<uint8_t>(255.999f * color.b);
