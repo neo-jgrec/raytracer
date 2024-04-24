@@ -87,14 +87,26 @@ namespace rt
         const auto nbThreads = std::thread::hardware_concurrency();
         std::cout << "Using " << nbThreads << " threads" << std::endl;
 
+        // TODO: handle when size / nbThreads is not an integer
         std::vector<std::thread> threads;
+        const int height = _height / nbThreads;
+
         for (uint8_t i = 0; i < nbThreads; ++i) {
-            threads.emplace_back(
-                &Camera::generateImageChunk, this,
-                i * (_height / nbThreads), (i + 1) * (_height / nbThreads),
-                0, _width,
-                primitives, std::ref(pixels)
-                );
+            if (i == nbThreads - 1) {
+                threads.emplace_back(
+                    &Camera::generateImageChunk, this,
+                    i * height, _height,
+                    0, _width,
+                    primitives, std::ref(pixels)
+                    );
+            } else {
+                threads.emplace_back(
+                    &Camera::generateImageChunk, this,
+                    i * height, (i + 1) * height,
+                    0, _width,
+                    primitives, std::ref(pixels)
+                    );
+            }
         }
         for (auto &thread : threads) {
             thread.join();
