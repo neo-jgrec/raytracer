@@ -21,6 +21,8 @@ namespace rt
                 Exception("[Material] " + name, message) {}
         };
 
+        virtual ~IMaterial() = default;
+
         [[nodiscard]] virtual utils::Color getColor(const math::Vector3<float> &point) const = 0;
     };
 } // namespace rt

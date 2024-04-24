@@ -22,6 +22,8 @@ namespace rt
                 Exception("[Primitive] " + name, message) {}
         };
 
+        virtual ~IPrimitive() = default;
+
         [[nodiscard]] virtual float hit(const math::Ray &ray) const = 0;
 
         virtual void setMaterial(IMaterial *material) = 0;
