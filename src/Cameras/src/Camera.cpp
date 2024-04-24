@@ -8,7 +8,7 @@
 #include "Camera.hpp"
 
 #include <iostream>
-#include <vector>
+#include <thread>
 #include <vector>
 
 namespace rt
