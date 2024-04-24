@@ -53,28 +53,28 @@ namespace rt
     {
         for (uint32_t j = startHeight; j < endHeight; ++j) {
             for (uint32_t i = startWidth; i < endWidth; ++i) {
-                const auto u = static_cast<float>(i) / static_cast<float>(_width - 1);
-                const auto v = static_cast<float>(j) / static_cast<float>(_height - 1);
-
-                const auto direction{_bottomLeft + _horizontal * u + _vertical * v - _origin};
-                const math::Ray ray{_origin, direction};
+                const math::Ray ray{_origin, {_bottomLeft
+                                        + _horizontal * (static_cast<float>(i) / static_cast<float>(_width - 1)) // u
+                                        + _vertical * (static_cast<float>(j) / static_cast<float>(_height - 1))  // v
+                                        - _origin}};
 
                 float t = -1;
                 const IPrimitive *closestPrimitive = nullptr;
                 for (const auto &primitive : primitives) {
-                    const auto tmp = primitive->hit(ray);
-                    if (tmp > 0 && (t < 0 || tmp < t)) {
+                    if (const auto tmp = primitive->hit(ray);
+                        tmp > 0 && (t < 0 || tmp < t)) {
                         t = tmp;
                         closestPrimitive = primitive;
                     }
                 }
 
-                const utils::Color color = t > 0
+                const utils::Color color = closestPrimitive
                     ? closestPrimitive->getMaterial()->getColor(ray.at(t))
-                    : getBackgroundPixel(direction);
-                pixels.get()[j * _width * 3 + i * 3] = static_cast<uint8_t>(255.999f * color.r);
-                pixels.get()[j * _width * 3 + i * 3 + 1] = static_cast<uint8_t>(255.999f * color.g);
-                pixels.get()[j * _width * 3 + i * 3 + 2] = static_cast<uint8_t>(255.999f * color.b);
+                    : getBackgroundPixel(ray.direction);
+                const int index = static_cast<int>(j * _width * 3 + i * 3);
+                pixels.get()[index] = static_cast<uint8_t>(255.999f * color.r);
+                pixels.get()[index + 1] = static_cast<uint8_t>(255.999f * color.g);
+                pixels.get()[index + 2] = static_cast<uint8_t>(255.999f * color.b);
             }
         }
     }
@@ -87,9 +87,8 @@ namespace rt
         const auto nbThreads = std::thread::hardware_concurrency();
         std::cout << "Using " << nbThreads << " threads" << std::endl;
 
-        // TODO: handle when size / nbThreads is not an integer
         std::vector<std::thread> threads;
-        const int height = _height / nbThreads;
+        const uint16_t height = _height / nbThreads;
 
         for (uint8_t i = 0; i < nbThreads; ++i) {
             if (i == nbThreads - 1) {
