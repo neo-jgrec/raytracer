@@ -49,7 +49,8 @@ namespace rt
 
     std::tuple<int, int, std::shared_ptr<uint8_t>> Camera::generateImage(const std::list<IPrimitive *> primitives)
     {
-        const auto pixels = std::shared_ptr<uint8_t>(new uint8_t[_width * _height * 3]);
+        const auto pixels = std::shared_ptr<uint8_t>(new uint8_t[_width * _height * 3],
+                                                     std::default_delete<uint8_t[]>());
 
         for (int j = _height - 1; j >= 0; --j) {
             std::cout << std::fixed << std::setprecision(2) << "\rProgress: "
