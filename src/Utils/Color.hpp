@@ -8,6 +8,9 @@
 #ifndef COLOR_HPP
 #define COLOR_HPP
 
+#include <ostream>
+#include <algorithm>
+
 namespace utils
 {
     class Color {
@@ -24,18 +27,17 @@ namespace utils
         // Addition
         Color operator+(const float &value) const
         {
-            return Color{r + value, g + value, b + value, a + value};
+            return Color{r + value, g + value, b + value, a};
         }
         Color operator+(const Color &color) const
         {
-            return Color{r + color.r, g + color.g, b + color.b, a + color.a};
+            return Color{r + color.r, g + color.g, b + color.b, a};
         }
         Color operator+=(const float &value)
         {
             r += value;
             g += value;
             b += value;
-            a += value;
             return *this;
         }
         Color operator+=(const Color &color)
@@ -43,25 +45,23 @@ namespace utils
             r += color.r;
             g += color.g;
             b += color.b;
-            a += color.a;
             return *this;
         }
 
         // Subtraction
         Color operator-(const float &value) const
         {
-            return Color{r - value, g - value, b - value, a - value};
+            return Color{r - value, g - value, b - value, a};
         }
         Color operator-(const Color &color) const
         {
-            return Color{r - color.r, g - color.g, b - color.b, a - color.a};
+            return Color{r - color.r, g - color.g, b - color.b, a};
         }
         Color operator-=(const float &value)
         {
             r -= value;
             g -= value;
             b -= value;
-            a -= value;
             return *this;
         }
         Color operator-=(const Color &color)
@@ -69,25 +69,23 @@ namespace utils
             r -= color.r;
             g -= color.g;
             b -= color.b;
-            a -= color.a;
             return *this;
         }
 
         // Multiplication
         Color operator*(const float &value) const
         {
-            return Color{r * value, g * value, b * value, a * value};
+            return Color{r * value, g * value, b * value, a};
         }
         Color operator*(const Color &color) const
         {
-            return Color{r * color.r, g * color.g, b * color.b, a * color.a};
+            return Color{r * color.r, g * color.g, b * color.b, a};
         }
         Color operator*=(const float &value)
         {
             r *= value;
             g *= value;
             b *= value;
-            a *= value;
             return *this;
         }
         Color operator*=(const Color &color)
@@ -95,25 +93,23 @@ namespace utils
             r *= color.r;
             g *= color.g;
             b *= color.b;
-            a *= color.a;
             return *this;
         }
 
         // Division
         Color operator/(const float &value) const
         {
-            return Color{r / value, g / value, b / value, a / value};
+            return Color{r / value, g / value, b / value, a};
         }
         Color operator/(const Color &color) const
         {
-            return Color{r / color.r, g / color.g, b / color.b, a / color.a};
+            return Color{r / color.r, g / color.g, b / color.b, a};
         }
         Color operator/=(const float &value)
         {
             r /= value;
             g /= value;
             b /= value;
-            a /= value;
             return *this;
         }
         Color operator/=(const Color &color)
@@ -121,7 +117,6 @@ namespace utils
             r /= color.r;
             g /= color.g;
             b /= color.b;
-            a /= color.a;
             return *this;
         }
 
@@ -133,6 +128,21 @@ namespace utils
         bool operator!=(const Color &color) const
         {
             return r != color.r || g != color.g || b != color.b || a != color.a;
+        }
+
+        // Stream
+        friend std::ostream &operator<<(std::ostream &os, const Color &color)
+        {
+            os << "Color(" << color.r << ", " << color.g << ", " << color.b << ", " << color.a << ")";
+            return os;
+        }
+
+        Color clamp()
+        {
+            r = std::clamp(r, 0.f, 1.f);
+            g = std::clamp(g, 0.f, 1.f);
+            b = std::clamp(b, 0.f, 1.f);
+            return *this;
         }
     };
 }

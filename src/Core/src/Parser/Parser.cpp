@@ -24,9 +24,9 @@ namespace rt
         for (const auto &primitive : _primitives) {
             delete primitive;
         }
-        // for (auto &light : _lights) {
-        //     delete light;
-        // }
+        for (auto &light : _lights) {
+            delete light;
+        }
     }
 
     std::string Parser::getLibPathFromMainBinary(const std::string &path)
@@ -103,6 +103,20 @@ namespace rt
         }
     }
 
+    void Parser::parseLights(const libconfig::Setting &lights)
+    {
+        for (uint8_t i = 0; i < static_cast<uint8_t>(lights.getLength()); i++) {
+            lightLoaders.emplace_back(getLibPathFromMainBinary(lights[i]["lib"]), "createComponent");
+
+            const std::function createComponent = reinterpret_cast<ILight *(*)(libconfig::Setting &)>
+                (lightLoaders.back().get());
+            if (createComponent == nullptr)
+                throw std::runtime_error("Failed to load light component");
+
+            _lights.emplace_back(createComponent(lights[i]));
+        }
+    }
+
     Parser *Parser::parseScene(const std::string &path)
     {
         const std::string abs_path = std::filesystem::absolute(path);
@@ -115,6 +129,7 @@ namespace rt
             parseCamera(root["camera"]);
             parseMaterials(root["materials"]);
             parsePrimitives(root["primitives"]);
+            parseLights(root["lights"]);
 
             std::cout << "Scene parsed successfully" << std::endl;
         } catch (const libconfig::FileIOException &fioex) {

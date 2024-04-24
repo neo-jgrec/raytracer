@@ -14,7 +14,7 @@
 #include "../../../Cameras/ICamera.hpp"
 #include "../../../Plugins/Primitives/IPrimitive.hpp"
 #include "../../../Plugins/Materials/IMaterial.hpp"
-// #include "../../Plugins/Lights/ILight.hpp"
+#include "../../../Plugins/Lights/ILight.hpp"
 
 namespace rt
 {
@@ -23,9 +23,9 @@ namespace rt
         Parser() = default;
         ~Parser();
 
-        ICamera *getCamera() { return _camera; }
+        [[nodiscard]] ICamera *getCamera() const { return _camera; }
         std::list<IPrimitive *> getPrimitives() { return _primitives; }
-        // std::list<ILight *> getLights() { return _lights; }
+        std::list<ILight *> getLights() { return _lights; }
 
         Parser *parseScene(const std::string &path);
 
@@ -35,17 +35,17 @@ namespace rt
         void parseCamera(libconfig::Setting &camera);
         void parsePrimitives(const libconfig::Setting &primitives);
         void parseMaterials(const libconfig::Setting &materials);
-        // void parseLights(libconfig::Setting &lights);
+        void parseLights(const libconfig::Setting &lights);
 
         ICamera *_camera{};
         std::list<IPrimitive *> _primitives;
-        // std::list<ILight *> _lights;
+        std::list<ILight *> _lights;
 
         std::map<std::string, IMaterial *> _materials;
 
         std::list<utils::DLLoader<ICamera>> cameraLoaders;
         std::list<utils::DLLoader<IPrimitive>> primitiveLoaders;
-        // std::vector<utils::DLLoader<ILight>> lightLoaders;
+        std::list<utils::DLLoader<ILight>> lightLoaders;
 
         std::list<std::string> materialLoadersNames;
         std::list<utils::DLLoader<IMaterial>> materialLoaders;

@@ -26,7 +26,7 @@ namespace rt
         Parser parser;
         parser.parseScene(_sceneName);
 
-        const auto image = parser.getCamera()->generateImage(parser.getPrimitives());
+        const auto image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights());
         const std::string imageName{"image.out.ppm"};
 
         std::ofstream file(imageName);

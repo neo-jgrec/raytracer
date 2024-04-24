@@ -11,6 +11,7 @@
 #include <list>
 
 #include "../Plugins/Primitives/IPrimitive.hpp"
+#include "../Plugins/Lights/ILight.hpp"
 
 namespace rt
 {
@@ -27,7 +28,8 @@ namespace rt
         [[nodiscard]] virtual const math::Vector3<float> &getOrigin() const = 0;
         virtual void setOrigin(const math::Vector3<float> &origin) = 0;
 
-        virtual std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(std::list<IPrimitive *> primitives) = 0;
+        virtual std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(
+            std::list<IPrimitive *> primitives, std::list<ILight *> lights) = 0;
     };
 }
 

@@ -30,11 +30,11 @@ namespace rt
             0, 0, _focalLength
         };
 
-        [[nodiscard]] static utils::Color getBackgroundPixel(const math::Vector3<float> &direction);
         void generateImageChunk(
             uint32_t startHeight, uint32_t endHeight,
             uint32_t startWidth, uint32_t endWidth,
-            const std::list<IPrimitive *> &primitives, const std::shared_ptr<uint8_t> &pixels) const;
+            const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
+            const std::shared_ptr<uint8_t> &pixels) const;
 
     public:
         class CameraException final : public ICameraException {
@@ -49,12 +49,13 @@ namespace rt
         [[nodiscard]] const math::Vector3<float> &getOrigin() const override;
         void setOrigin(const math::Vector3<float> &origin) override;
 
-        std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(std::list<IPrimitive *> primitives) override;
+        std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(std::list<IPrimitive *> primitives,
+                                                                     std::list<ILight *> lights) override;
     };
 } // namespace rt
 
 extern "C" {
-    rt::ICamera *createComponent(libconfig::Setting &camera)
+    rt::ICamera *createComponent(const libconfig::Setting &camera)
     {
         auto *newCamera = new rt::Camera();
 

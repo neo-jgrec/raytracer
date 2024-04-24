@@ -13,14 +13,6 @@
 
 namespace rt
 {
-    utils::Color Camera::getBackgroundPixel(const math::Vector3<float> &direction)
-    {
-        const auto tf = 0.5f * (direction.y + 1.0f);
-        const auto vecColor = math::Vector3{1.0f, 1.0f, 1.0f} * (1.0f - tf)
-            + math::Vector3{0.5f, 0.7f, 1.0f} * tf;
-        return {vecColor.x, vecColor.y, vecColor.z};
-    }
-
     std::pair<int, int> Camera::getResolution() const
     {
         return {_width, _height};
@@ -49,7 +41,8 @@ namespace rt
 
     void Camera::generateImageChunk(
         const uint32_t startHeight, const uint32_t endHeight, const uint32_t startWidth, const uint32_t endWidth,
-        const std::list<IPrimitive *> &primitives, const std::shared_ptr<uint8_t> &pixels) const
+        const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
+        const std::shared_ptr<uint8_t> &pixels) const
     {
         for (uint32_t j = startHeight; j < endHeight; ++j) {
             for (uint32_t i = startWidth; i < endWidth; ++i) {
@@ -68,9 +61,14 @@ namespace rt
                     }
                 }
 
-                const utils::Color color = closestPrimitive
-                    ? closestPrimitive->getMaterial()->getColor(ray.at(t))
-                    : getBackgroundPixel(ray.direction);
+                utils::Color color;
+                if (closestPrimitive) {
+                    color = closestPrimitive->getMaterial()->getColor(ray.at(t));
+                    for (const auto &light : lights) {
+                        light->illuminate(ray.at(t), color);
+                    }
+                }
+
                 const int index = static_cast<int>((_height - j - 1) * _width * 3 + i * 3);
                 pixels.get()[index] = static_cast<uint8_t>(255.999f * color.r);
                 pixels.get()[index + 1] = static_cast<uint8_t>(255.999f * color.g);
@@ -79,7 +77,8 @@ namespace rt
         }
     }
 
-    std::tuple<int, int, std::shared_ptr<uint8_t>> Camera::generateImage(const std::list<IPrimitive *> primitives)
+    std::tuple<int, int, std::shared_ptr<uint8_t>> Camera::generateImage(
+        const std::list<IPrimitive *> primitives, const std::list<ILight *> lights)
     {
         const auto pixels = std::shared_ptr<uint8_t>(new uint8_t[_width * _height * 3],
                                                      std::default_delete<uint8_t[]>());
@@ -96,14 +95,14 @@ namespace rt
                     &Camera::generateImageChunk, this,
                     i * height, _height,
                     0, _width,
-                    primitives, std::ref(pixels)
+                    primitives, lights, std::ref(pixels)
                     );
             } else {
                 threads.emplace_back(
                     &Camera::generateImageChunk, this,
                     i * height, (i + 1) * height,
                     0, _width,
-                    primitives, std::ref(pixels)
+                    primitives, lights, std::ref(pixels)
                     );
             }
         }

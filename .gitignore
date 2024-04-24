@@ -64,7 +64,8 @@ coverage.info
 vgcore.*
 
 # Images
-*.ppm
+*.out.png
+*.out.ppm
 
 # IDE files
 .vscode/
