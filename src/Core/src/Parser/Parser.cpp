@@ -58,7 +58,7 @@ void Parser::parseMaterials(libconfig::Setting &materials)
         if (createComponent == nullptr)
             throw std::runtime_error("Failed to load material component");
 
-        _materials.push_back(createComponent(materials[i]));
+        _materials.emplace(materialName, createComponent(materials[i]));
     }
 }
 
@@ -68,7 +68,7 @@ void Parser::parsePrimitives(libconfig::Setting &primitives)
         IMaterial *usedMaterial = nullptr;
 
         try {
-            usedMaterial = materialLoaders.at(static_cast<std::string>(primitives[i]["material"])).get();
+            usedMaterial = _materials.at(static_cast<std::string>(primitives[i]["material"]));
         } catch (const std::out_of_range &e) {
             throw std::runtime_error("Material not found: " + static_cast<std::string>(primitives[i]["material"]));
         }
@@ -84,7 +84,7 @@ void Parser::parsePrimitives(libconfig::Setting &primitives)
         if (createComponent == nullptr)
             throw std::runtime_error("Failed to load primitive component");
 
-        _primitives.push_back(createComponent(primitives[i], usedMaterial));
+        _primitives.emplace_back(createComponent(primitives[i], usedMaterial));
     }
 }
 

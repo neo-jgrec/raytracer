@@ -26,6 +26,13 @@ int main([[maybe_unused]] int ac, char **av)
     parser.parseScene(av[1]);
     parser.getCamera()->generateImage(parser.getPrimitives());
 
+    for (auto &loader : cameraLoaders)
+        loader.destroy();
+    for (auto &loader : primitiveLoaders)
+        loader.destroy();
+    for (auto &loader : materialLoaders)
+        loader.second.destroy();
+
     exit(0);
 
     rt::Raytracer raytracer;

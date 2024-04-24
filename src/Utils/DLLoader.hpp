@@ -45,17 +45,19 @@ namespace utils
             _instance = reinterpret_cast<T*>(constructor);
         }
 
-        ~DLLoader() noexcept(false)
+        ~DLLoader() {}
+
+        [[nodiscard]] T *get() const
+        {
+            return _instance;
+        }
+
+        void destroy()
         {
             void *destructor = dlsym(_lib.get(), "destroy");
             if (!destructor)
                 throw DLLoaderException(dlerror());
             reinterpret_cast<void (*)(T *)>(destructor)(_instance);
-        }
-
-        [[nodiscard]] T *get() const
-        {
-            return _instance;
         }
 
         void *operator[](const std::string &symbol) const
