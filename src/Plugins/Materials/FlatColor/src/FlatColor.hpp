@@ -37,13 +37,11 @@ extern "C" {
     rt::FlatColor *createComponent([[maybe_unused]] libconfig::Setting &material)
     {
         auto *newUVColor = new rt::FlatColor();
-        newUVColor->setColor(
-            utils::Color{
-                static_cast<float>(static_cast<unsigned char>(material["color"]["r"].operator int())),
-                static_cast<float>(static_cast<unsigned char>(material["color"]["g"].operator int())),
-                static_cast<float>(static_cast<unsigned char>(material["color"]["b"].operator int()))
-            }
-            );
+        newUVColor->setColor(utils::Color{
+            static_cast<float>(material["color"]["r"].operator int()) / 255,
+            static_cast<float>(material["color"]["g"].operator int()) / 255,
+            static_cast<float>(material["color"]["b"].operator int()) / 255
+        });
 
         return newUVColor;
     }

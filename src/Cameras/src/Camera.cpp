@@ -18,7 +18,7 @@ namespace rt
         const auto tf = 0.5f * (direction.y + 1.0f);
         const auto vecColor = math::Vector3{1.0f, 1.0f, 1.0f} * (1.0f - tf)
             + math::Vector3{0.5f, 0.7f, 1.0f} * tf;
-        return {255.999f * vecColor.x, 255.999f * vecColor.y, 255.999f * vecColor.z};
+        return {vecColor.x, vecColor.y, vecColor.z};
     }
 
     std::pair<int, int> Camera::getResolution() const
@@ -72,9 +72,9 @@ namespace rt
                 const utils::Color color = t > 0
                     ? closestPrimitive->getMaterial()->getColor(ray.at(t))
                     : getBackgroundPixel(direction);
-                pixels.get()[j * _width * 3 + i * 3] = static_cast<uint8_t>(color.r);
-                pixels.get()[j * _width * 3 + i * 3 + 1] = static_cast<uint8_t>(color.g);
-                pixels.get()[j * _width * 3 + i * 3 + 2] = static_cast<uint8_t>(color.b);
+                pixels.get()[j * _width * 3 + i * 3] = static_cast<uint8_t>(255.999f * color.r);
+                pixels.get()[j * _width * 3 + i * 3 + 1] = static_cast<uint8_t>(255.999f * color.g);
+                pixels.get()[j * _width * 3 + i * 3 + 2] = static_cast<uint8_t>(255.999f * color.b);
             }
         }
     }
