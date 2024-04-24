@@ -21,11 +21,11 @@ namespace rt
     class Parser {
     public:
         Parser() = default;
-        ~Parser() {};
+        ~Parser();
 
-        ICamera *getCamera(void) { return _camera; }
-        std::list<IPrimitive *> getPrimitives(void) { return _primitives; }
-        // std::list<ILight *> getLights(void) { return _lights; }
+        ICamera *getCamera() { return _camera; }
+        std::list<IPrimitive *> getPrimitives() { return _primitives; }
+        // std::list<ILight *> getLights() { return _lights; }
 
         Parser *parseScene(const std::string &path);
 

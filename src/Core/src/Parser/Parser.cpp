@@ -15,6 +15,20 @@
 
 namespace rt
 {
+    Parser::~Parser()
+    {
+        delete _camera;
+        for (const auto &material : _materials) {
+            delete material.second;
+        }
+        for (const auto &primitive : _primitives) {
+            delete primitive;
+        }
+        // for (auto &light : _lights) {
+        //     delete light;
+        // }
+    }
+
     std::string Parser::getLibPathFromMainBinary(const std::string &path)
     {
         const std::string binaryPath = std::filesystem::read_symlink("/proc/self/exe");
