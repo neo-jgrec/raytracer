@@ -33,5 +33,4 @@ namespace rt
                    (std::get<2>(image).get()), std::get<0>(image) * std::get<1>(image) * 3);
         file.close();
     }
-
 }

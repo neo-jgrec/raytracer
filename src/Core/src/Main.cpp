@@ -9,7 +9,7 @@
 
 #include "Raytracer.hpp"
 
-int main([[maybe_unused]] int ac, char **av)
+int main(const int ac, char **av)
 {
     if (ac != 2) {
         std::cerr << "Usage: " << av[0] << " scene.cfg" << std::endl;
@@ -17,7 +17,7 @@ int main([[maybe_unused]] int ac, char **av)
     }
 
     try {
-        rt::Raytracer raytracer(av[1]);
+        const rt::Raytracer raytracer(av[1]);
         raytracer.run();
     } catch (const rt::Raytracer::RaytracerException &e) {
         std::cerr << e.what() << std::endl;

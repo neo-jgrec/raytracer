@@ -31,7 +31,6 @@ namespace rt
         _origin = origin;
     }
 
-
     float Sphere::getRadius() const
     {
         return _radius;
