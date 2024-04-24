@@ -7,9 +7,9 @@
 
 #include "Camera.hpp"
 
-#include <fstream>
-#include <iomanip>
 #include <iostream>
+#include <vector>
+#include <vector>
 
 namespace rt
 {
@@ -18,7 +18,7 @@ namespace rt
         const auto tf = 0.5f * (direction.y + 1.0f);
         const auto vecColor = math::Vector3{1.0f, 1.0f, 1.0f} * (1.0f - tf)
             + math::Vector3{0.5f, 0.7f, 1.0f} * tf;
-        return {vecColor.x, vecColor.y, vecColor.z};
+        return {255.999f * vecColor.x, 255.999f * vecColor.y, 255.999f * vecColor.z};
     }
 
     std::pair<int, int> Camera::getResolution() const
@@ -47,15 +47,12 @@ namespace rt
         _origin = origin;
     }
 
-    std::tuple<int, int, std::shared_ptr<uint8_t>> Camera::generateImage(const std::list<IPrimitive *> primitives)
+    void Camera::generateImageChunk(
+        const uint32_t startHeight, const uint32_t endHeight, const uint32_t startWidth, const uint32_t endWidth,
+        const std::list<IPrimitive *> &primitives, const std::shared_ptr<uint8_t> &pixels) const
     {
-        const auto pixels = std::shared_ptr<uint8_t>(new uint8_t[_width * _height * 3],
-                                                     std::default_delete<uint8_t[]>());
-
-        for (int j = _height - 1; j >= 0; --j) {
-            std::cout << std::fixed << std::setprecision(2) << "\rProgress: "
-                << (1 - (static_cast<float>(j) / static_cast<float>(_height - 1))) * 100 << "% " << std::flush;
-            for (int i = 0; i < _width; ++i) {
+        for (uint32_t j = startHeight; j < endHeight; ++j) {
+            for (uint32_t i = startWidth; i < endWidth; ++i) {
                 const auto u = static_cast<float>(i) / static_cast<float>(_width - 1);
                 const auto v = static_cast<float>(j) / static_cast<float>(_height - 1);
 
@@ -80,7 +77,29 @@ namespace rt
                 pixels.get()[j * _width * 3 + i * 3 + 2] = static_cast<uint8_t>(color.b);
             }
         }
-        std::cout << std::endl;
+    }
+
+    std::tuple<int, int, std::shared_ptr<uint8_t>> Camera::generateImage(const std::list<IPrimitive *> primitives)
+    {
+        const auto pixels = std::shared_ptr<uint8_t>(new uint8_t[_width * _height * 3],
+                                                     std::default_delete<uint8_t[]>());
+
+        const auto nbThreads = std::thread::hardware_concurrency();
+        std::cout << "Using " << nbThreads << " threads" << std::endl;
+
+        std::vector<std::thread> threads;
+        for (uint8_t i = 0; i < nbThreads; ++i) {
+            threads.emplace_back(
+                &Camera::generateImageChunk, this,
+                i * (_height / nbThreads), (i + 1) * (_height / nbThreads),
+                0, _width,
+                primitives, std::ref(pixels)
+                );
+        }
+        for (auto &thread : threads) {
+            thread.join();
+        }
+
         return {_width, _height, pixels};
     }
 } // namespace raytracer
