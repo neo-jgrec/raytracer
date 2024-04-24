@@ -22,6 +22,8 @@ namespace utils
         std::shared_ptr<void> _lib = nullptr;
         T *_instance = nullptr;
 
+        T *_ptr = nullptr;
+
     public:
         class DLLoaderException final : public Exception {
         public:
@@ -45,19 +47,23 @@ namespace utils
             _instance = reinterpret_cast<T*>(constructor);
         }
 
-        ~DLLoader() {}
+        ~DLLoader()
+        {
+            if (!_ptr)
+                return;
+            void *destructor = dlsym(_lib.get(), "destroy");
+            if (destructor)
+                reinterpret_cast<void(*)(const T *)>(destructor)(_ptr);
+        }
 
         [[nodiscard]] T *get() const
         {
             return _instance;
         }
 
-        void destroy()
+        void setPointer(T *ptr)
         {
-            void *destructor = dlsym(_lib.get(), "destroy");
-            if (!destructor)
-                throw DLLoaderException(dlerror());
-            reinterpret_cast<void (*)(T *)>(destructor)(_instance);
+            _ptr = ptr;
         }
 
         void *operator[](const std::string &symbol) const

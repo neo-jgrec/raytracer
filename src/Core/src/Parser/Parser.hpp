@@ -19,10 +19,7 @@
 namespace rt {
     class Parser {
         public:
-            Parser(std::list<utils::DLLoader<ICamera>> &cameraLoaders,
-                   std::list<utils::DLLoader<IPrimitive>> &primitiveLoaders,
-                   std::map<std::string, utils::DLLoader<IMaterial>> &materialLoaders)
-                : cameraLoaders(cameraLoaders), primitiveLoaders(primitiveLoaders), materialLoaders(materialLoaders) {};
+            Parser() = default;
             ~Parser() {};
 
             rt::ICamera *getCamera(void) { return _camera; }
@@ -47,8 +44,10 @@ namespace rt {
 
                 std::list<utils::DLLoader<ICamera>> cameraLoaders;
                 std::list<utils::DLLoader<IPrimitive>> primitiveLoaders;
-                std::map<std::string, utils::DLLoader<IMaterial>> materialLoaders;
                 // std::vector<utils::DLLoader<ILight>> lightLoaders;
+
+                std::list<std::string> materialLoadersNames;
+                std::list<utils::DLLoader<IMaterial>> materialLoaders;
     };
 }
 

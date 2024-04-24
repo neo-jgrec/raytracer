@@ -8,7 +8,6 @@
 #ifndef SPHERE_HPP
 #define SPHERE_HPP
 
-#include <iostream>
 #include <libconfig.h++>
 #include "../../APrimitive.hpp"
 
@@ -45,7 +44,6 @@ extern "C" {
         newSphere->setRadius(static_cast<float>(sphere["r"].operator int()));
 
         newSphere->setMaterial(material);
-
         return newSphere;
     }
 

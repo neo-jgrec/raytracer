@@ -33,24 +33,34 @@ void Parser::parseCamera(libconfig::Setting &camera)
         throw std::runtime_error("Failed to load camera component");
 
     _camera = createComponent(camera);
+    cameraLoaders.back().setPointer(_camera);
 }
 
 void Parser::parseMaterials(libconfig::Setting &materials)
 {
     for (int i = 0; i < materials.getLength(); i++) {
         std::string materialName = static_cast<std::string>(materials[i]["name"]);
-        if (materialLoaders.find(materialName) != materialLoaders.end()) {
-            throw std::runtime_error("Material with the same name already exists: " + materialName);
+        bool materialExists = false;
+
+        for (const auto& name : materialLoadersNames) {
+            if (name == materialName) {
+                materialExists = true;
+                break;
+            }
         }
+        if (materialExists)
+            throw std::runtime_error("Material with the same name already exists: " + materialName);
+
         try {
-            materialLoaders.emplace(materialName, utils::DLLoader<IMaterial>(getLibPathFromMainBinary(materials[i]["lib"]), "createComponent"));
+            materialLoaders.emplace_back(getLibPathFromMainBinary(materials[i]["lib"]), "createComponent");
+            materialLoadersNames.emplace_back(materialName);
         } catch (const utils::DLLoader<IMaterial>::DLLoaderException &e) {
             std::cerr << e.what() << std::endl;
             continue;
         }
         std::function<IMaterial *(libconfig::Setting &)> createComponent;
         try {
-            createComponent = reinterpret_cast<IMaterial *(*)(libconfig::Setting &)>(materialLoaders.at(materialName).get());
+            createComponent = reinterpret_cast<IMaterial *(*)(libconfig::Setting &)>(materialLoaders.back().get());
         } catch (const std::out_of_range &e) {
             throw std::runtime_error("Material not found: " + materialName);
         }
@@ -59,6 +69,7 @@ void Parser::parseMaterials(libconfig::Setting &materials)
             throw std::runtime_error("Failed to load material component");
 
         _materials.emplace(materialName, createComponent(materials[i]));
+        materialLoaders.back().setPointer(_materials.at(materialName));
     }
 }
 
@@ -85,6 +96,7 @@ void Parser::parsePrimitives(libconfig::Setting &primitives)
             throw std::runtime_error("Failed to load primitive component");
 
         _primitives.emplace_back(createComponent(primitives[i], usedMaterial));
+        primitiveLoaders.back().setPointer(_primitives.back());
     }
 }
 
