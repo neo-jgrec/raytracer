@@ -19,18 +19,11 @@ namespace math
         T y;
         T z;
 
-        Vector3(T x = 0, T y = 0, T z = 0) :
-            x(x), y(y), z(z) {}
+        Vector3(T x = 0, T y = 0, T z = 0) : x(x), y(y), z(z) {}
 
         // Multiplication
-        Vector3 operator*(const T &scalar) const
-        {
-            return Vector3(x * scalar, y * scalar, z * scalar);
-        }
-        Vector3 operator*(const Vector3 &other) const
-        {
-            return Vector3(x * other.x, y * other.y, z * other.z);
-        }
+        Vector3 operator*(const T &scalar) const { return Vector3(x * scalar, y * scalar, z * scalar); }
+        Vector3 operator*(const Vector3 &other) const { return Vector3(x * other.x, y * other.y, z * other.z); }
         Vector3 operator*=(const T &scalar)
         {
             x *= scalar;
@@ -47,14 +40,8 @@ namespace math
         }
 
         // Addition
-        Vector3 operator+(const T &scalar) const
-        {
-            return Vector3(x + scalar, y + scalar, z + scalar);
-        }
-        Vector3 operator+(const Vector3 &other) const
-        {
-            return Vector3(x + other.x, y + other.y, z + other.z);
-        }
+        Vector3 operator+(const T &scalar) const { return Vector3(x + scalar, y + scalar, z + scalar); }
+        Vector3 operator+(const Vector3 &other) const { return Vector3(x + other.x, y + other.y, z + other.z); }
         Vector3 operator+=(const T &scalar)
         {
             x += scalar;
@@ -71,14 +58,8 @@ namespace math
         }
 
         // Substraction
-        Vector3 operator-(const T &scalar) const
-        {
-            return Vector3(x - scalar, y - scalar, z - scalar);
-        }
-        Vector3 operator-(const Vector3 &other) const
-        {
-            return Vector3(x - other.x, y - other.y, z - other.z);
-        }
+        Vector3 operator-(const T &scalar) const { return Vector3(x - scalar, y - scalar, z - scalar); }
+        Vector3 operator-(const Vector3 &other) const { return Vector3(x - other.x, y - other.y, z - other.z); }
         Vector3 operator-=(const T &scalar)
         {
             x -= scalar;
@@ -95,14 +76,8 @@ namespace math
         }
 
         // Division
-        Vector3 operator/(const T &scalar) const
-        {
-            return Vector3(x / scalar, y / scalar, z / scalar);
-        }
-        Vector3 operator/(const Vector3 &other) const
-        {
-            return Vector3(x / other.x, y / other.y, z / other.z);
-        }
+        Vector3 operator/(const T &scalar) const { return Vector3(x / scalar, y / scalar, z / scalar); }
+        Vector3 operator/(const Vector3 &other) const { return Vector3(x / other.x, y / other.y, z / other.z); }
         Vector3 operator/=(const T &scalar)
         {
             x /= scalar;
@@ -119,24 +94,12 @@ namespace math
         }
 
         // Comparison
-        bool operator==(const Vector3 &other) const
-        {
-            return x == other.x && y == other.y && z == other.z;
-        }
-        bool operator!=(const Vector3 &other) const
-        {
-            return x != other.x || y != other.y || z != other.z;
-        }
-        bool operator<(const Vector3 &other) const
-        {
-            return x < other.x && y < other.y && z < other.z;
-        }
-        bool operator>(const Vector3 &other) const
-        {
-            return x > other.x && y > other.y && z > other.z;
-        }
+        bool operator==(const Vector3 &other) const { return x == other.x && y == other.y && z == other.z; }
+        bool operator!=(const Vector3 &other) const { return x != other.x || y != other.y || z != other.z; }
+        bool operator<(const Vector3 &other) const { return x < other.x && y < other.y && z < other.z; }
+        bool operator>(const Vector3 &other) const { return x > other.x && y > other.y && z > other.z; }
 
-        //operator []
+        // operator []
         T operator[](const int index) const
         {
             switch (index) {
@@ -157,25 +120,16 @@ namespace math
             return os;
         }
 
-        T dot(const Vector3 &other) const
-        {
-            return x * other.x + y * other.y + z * other.z;
-        }
+        T dot(const Vector3 &other) const { return x * other.x + y * other.y + z * other.z; }
         T distance(const Vector3 &other) const
         {
             return std::sqrt(std::pow(x - other.x, 2) + std::pow(y - other.y, 2) + std::pow(z - other.z, 2));
         }
 
-        T length() const
-        {
-            return std::sqrt(x * x + y * y + z * z);
-        }
+        T length() const { return std::sqrt(x * x + y * y + z * z); }
 
-        Vector3 normalize() const
-        {
-            return *this / length();
-        }
+        Vector3 normalize() const { return *this / length(); }
     };
-} // math
+} // namespace math
 
-#endif //VECTOR3_HPP
+#endif // VECTOR3_HPP

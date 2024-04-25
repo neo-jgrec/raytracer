@@ -6,10 +6,10 @@
 */
 
 #ifndef ILIGHT_HPP
-    #define ILIGHT_HPP
+#define ILIGHT_HPP
 
-    #include "../../Utils/Utils.hpp"
-    #include "../../Math/Math.hpp"
+#include "../../Math/Math.hpp"
+#include "../../Utils/Utils.hpp"
 
 namespace rt
 {
@@ -17,8 +17,8 @@ namespace rt
     public:
         class ILightException : public utils::Exception {
         public:
-            ILightException(const std::string &name, const std::string &message) :
-                Exception("[Light] " + name, message) {}
+            ILightException(const std::string &name, const std::string &message) : Exception("[Light] " + name, message)
+            {}
         };
 
         virtual ~ILight() = default;
@@ -27,4 +27,4 @@ namespace rt
     };
 } // namespace rt
 
-#endif //ILIGHT_HPP
+#endif // ILIGHT_HPP

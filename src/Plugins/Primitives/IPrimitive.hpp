@@ -6,11 +6,11 @@
 */
 
 #ifndef IPRIMITIVE_HPP
-    #define IPRIMITIVE_HPP
+#define IPRIMITIVE_HPP
 
-    #include "../Materials/IMaterial.hpp"
-    #include "../../Utils/Utils.hpp"
-    #include "../../Math/Math.hpp"
+#include "../../Math/Math.hpp"
+#include "../../Utils/Utils.hpp"
+#include "../Materials/IMaterial.hpp"
 
 namespace rt
 {
@@ -19,7 +19,8 @@ namespace rt
         class IPrimitiveException : public utils::Exception {
         public:
             IPrimitiveException(const std::string &name, const std::string &message) :
-                Exception("[Primitive] " + name, message) {}
+                Exception("[Primitive] " + name, message)
+            {}
         };
 
         virtual ~IPrimitive() = default;
@@ -31,4 +32,4 @@ namespace rt
     };
 } // namespace rt
 
-#endif //IPRIMITIVE_HPP
+#endif // IPRIMITIVE_HPP

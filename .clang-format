@@ -8,7 +8,7 @@ AlignOperands: false
 AlignTrailingComments: true
 AllowShortIfStatementsOnASingleLine: false
 AlwaysBreakTemplateDeclarations: Yes
-BraceWrapping: 
+BraceWrapping:
   AfterCaseLabel: false
   AfterClass: false
   AfterControlStatement: false
@@ -30,7 +30,7 @@ BreakConstructorInitializers: AfterColon
 BreakConstructorInitializersBeforeComma: false
 ColumnLimit: 120
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
-IncludeCategories: 
+IncludeCategories:
   - Regex: '^<.*'
     Priority: 1
   - Regex: '^".*'
@@ -44,6 +44,9 @@ MacroBlockBegin: ''
 MacroBlockEnd: ''
 MaxEmptyLinesToKeep: 2
 NamespaceIndentation: All
+IndentExternBlock: Indent
+PPIndentWidth: 4
+IndentPPDirectives: BeforeHash
 SpaceInEmptyParentheses: false
 SpacesInAngles: false
 SpacesInConditionalStatement: false

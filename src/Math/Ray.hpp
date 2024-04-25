@@ -12,19 +12,23 @@
 
 namespace math
 {
-    class Ray {
+    class Ray final {
     public:
         Vector3<float> origin;
         Vector3<float> direction;
 
-        Ray(const Vector3<float> origin = {0, 0, 0}, const Vector3<float> direction = {0, 0, 0})
-            : origin{origin}, direction{direction} {}
+        Ray(const Vector3<float> origin = {0, 0, 0}, const Vector3<float> direction = {0, 0, 0}) :
+            origin{origin}, direction{direction}
+        {}
 
-        Vector3<float> at(float t) const
+        [[nodiscard]] Vector3<float> at(const float t) const { return origin + direction * t; }
+
+        friend std::ostream &operator<<(std::ostream &os, const Ray &ray)
         {
-            return origin + direction * t;
+            os << "Ray{origin: " << ray.origin << ", direction: " << ray.direction << "}";
+            return os;
         }
     };
-} // rt
+} // namespace math
 
-#endif //RAY_HPP
+#endif // RAY_HPP

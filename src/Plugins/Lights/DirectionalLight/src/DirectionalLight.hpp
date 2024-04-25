@@ -27,8 +27,7 @@ namespace rt
     public:
         class DirectionalLightException final : public ILightException {
         public:
-            DirectionalLightException(const std::string &message) :
-                ILightException("DirectionalLight", message) {}
+            DirectionalLightException(const std::string &message) : ILightException("DirectionalLight", message) {}
         };
 
         void illuminate(const math::Vector3<float> &point, utils::Color &color) const override;
@@ -57,31 +56,22 @@ extern "C" {
     {
         auto *newDirectionalLight = new rt::DirectionalLight();
 
-        newDirectionalLight->setOrigin(math::Vector3{
-            static_cast<float>(light["origin"]["x"].operator int()),
-            static_cast<float>(light["origin"]["y"].operator int()),
-            static_cast<float>(light["origin"]["z"].operator int())
-        });
-        newDirectionalLight->setDirection(math::Vector3{
-            static_cast<float>(light["direction"]["x"].operator int()),
-            static_cast<float>(light["direction"]["y"].operator int()),
-            static_cast<float>(light["direction"]["z"].operator int())
-        });
+        newDirectionalLight->setOrigin(math::Vector3{static_cast<float>(light["origin"]["x"].operator int()),
+                                                     static_cast<float>(light["origin"]["y"].operator int()),
+                                                     static_cast<float>(light["origin"]["z"].operator int())});
+        newDirectionalLight->setDirection(math::Vector3{static_cast<float>(light["direction"]["x"].operator int()),
+                                                        static_cast<float>(light["direction"]["y"].operator int()),
+                                                        static_cast<float>(light["direction"]["z"].operator int())});
         // TODO: Fix shadow with color
-        newDirectionalLight->setColor(utils::Color{
-            static_cast<float>(light["color"]["r"].operator int()) / 255.f,
-            static_cast<float>(light["color"]["g"].operator int()) / 255.f,
-            static_cast<float>(light["color"]["b"].operator int()) / 255.f
-        });
+        newDirectionalLight->setColor(utils::Color{static_cast<float>(light["color"]["r"].operator int()) / 255.f,
+                                                   static_cast<float>(light["color"]["g"].operator int()) / 255.f,
+                                                   static_cast<float>(light["color"]["b"].operator int()) / 255.f});
         newDirectionalLight->setIntensity((light["intensity"].operator float()));
 
         return newDirectionalLight;
     }
 
-    void destroy(const rt::DirectionalLight *ptr)
-    {
-        delete ptr;
-    }
+    void destroy(const rt::DirectionalLight *ptr) { delete ptr; }
 }
 
-#endif //DIRECTIONALLIGHT_HPP
+#endif // DIRECTIONALLIGHT_HPP

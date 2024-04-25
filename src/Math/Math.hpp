@@ -6,9 +6,9 @@
 */
 
 #ifndef MATH_HPP
-    #define MATH_HPP
+#define MATH_HPP
 
-    #include "Vector3.hpp"
-    #include "Ray.hpp"
+#include "Ray.hpp"
+#include "Vector3.hpp"
 
-#endif //MATH_HPP
+#endif // MATH_HPP

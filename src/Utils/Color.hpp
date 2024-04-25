@@ -8,8 +8,8 @@
 #ifndef COLOR_HPP
 #define COLOR_HPP
 
-#include <ostream>
 #include <algorithm>
+#include <ostream>
 
 namespace utils
 {
@@ -20,19 +20,11 @@ namespace utils
         float b;
         float a;
 
-        Color(const float r = 0, const float g = 0, const float b = 0, const float a = 1)
-            : r{r}, g{g}, b{b}, a{a}
-        {}
+        Color(const float r = 0, const float g = 0, const float b = 0, const float a = 1) : r{r}, g{g}, b{b}, a{a} {}
 
         // Addition
-        Color operator+(const float &value) const
-        {
-            return Color{r + value, g + value, b + value, a};
-        }
-        Color operator+(const Color &color) const
-        {
-            return Color{r + color.r, g + color.g, b + color.b, a};
-        }
+        Color operator+(const float &value) const { return Color{r + value, g + value, b + value, a}; }
+        Color operator+(const Color &color) const { return Color{r + color.r, g + color.g, b + color.b, a}; }
         Color operator+=(const float &value)
         {
             r += value;
@@ -49,14 +41,8 @@ namespace utils
         }
 
         // Subtraction
-        Color operator-(const float &value) const
-        {
-            return Color{r - value, g - value, b - value, a};
-        }
-        Color operator-(const Color &color) const
-        {
-            return Color{r - color.r, g - color.g, b - color.b, a};
-        }
+        Color operator-(const float &value) const { return Color{r - value, g - value, b - value, a}; }
+        Color operator-(const Color &color) const { return Color{r - color.r, g - color.g, b - color.b, a}; }
         Color operator-=(const float &value)
         {
             r -= value;
@@ -73,14 +59,8 @@ namespace utils
         }
 
         // Multiplication
-        Color operator*(const float &value) const
-        {
-            return Color{r * value, g * value, b * value, a};
-        }
-        Color operator*(const Color &color) const
-        {
-            return Color{r * color.r, g * color.g, b * color.b, a};
-        }
+        Color operator*(const float &value) const { return Color{r * value, g * value, b * value, a}; }
+        Color operator*(const Color &color) const { return Color{r * color.r, g * color.g, b * color.b, a}; }
         Color operator*=(const float &value)
         {
             r *= value;
@@ -97,14 +77,8 @@ namespace utils
         }
 
         // Division
-        Color operator/(const float &value) const
-        {
-            return Color{r / value, g / value, b / value, a};
-        }
-        Color operator/(const Color &color) const
-        {
-            return Color{r / color.r, g / color.g, b / color.b, a};
-        }
+        Color operator/(const float &value) const { return Color{r / value, g / value, b / value, a}; }
+        Color operator/(const Color &color) const { return Color{r / color.r, g / color.g, b / color.b, a}; }
         Color operator/=(const float &value)
         {
             r /= value;
@@ -145,7 +119,6 @@ namespace utils
             return *this;
         }
     };
-}
+} // namespace utils
 
-
-#endif //COLOR_HPP
+#endif // COLOR_HPP

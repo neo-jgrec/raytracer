@@ -6,10 +6,10 @@
 */
 
 #ifndef UTILS_HPP
-    #define UTILS_HPP
+#define UTILS_HPP
 
-    #include "Color.hpp"
-    #include "DLLoader.hpp"
-    #include "Exceptions.hpp"
+#include "Color.hpp"
+#include "DLLoader.hpp"
+#include "Exceptions.hpp"
 
-#endif //UTILS_HPP
+#endif // UTILS_HPP

@@ -6,9 +6,9 @@
 */
 
 #ifndef APRIMITIVE_HPP
-    #define APRIMITIVE_HPP
+#define APRIMITIVE_HPP
 
-    #include "IPrimitive.hpp"
+#include "IPrimitive.hpp"
 
 namespace rt
 {
@@ -20,13 +20,11 @@ namespace rt
         class APrimitiveException : public IPrimitiveException {
         public:
             APrimitiveException(const std::string &name, const std::string &message) :
-                IPrimitiveException(name, message) {}
+                IPrimitiveException(name, message)
+            {}
         };
 
-        void setMaterial(IMaterial *material) override
-        {
-            _material = material;
-        }
+        void setMaterial(IMaterial *material) override { _material = material; }
         [[nodiscard]] IMaterial *getMaterial() const override
         {
             if (!_material)
@@ -36,4 +34,4 @@ namespace rt
     };
 } // namespace rt
 
-#endif //APRIMITIVE_HPP
+#endif // APRIMITIVE_HPP

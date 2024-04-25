@@ -10,8 +10,8 @@
 
 #include <string>
 
-#include "../Utils/Utils.hpp"
 #include "../Cameras/ICamera.hpp"
+#include "../Utils/Utils.hpp"
 
 namespace rt
 {
@@ -20,7 +20,8 @@ namespace rt
         class IDisplayException : public utils::Exception {
         public:
             IDisplayException(const std::string &name, const std::string &message) :
-                Exception("[Display] " + name, message) {}
+                Exception("[Display] " + name, message)
+            {}
         };
 
         virtual void createWindow(const int &width, const int &height, const std::string &title) = 0;

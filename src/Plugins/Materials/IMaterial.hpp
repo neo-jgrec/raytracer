@@ -6,10 +6,10 @@
 */
 
 #ifndef IMATERIAL_HPP
-    #define IMATERIAL_HPP
+#define IMATERIAL_HPP
 
-    #include "../../Utils/Utils.hpp"
-    #include "../../Math/Math.hpp"
+#include "../../Math/Math.hpp"
+#include "../../Utils/Utils.hpp"
 
 namespace rt
 {
@@ -18,7 +18,8 @@ namespace rt
         class IMaterialException : public utils::Exception {
         public:
             IMaterialException(const std::string &name, const std::string &message) :
-                Exception("[Material] " + name, message) {}
+                Exception("[Material] " + name, message)
+            {}
         };
 
         virtual ~IMaterial() = default;
@@ -27,4 +28,4 @@ namespace rt
     };
 } // namespace rt
 
-#endif //IMATERIAL_HPP
+#endif // IMATERIAL_HPP

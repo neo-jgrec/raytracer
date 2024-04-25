@@ -6,13 +6,13 @@
 */
 
 #ifndef ARCADE_DLLOADER_HPP
-    #define ARCADE_DLLOADER_HPP
+#define ARCADE_DLLOADER_HPP
 
-    #include <dlfcn.h>
-    #include <string>
-    #include <memory>
+#include <dlfcn.h>
+#include <memory>
+#include <string>
 
-    #include "Exceptions.hpp"
+#include "Exceptions.hpp"
 
 namespace utils
 {
@@ -27,16 +27,17 @@ namespace utils
     public:
         class DLLoaderException final : public Exception {
         public:
-            DLLoaderException(const std::string &message) :
-                Exception("DLLoader", message) {}
+            DLLoaderException(const std::string &message) : Exception("DLLoader", message) {}
         };
 
         DLLoader(const std::string &path, const std::string &symbol)
         {
-            _lib = std::shared_ptr<void>(dlopen(path.c_str(), RTLD_LAZY), [](void *lib) {
-                if (lib)
-                    dlclose(lib);
-            });
+            _lib = std::shared_ptr<void>(dlopen(path.c_str(), RTLD_LAZY),
+                                         [](void *lib)
+                                         {
+                                             if (lib)
+                                                 dlclose(lib);
+                                         });
             if (!_lib)
                 throw DLLoaderException(dlerror());
 
@@ -44,7 +45,7 @@ namespace utils
             if (!constructor)
                 throw std::runtime_error(dlerror());
 
-            _instance = reinterpret_cast<T*>(constructor);
+            _instance = reinterpret_cast<T *>(constructor);
         }
 
         ~DLLoader()
@@ -53,25 +54,16 @@ namespace utils
                 return;
             void *destructor = dlsym(_lib.get(), "destroy");
             if (destructor)
-                reinterpret_cast<void(*)(const T *)>(destructor)(_ptr);
+                reinterpret_cast<void (*)(const T *)>(destructor)(_ptr);
         }
 
-        [[nodiscard]] T *get() const
-        {
-            return _instance;
-        }
+        [[nodiscard]] T *get() const { return _instance; }
 
-        void setPointer(T *ptr)
-        {
-            _ptr = ptr;
-        }
+        void setPointer(T *ptr) { _ptr = ptr; }
 
-        void *operator[](const std::string &symbol) const
-        {
-            return dlsym(_lib.get(), symbol.c_str());
-        }
+        void *operator[](const std::string &symbol) const { return dlsym(_lib.get(), symbol.c_str()); }
     };
-}
+} // namespace utils
 
 
-#endif //ARCADE_DLLOADER_HPP
+#endif // ARCADE_DLLOADER_HPP

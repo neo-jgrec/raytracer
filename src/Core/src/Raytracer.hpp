@@ -19,14 +19,13 @@ namespace rt
     public:
         class RaytracerException final : public utils::Exception {
         public:
-            RaytracerException(const std::string &message) :
-                Exception("Raytracer", message) {}
+            RaytracerException(const std::string &message) : Exception("Raytracer", message) {}
         };
 
         Raytracer(std::string sceneName);
 
         void run() const;
     };
-}
+} // namespace rt
 
-#endif //RAYTRACER_HPP
+#endif // RAYTRACER_HPP

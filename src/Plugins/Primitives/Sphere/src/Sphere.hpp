@@ -21,17 +21,16 @@ namespace rt
     public:
         class SphereException final : public APrimitiveException {
         public:
-            SphereException(const std::string &message) :
-                APrimitiveException("Sphere", message) {}
+            SphereException(const std::string &message) : APrimitiveException("Sphere", message) {}
         };
 
         [[nodiscard]] float hit(const math::Ray &ray) const override;
 
-        [[nodiscard]] const math::Vector3<float> &getOrigin() const;
-        [[nodiscard]] float getRadius() const;
+        [[nodiscard]] const math::Vector3<float> &getOrigin() const { return _origin; }
+        [[nodiscard]] float getRadius() const { return _radius; }
 
-        void setOrigin(const math::Vector3<float> &origin);
-        void setRadius(float radius);
+        void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
+        void setRadius(const float radius) { _radius = radius; }
     };
 } // namespace rt
 
@@ -40,20 +39,16 @@ extern "C" {
     {
         auto *newSphere = new rt::Sphere();
 
-        newSphere->setOrigin(math::Vector3{
-            static_cast<float>(sphere["x"].operator int()),
-            static_cast<float>(sphere["y"].operator int()),
-            static_cast<float>(sphere["z"].operator int())
-        });
+        newSphere->setOrigin(math::Vector3{static_cast<float>(sphere["x"].operator int()),
+                                           static_cast<float>(sphere["y"].operator int()),
+                                           static_cast<float>(sphere["z"].operator int())});
         newSphere->setRadius((sphere["r"].operator float()));
         newSphere->setMaterial(material);
+
         return newSphere;
     }
 
-    void destroy(const rt::IPrimitive *ptr)
-    {
-        delete ptr;
-    }
+    void destroy(const rt::IPrimitive *ptr) { delete ptr; }
 }
 
-#endif //SPHERE_HPP
+#endif // SPHERE_HPP

@@ -10,8 +10,8 @@
 
 #include <iostream>
 
-#include "../IMaterial.hpp"
 #include <libconfig.h++>
+#include "../IMaterial.hpp"
 
 namespace rt
 {
@@ -22,8 +22,7 @@ namespace rt
     public:
         class FlatColorException final : public IMaterialException {
         public:
-            FlatColorException(const std::string &message) :
-                IMaterialException("FlatColor", message) {}
+            FlatColorException(const std::string &message) : IMaterialException("FlatColor", message) {}
         };
 
         [[nodiscard]] utils::Color getColor(const math::Vector3<float> &point) const override;
@@ -31,26 +30,21 @@ namespace rt
         [[nodiscard]] utils::Color getColor() const;
         void setColor(const utils::Color &color);
     };
-} // rt
+} // namespace rt
 
 extern "C" {
     rt::FlatColor *createComponent([[maybe_unused]] libconfig::Setting &material)
     {
         auto *newUVColor = new rt::FlatColor();
-        newUVColor->setColor(utils::Color{
-            static_cast<float>(material["color"]["r"].operator int()) / 255,
-            static_cast<float>(material["color"]["g"].operator int()) / 255,
-            static_cast<float>(material["color"]["b"].operator int()) / 255
-        });
+        newUVColor->setColor(utils::Color{static_cast<float>(material["color"]["r"].operator int()) / 255,
+                                          static_cast<float>(material["color"]["g"].operator int()) / 255,
+                                          static_cast<float>(material["color"]["b"].operator int()) / 255});
 
         return newUVColor;
     }
 
-    void destroy(const rt::FlatColor *ptr)
-    {
-        delete ptr;
-    }
+    void destroy(const rt::FlatColor *ptr) { delete ptr; }
 }
 
 
-#endif //FLATCOLOR_HPP
+#endif // FLATCOLOR_HPP

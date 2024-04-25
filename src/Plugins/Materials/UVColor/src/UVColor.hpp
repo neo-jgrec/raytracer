@@ -8,8 +8,8 @@
 #ifndef UVCOLOR_HPP
 #define UVCOLOR_HPP
 
-#include "../IMaterial.hpp"
 #include <libconfig.h++>
+#include "../IMaterial.hpp"
 
 namespace rt
 {
@@ -17,8 +17,7 @@ namespace rt
     public:
         class UVColorException final : public IMaterialException {
         public:
-            UVColorException(const std::string &message) :
-                IMaterialException("UVColor", message) {}
+            UVColorException(const std::string &message) : IMaterialException("UVColor", message) {}
         };
 
         [[nodiscard]] utils::Color getColor(const math::Vector3<float> &point) const override;
@@ -26,14 +25,13 @@ namespace rt
 } // namespace rt
 
 extern "C" {
-    rt::UVColor *createComponent([[maybe_unused]] libconfig::Setting &material) {
+    rt::UVColor *createComponent([[maybe_unused]] libconfig::Setting &material)
+    {
         auto *newUVColor = new rt::UVColor();
         return newUVColor;
     }
 
-    void destroy(const rt::UVColor *ptr) {
-        delete ptr;
-    }
+    void destroy(const rt::UVColor *ptr) { delete ptr; }
 }
 
-#endif //UVCOLOR_HPP
+#endif // UVCOLOR_HPP

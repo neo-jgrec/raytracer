@@ -12,9 +12,9 @@
 #include <map>
 
 #include "../../../Cameras/ICamera.hpp"
-#include "../../../Plugins/Primitives/IPrimitive.hpp"
-#include "../../../Plugins/Materials/IMaterial.hpp"
 #include "../../../Plugins/Lights/ILight.hpp"
+#include "../../../Plugins/Materials/IMaterial.hpp"
+#include "../../../Plugins/Primitives/IPrimitive.hpp"
 
 namespace rt
 {
@@ -50,6 +50,6 @@ namespace rt
         std::list<std::string> materialLoadersNames;
         std::list<utils::DLLoader<IMaterial>> materialLoaders;
     };
-}
+} // namespace rt
 
 #endif /* !PARSER_HPP_ */
