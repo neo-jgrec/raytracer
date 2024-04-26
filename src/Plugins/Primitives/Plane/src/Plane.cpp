@@ -11,14 +11,12 @@ namespace rt
 {
     float Plane::hit(const math::Ray &ray) const
     {
-        constexpr float epsilon = std::numeric_limits<float>::epsilon();
+        constexpr auto epsilon = std::numeric_limits<float>::epsilon();
+        const auto normal = _direction.normalize();
 
-        const float denom = ray.direction.dot(_direction);
-        if (denom <= epsilon)
-            return -1;
-
-        const math::Vector3<float> oc = ray.origin - _origin;
-        const float t = oc.dot(ray.origin) / denom;
-        return t > 0 ? t : -1;
+        if (const float denom = normal.dot(ray.direction); std::abs(denom) > epsilon)
+            if (const float t = (_origin - ray.origin).dot(normal) / denom; t >= 0)
+                return t;
+        return -1;
     }
 } // namespace rt
