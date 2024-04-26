@@ -29,7 +29,7 @@ namespace rt
 
     void SFML::run(Parser &parser)
     {
-        const auto image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights());
+        const auto image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights(), true);
 
         sf::Texture texture;
         texture.create(std::get<0>(image), std::get<1>(image));

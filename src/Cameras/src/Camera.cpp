@@ -7,6 +7,7 @@
 
 #include "Camera.hpp"
 
+#include <cstring>
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -21,7 +22,8 @@ namespace rt
 
     void Camera::generateImageChunk(const uint32_t startHeight, const uint32_t endHeight, const uint32_t startWidth,
                                     const uint32_t endWidth, const std::list<IPrimitive *> &primitives,
-                                    const std::list<ILight *> &lights, const std::shared_ptr<uint8_t> &pixels) const
+                                    const std::list<ILight *> &lights, const std::shared_ptr<uint8_t> &pixels,
+                                    const bool rgba) const
     {
         for (uint32_t j = startHeight; j < endHeight; ++j) {
             for (uint32_t i = startWidth; i < endWidth; ++i) {
@@ -47,16 +49,23 @@ namespace rt
                         light->illuminate(ray.at(t), color);
                 }
 
-                const int index = static_cast<int>((_height - j - 1) * _width * 4 + i * 4);
-                pixels.get()[index] = static_cast<uint8_t>(255.999f * color.r);
-                pixels.get()[index + 1] = static_cast<uint8_t>(255.999f * color.g);
-                pixels.get()[index + 2] = static_cast<uint8_t>(255.999f * color.b);
-                pixels.get()[index + 3] = 255;
+                if (rgba) {
+                    const int index = static_cast<int>((_height - j - 1) * _width * 4 + i * 4);
+                    pixels.get()[index] = static_cast<uint8_t>(255.999f * color.r);
+                    pixels.get()[index + 1] = static_cast<uint8_t>(255.999f * color.g);
+                    pixels.get()[index + 2] = static_cast<uint8_t>(255.999f * color.b);
+                    pixels.get()[index + 3] = 255;
+                } else {
+                    const int index = static_cast<int>((_height - j - 1) * _width * 3 + i * 3);
+                    pixels.get()[index] = static_cast<uint8_t>(255.999f * color.r);
+                    pixels.get()[index + 1] = static_cast<uint8_t>(255.999f * color.g);
+                    pixels.get()[index + 2] = static_cast<uint8_t>(255.999f * color.b);
+                }
             }
         }
     }
 
-    void Camera::reload()
+    void Camera::reload(const bool rgba)
     {
         _aspectRatio = static_cast<float>(_width) / static_cast<float>(_height);
         _viewportWidth = _aspectRatio * _viewportHeight;
@@ -66,15 +75,14 @@ namespace rt
         const auto focalLength = static_cast<float>(1 / std::tan(static_cast<float>(_fov) / 2 * M_PI / 180));
 
         _bottomLeft = _origin - _horizontal / 2 - _vertical / 2 - math::Vector3<float>{0, 0, focalLength};
+        _pixels.reset(new uint8_t[_width * _height * (rgba ? 4 : 3)], std::default_delete<uint8_t[]>());
+        std::memset(_pixels.get(), 0, _width * _height * 3);
     }
 
-    std::tuple<int, int, std::shared_ptr<uint8_t>> Camera::generateImage(const std::list<IPrimitive *> primitives,
-                                                                         const std::list<ILight *> lights)
+    std::tuple<int, int, std::shared_ptr<uint8_t>>
+    Camera::generateImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights, const bool rgba)
     {
-        reload();
-
-        const auto pixels =
-            std::shared_ptr<uint8_t>(new uint8_t[_width * _height * 4], std::default_delete<uint8_t[]>());
+        reload(rgba);
 
         const auto nbThreads = std::thread::hardware_concurrency();
         std::cout << "Using " << nbThreads << " threads" << std::endl;
@@ -85,16 +93,15 @@ namespace rt
         for (uint8_t i = 0; i < nbThreads; ++i) {
             if (i == nbThreads - 1) {
                 threads.emplace_back(&Camera::generateImageChunk, this, i * height, _height, 0, _width, primitives,
-                                     lights, std::ref(pixels));
+                                     lights, std::ref(_pixels), rgba);
             } else {
                 threads.emplace_back(&Camera::generateImageChunk, this, i * height, (i + 1) * height, 0, _width,
-                                     primitives, lights, std::ref(pixels));
+                                     primitives, lights, std::ref(_pixels), rgba);
             }
         }
-        for (auto &thread : threads) {
+        for (auto &thread : threads)
             thread.join();
-        }
 
-        return {_width, _height, pixels};
+        return {_width, _height, _pixels};
     }
 } // namespace rt

@@ -28,9 +28,11 @@ namespace rt
         math::Vector3<float> _vertical;
         math::Vector3<float> _bottomLeft;
 
+        std::shared_ptr<uint8_t> _pixels{new uint8_t[_width * _height * 4], std::default_delete<uint8_t[]>()};
+
         void generateImageChunk(uint32_t startHeight, uint32_t endHeight, uint32_t startWidth, uint32_t endWidth,
                                 const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
-                                const std::shared_ptr<uint8_t> &pixels) const;
+                                const std::shared_ptr<uint8_t> &pixels, bool rgba) const;
 
     public:
         class CameraException final : public ICameraException {
@@ -47,9 +49,9 @@ namespace rt
         [[nodiscard]] int getFieldOfView() const { return _fov; }
         void setFieldOfView(const int fov) { _fov = fov; }
 
-        void reload();
-        [[nodiscard]] std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(std::list<IPrimitive *> primitives,
-                                                                                   std::list<ILight *> lights) override;
+        void reload(bool rgba);
+        std::tuple<int, int, std::shared_ptr<uint8_t>>
+        generateImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights, bool rgba) override;
     };
 } // namespace rt
 

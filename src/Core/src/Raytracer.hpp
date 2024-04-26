@@ -20,7 +20,7 @@ namespace rt
         std::string _graphicalPlugin;
         Parser _parser;
 
-        void toPPM(const std::string &filename, const std::tuple<int, int, std::shared_ptr<uint8_t>> &image);
+        void toPPM(const std::string &filename);
         void toGraphical();
 
     public:
