@@ -55,6 +55,7 @@ namespace rt
 
             _window.clear();
             ImGui::SFML::Render(_window);
+            parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights(), true);
             _window.draw(sprite);
             _window.display();
         }

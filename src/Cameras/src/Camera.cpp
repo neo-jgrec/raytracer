@@ -79,14 +79,14 @@ namespace rt
         std::memset(_pixels.get(), 0, _width * _height * 3);
     }
 
+    std::tuple<int, int, std::shared_ptr<uint8_t>> Camera::getImages() const { return {_width, _height, _pixels}; }
+
     std::tuple<int, int, std::shared_ptr<uint8_t>>
     Camera::generateImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights, const bool rgba)
     {
         reload(rgba);
 
         const auto nbThreads = std::thread::hardware_concurrency();
-        std::cout << "Using " << nbThreads << " threads" << std::endl;
-
         std::vector<std::thread> threads;
         const uint16_t height = _height / nbThreads;
 

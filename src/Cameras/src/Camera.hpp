@@ -30,6 +30,7 @@ namespace rt
 
         std::shared_ptr<uint8_t> _pixels{new uint8_t[_width * _height * 4], std::default_delete<uint8_t[]>()};
 
+        void reload(bool rgba);
         void generateImageChunk(uint32_t startHeight, uint32_t endHeight, uint32_t startWidth, uint32_t endWidth,
                                 const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
                                 const std::shared_ptr<uint8_t> &pixels, bool rgba) const;
@@ -49,7 +50,7 @@ namespace rt
         [[nodiscard]] int getFieldOfView() const { return _fov; }
         void setFieldOfView(const int fov) { _fov = fov; }
 
-        void reload(bool rgba);
+        [[nodiscard]] std::tuple<int, int, std::shared_ptr<uint8_t>> getImages() const override;
         std::tuple<int, int, std::shared_ptr<uint8_t>>
         generateImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights, bool rgba) override;
     };

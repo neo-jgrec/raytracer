@@ -32,6 +32,7 @@ namespace rt
         [[nodiscard]] virtual const math::Vector3<float> &getOrigin() const = 0;
         virtual void setOrigin(const math::Vector3<float> &origin) = 0;
 
+        [[nodiscard]] virtual std::tuple<int, int, std::shared_ptr<uint8_t>> getImages() const = 0;
         virtual std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(const std::list<IPrimitive *> &primitives,
                                                                              const std::list<ILight *> &lights,
                                                                              bool rgba = false) = 0;
