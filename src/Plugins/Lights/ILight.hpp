@@ -23,6 +23,7 @@ namespace rt
 
         virtual ~ILight() = default;
 
+        [[nodiscard]] virtual const math::Vector3<float> &getOrigin() const = 0;
         virtual void illuminate(const math::Vector3<float> &point, utils::Color &color) const = 0;
     };
 } // namespace rt

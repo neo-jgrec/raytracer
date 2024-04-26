@@ -32,7 +32,7 @@ namespace rt
 
         void illuminate(const math::Vector3<float> &point, utils::Color &color) const override;
 
-        [[nodiscard]] const math::Vector3<float> &getOrigin() const { return _origin; }
+        [[nodiscard]] const math::Vector3<float> &getOrigin() const override { return _origin; }
         void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
 
         [[nodiscard]] const math::Vector3<float> &getDirection() const { return _direction; }
