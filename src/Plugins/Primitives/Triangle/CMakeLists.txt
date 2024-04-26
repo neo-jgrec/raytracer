@@ -18,4 +18,4 @@ target_include_directories(raytracer_triangle
 
 set_target_properties(raytracer_triangle PROPERTIES PREFIX "")
 
-install(TARGETS raytracer_triangle LIBRARY DESTINATION lib)
+install(TARGETS raytracer_triangle LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/plugins)

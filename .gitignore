@@ -51,10 +51,9 @@ raytracer
 build/**/*
 
 include/*
-lib/*
-bin/*
-!bin/.*
-test/test_runner
+/bin/*
+!/bin/.*
+!/bin/lib/.gitkeep
 
 # tests
 unit_tests
