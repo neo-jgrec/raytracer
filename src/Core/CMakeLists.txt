@@ -14,6 +14,7 @@ target_include_directories(raytracer
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/includes
+        ${CMAKE_SOURCE_DIR}/libs/imgui
 )
 
 find_package(PkgConfig REQUIRED)
@@ -27,6 +28,7 @@ target_include_directories(raytracer
 target_link_libraries(raytracer
         PRIVATE
         ${LIBCONFIG_LIBRARIES}
+        imgui
 )
 
 install(TARGETS raytracer)
