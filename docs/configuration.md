@@ -10,42 +10,41 @@ To configure a raytracer scene, you need to create a `.cfg`, here's a sample tha
 camera:
 {
     lib = "raytracer_camera.so";
-    resolution = { width = 1920; height = 1080; };
-    position = { x = 0; y = -100; z = 20; };
-    rotation = { x = 0; y = 0; z = 0; };
-    fieldOfView = 72.0;
+    origin = { x = 0; y = 0; z = 1; };
+    resolution = { width = 3840; height = 2160; };
+    fieldOfView = 75;
 };
 
 materials:
 (
-    { lib = "raytracer_uvcolor.so"; name = "red"; color = { r = 255; g = 64; b = 64; }; },
-    { lib = "raytracer_uvcolor.so"; name = "green"; color = { r = 64; g = 255; b = 64; }; },
-    { lib = "raytracer_uvcolor.so"; name = "blue"; color = { r = 64; g = 64; b = 255; }; }
+    { lib = "raytracer_flatcolor.so"; name = "red";   color = { r = 255; g = 64; b = 64; }; },
+    { lib = "raytracer_flatcolor.so"; name = "green"; color = { r = 64; g = 255; b = 64; }; },
+    { lib = "raytracer_flatcolor.so"; name = "blue";  color = { r = 64; g = 64; b = 255; }; },
+    { lib = "raytracer_uvcolor.so";   name = "uv"; },
 );
 
 # Primitives in the scene
 primitives:
 (
-    { lib = "raytracer_sphere.so"; material = "red"; x = 60; y = 5; z = 40; r = 25; color = { r = 255; g = 64; b = 64; }; },
-    { lib = "raytracer_sphere.so"; material = "red"; x = -40; y = 20; z = -10; r = 35; color = { r = 64; g = 255; b = 64; }; },
-    { lib = "raytracer_plane.so"; material = "red"; axis = "Z"; position = -20; color = { r = 64; g = 64; b = 255; }; }
+    { lib = "raytracer_sphere.so"; material = "blue"; x = -1; y = 0; z = 0; r = 0.5  },
+    { lib = "raytracer_sphere.so"; material = "red";  x = 0;  y = 0; z = 0; r = 0.65 },
+    { lib = "raytracer_sphere.so"; material = "blue"; x = 1;  y = 0; z = 0; r = 0.5  },
 );
 
 # Light configuration
 lights:
-{
-    ambient = 0.4; # Multiplier of ambient light
-    diffuse = 0.6; # Multiplier of diffuse light
-    # List of point lights
-    point = (
-        { lib = "raytracer_light.so"; x = 400; y = 100; z = 500; }
-    );
-    # List of directional lights
-    directional = ();
-};
+(
+    {
+        lib = "raytracer_directionallight.so";
+        origin = { x = -1; y = -1; z = 0; };
+        direction = { x = 0; y = -1; z = -1; };
+        color = { r = 0; g = 0; b = 0; };
+        intensity = 1.0;
+    },
+);
 ```
 
-Here are all the field allowed per `shared library`:
+Here are all the mandatory fields for each `shared library`:
 
 - `raytracer_camera.so`:
     - `resolution`: Resolution of the image.
