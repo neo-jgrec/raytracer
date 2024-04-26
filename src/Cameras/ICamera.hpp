@@ -26,6 +26,9 @@ namespace rt
 
         virtual ~ICamera() = default;
 
+        [[nodiscard]] virtual std::pair<int, int> getResolution() const = 0;
+        virtual void setResolution(int width, int height) = 0;
+
         [[nodiscard]] virtual const math::Vector3<float> &getOrigin() const = 0;
         virtual void setOrigin(const math::Vector3<float> &origin) = 0;
 

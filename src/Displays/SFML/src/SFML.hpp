@@ -8,32 +8,30 @@
 #ifndef SFML_HPP_
 #define SFML_HPP_
 
-#include "../../IDisplay.hpp"
 #include <SFML/Graphics.hpp>
+#include "../../IDisplay.hpp"
 
-namespace rt {
-    class SFML : public rt::IDisplay {
-    public:
-        SFML();
-        ~SFML();
-
-        void createWindow(const int &width, const int &height, const std::string &title) override;
-        void destroyWindow() override;
-        void run(const rt::Parser &parser) override;
-
+namespace rt
+{
+    class SFML final : public IDisplay {
     private:
         sf::RenderWindow _window;
+
+    public:
+        SFML(uint32_t width = 800, uint32_t height = 600, const std::string &title = "Raytracer");
+        ~SFML() override;
+
+        void run(Parser &parser) override;
     };
-}
+} // namespace rt
 
 extern "C" {
-    rt::IDisplay *create_display() {
-        return new rt::SFML();
+    rt::IDisplay *create_display(const uint32_t width, const uint32_t height, const std::string &title)
+    {
+        return new rt::SFML(width, height, title);
     }
 
-    void destroy(rt::SFML *display) {
-        delete display;
-    }
+    void destroy(const rt::SFML *display) { delete display; }
 }
 
 #endif /* !SFML_HPP_ */

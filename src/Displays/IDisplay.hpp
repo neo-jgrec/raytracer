@@ -23,12 +23,9 @@ namespace rt
             {}
         };
 
-        virtual void createWindow(const int &width, const int &height, const std::string &title) = 0;
+        virtual ~IDisplay() = default;
 
-        virtual void run(const rt::Parser &parser) = 0;
-
-        virtual void destroyWindow() = 0;
-
+        virtual void run(Parser &parser) = 0;
     };
 } // namespace rt
 

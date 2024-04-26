@@ -38,8 +38,8 @@ namespace rt
             CameraException(const std::string &message) : ICameraException("Camera", message) {}
         };
 
-        [[nodiscard]] std::pair<int, int> getResolution() const { return {_width, _height}; }
-        void setResolution(int width, int height);
+        [[nodiscard]] std::pair<int, int> getResolution() const override { return {_width, _height}; }
+        void setResolution(int width, int height) override;
 
         [[nodiscard]] const math::Vector3<float> &getOrigin() const override { return _origin; }
         void setOrigin(const math::Vector3<float> &origin) override { _origin = origin; }

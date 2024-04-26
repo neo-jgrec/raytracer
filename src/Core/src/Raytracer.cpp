@@ -13,13 +13,13 @@
 #include <utility>
 
 #include "../Displays/IDisplay.hpp"
-#include "Parser/Parser.hpp"
 #include "../Utils/DLLoader.hpp"
+#include "Parser/Parser.hpp"
 
 namespace rt
 {
-    Raytracer::Raytracer(std::string sceneName, std::string graphicalPlugin /*= ""*/)
-        : _sceneName(std::move(sceneName)), _graphicalPlugin(std::move(graphicalPlugin))
+    Raytracer::Raytracer(std::string sceneName, std::string graphicalPlugin /*= ""*/) :
+        _sceneName(std::move(sceneName)), _graphicalPlugin(std::move(graphicalPlugin))
     {}
 
     void Raytracer::run() const
@@ -33,27 +33,23 @@ namespace rt
             return;
         }
 
-        const auto image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights());
-        const std::string imageName{"image.out.ppm"};
 
-        utils::DLLoader<rt::IDisplay> graphicalPluginLoader(_graphicalPlugin, "create_display");
-        const std::function create_display = reinterpret_cast<rt::IDisplay *(*)()>(graphicalPluginLoader.get());
+        const utils::DLLoader<IDisplay> graphicalPluginLoader(_graphicalPlugin, "create_display");
+        const std::function create_display =
+            reinterpret_cast<IDisplay *(*)(uint32_t, uint32_t, const std::string &)>(graphicalPluginLoader.get());
 
-        if (create_display == nullptr) {
-            std::cerr << "Failed to load graphical plugin" << std::endl;
-            return;
-        }
-
-        rt::IDisplay *display = create_display();
-        display->createWindow(std::get<0>(image), std::get<1>(image), "Raytracer");
+        const auto [width, height] = parser.getCamera()->getResolution();
+        IDisplay *display = create_display(width, height, "Raytracer");
         display->run(parser);
-        display->destroyWindow();
 
-        std::ofstream file(imageName);
-        file << "P6\n" << std::get<0>(image) << " " << std::get<1>(image) << "\n255\n";
-        file.write(reinterpret_cast<const char *>(std::get<2>(image).get()),
-                   std::get<0>(image) * std::get<1>(image) * 3);
-        file.close();
-        std::cout << "Image saved to " << imageName << std::endl;
+        // const auto image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights());
+        // const std::string imageName{"image.out.ppm"};
+        //
+        // std::ofstream file(imageName);
+        // file << "P6\n" << std::get<0>(image) << " " << std::get<1>(image) << "\n255\n";
+        // file.write(reinterpret_cast<const char *>(std::get<2>(image).get()),
+        //            std::get<0>(image) * std::get<1>(image) * 3);
+        // file.close();
+        // std::cout << "Image saved to " << imageName << std::endl;
     }
 } // namespace rt

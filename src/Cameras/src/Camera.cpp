@@ -47,10 +47,11 @@ namespace rt
                         light->illuminate(ray.at(t), color);
                 }
 
-                const int index = static_cast<int>((_height - j - 1) * _width * 3 + i * 3);
+                const int index = static_cast<int>((_height - j - 1) * _width * 4 + i * 4);
                 pixels.get()[index] = static_cast<uint8_t>(255.999f * color.r);
                 pixels.get()[index + 1] = static_cast<uint8_t>(255.999f * color.g);
                 pixels.get()[index + 2] = static_cast<uint8_t>(255.999f * color.b);
+                pixels.get()[index + 3] = 255;
             }
         }
     }
@@ -73,7 +74,7 @@ namespace rt
         reload();
 
         const auto pixels =
-            std::shared_ptr<uint8_t>(new uint8_t[_width * _height * 3], std::default_delete<uint8_t[]>());
+            std::shared_ptr<uint8_t>(new uint8_t[_width * _height * 4], std::default_delete<uint8_t[]>());
 
         const auto nbThreads = std::thread::hardware_concurrency();
         std::cout << "Using " << nbThreads << " threads" << std::endl;
