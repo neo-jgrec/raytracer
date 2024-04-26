@@ -13,7 +13,7 @@ namespace rt
     {
         constexpr float epsilon = std::numeric_limits<float>::epsilon();
 
-        float denom = ray.direction.dot(_direction);
+        const float denom = ray.direction.dot(_direction);
         if (denom <= epsilon)
             return -1;
 
@@ -21,22 +21,4 @@ namespace rt
         const float t = oc.dot(ray.origin) / denom;
         return t > 0 ? t : -1;
     }
-
-    math::Vector3<float> Plane::getPosition() const
-    {
-        return _position;
-    }
-    void Plane::setPosition(const math::Vector3<float> &position)
-    {
-        _position = position;
-    }
-
-    math::Vector3<float> Plane::getLimit() const
-    {
-        return _position;
-    }
-    void Plane::setLimit(const math::Vector3<float> &limit)
-    {
-        _limit = limit;
-    }
-}
+} // namespace rt

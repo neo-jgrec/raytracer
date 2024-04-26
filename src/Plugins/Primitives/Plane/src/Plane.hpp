@@ -13,49 +13,44 @@
 
 namespace rt
 {
-    class Plane : public APrimitive {
-        private:
-            math::Vector3<float> _origin = {0, 0, 0};
-            math::Vector3<float> _direction = {0, 0, 0};
+    class Plane final : public APrimitive {
+    private:
+        math::Vector3<float> _origin;
+        math::Vector3<float> _direction;
+
+    public:
+        class PlaneException final : public APrimitiveException {
         public:
-            class PlaneException final : public APrimitiveException {
-            public:
-                PlaneException(const std::string &message) :
-                    APrimitiveException("Plane", message) {}
-            };
-
-            [[nodiscard]] float hit(const math::Ray &ray) const override;
-
-            [[nodiscard]] math::Vector3<float> getOrigin() const;
-            [[nodiscard]] math::Vector3<float> getDirection() const;
-
-            void setOrigin(const math::Vector3<float> &origin);
-            void setDirection(const math::Vector3<float> &direction);
+            PlaneException(const std::string &message) : APrimitiveException("Plane", message) {}
         };
+
+        [[nodiscard]] float hit(const math::Ray &ray) const override;
+
+        [[nodiscard]] math::Vector3<float> getOrigin() const { return _origin; }
+        [[nodiscard]] math::Vector3<float> getDirection() const { return _direction; }
+
+        void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
+        void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
+    };
 } // namespace rt
 
 extern "C" {
-    rt::IPrimitive *createComponent(libconfig::Setting &plane, rt::IMaterial *material)
+    rt::IPrimitive *createComponent(const libconfig::Setting &setting, rt::IMaterial *material)
     {
-        auto *newPlane = new rt::Plane();
-        newPlane->setOrigin(math::Vector3{
-            static_cast<float>(plane["origin"]["x"].operator int()),
-            static_cast<float>(plane["origin"]["y"].operator int()),
-            static_cast<float>(plane["origin"]["z"].operator int())
-        });
-        newPlane->setDirection(math::Vector3{
-            static_cast<float>(plane["direction"]["x"].operator int()),
-            static_cast<float>(plane["direction"]["y"].operator int()),
-            static_cast<float>(plane["direction"]["z"].operator int())
-        });
-        newPlane->setMaterial(material);
-        return newPlane;
+        auto *plane = new rt::Plane();
+
+        plane->setOrigin({static_cast<float>(setting["origin"]["x"].operator int()),
+                          static_cast<float>(setting["origin"]["y"].operator int()),
+                          static_cast<float>(setting["origin"]["z"].operator int())});
+        plane->setDirection({static_cast<float>(setting["direction"]["x"].operator int()),
+                             static_cast<float>(setting["direction"]["y"].operator int()),
+                             static_cast<float>(setting["direction"]["z"].operator int())});
+        plane->setMaterial(material);
+
+        return plane;
     }
 
-    void destroy(const rt::IPrimitive *ptr)
-    {
-        delete ptr;
-    }
+    void destroy(const rt::IPrimitive *ptr) { delete ptr; }
 }
 
 #endif /* !PLANE_HPP */
