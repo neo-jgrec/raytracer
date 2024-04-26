@@ -10,8 +10,7 @@
 
 #include <string>
 
-#include "../Cameras/ICamera.hpp"
-#include "../Utils/Utils.hpp"
+#include "../Core/src/Parser/Parser.hpp"
 
 namespace rt
 {
@@ -26,7 +25,10 @@ namespace rt
 
         virtual void createWindow(const int &width, const int &height, const std::string &title) = 0;
 
-        virtual void displayImage(const std::list<ICamera *> &cameras) = 0;
+        virtual void run(const rt::Parser &parser) = 0;
+
+        virtual void destroyWindow() = 0;
+
     };
 } // namespace rt
 
