@@ -12,31 +12,11 @@
 #include <map>
 
 #include "../../../Cameras/ICamera.hpp"
-#include "../../../Plugins/Lights/ILight.hpp"
-#include "../../../Plugins/Materials/IMaterial.hpp"
-#include "../../../Plugins/Primitives/IPrimitive.hpp"
 
 namespace rt
 {
     class Parser {
-    public:
-        Parser() = default;
-        ~Parser();
-
-        [[nodiscard]] ICamera *getCamera() const { return _camera; }
-        std::list<IPrimitive *> getPrimitives() { return _primitives; }
-        std::list<ILight *> getLights() { return _lights; }
-
-        Parser *parseScene(const std::string &path);
-
     private:
-        static std::string getLibPathFromMainBinary(const std::string &path);
-
-        void parseCamera(libconfig::Setting &camera);
-        void parsePrimitives(const libconfig::Setting &primitives);
-        void parseMaterials(const libconfig::Setting &materials);
-        void parseLights(const libconfig::Setting &lights);
-
         ICamera *_camera{};
         std::list<IPrimitive *> _primitives;
         std::list<ILight *> _lights;
@@ -49,6 +29,30 @@ namespace rt
 
         std::list<std::string> materialLoadersNames;
         std::list<utils::DLLoader<IMaterial>> materialLoaders;
+
+        static std::string getLibPathFromMainBinary(const std::string &path);
+
+        void parseCamera(libconfig::Setting &camera);
+        void parsePrimitives(const libconfig::Setting &primitives);
+        void parseMaterials(const libconfig::Setting &materials);
+        void parseLights(const libconfig::Setting &lights);
+
+    public:
+        class ParserExecption final : public utils::Exception {
+        public:
+            ParserExecption(const std::string &message) : Exception("[Parser] ", message) {}
+            ParserExecption(const std::string &name, const std::string &message) :
+                Exception("[Parser] " + name, message)
+            {}
+        };
+
+        ~Parser();
+
+        [[nodiscard]] ICamera *getCamera() const { return _camera; }
+        std::list<IPrimitive *> getPrimitives() { return _primitives; }
+        std::list<ILight *> getLights() { return _lights; }
+
+        Parser *parseScene(const std::string &path);
     };
 } // namespace rt
 

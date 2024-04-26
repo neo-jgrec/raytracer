@@ -24,7 +24,7 @@ namespace rt
         for (const auto &primitive : _primitives) {
             delete primitive;
         }
-        for (auto &light : _lights) {
+        for (const auto &light : _lights) {
             delete light;
         }
     }
@@ -40,12 +40,16 @@ namespace rt
 
     void Parser::parseCamera(libconfig::Setting &camera)
     {
-        cameraLoaders.emplace_back(getLibPathFromMainBinary(camera["lib"]), "createComponent");
+        try {
+            cameraLoaders.emplace_back(getLibPathFromMainBinary(camera["lib"]), "createComponent");
+        } catch (const utils::DLLoader<ICamera>::DLLoaderException &e) {
+            throw ParserExecption("Invalid path", camera["lib"]);
+        }
 
-        const std::function createComponent = reinterpret_cast<ICamera *(*)(libconfig::Setting &)>
-            (cameraLoaders.back().get());
+        const std::function createComponent =
+            reinterpret_cast<ICamera *(*)(libconfig::Setting &)>(cameraLoaders.back().get());
         if (createComponent == nullptr)
-            throw std::runtime_error("Failed to load camera component");
+            throw ParserExecption("Failed to load camera component");
 
         _camera = createComponent(camera);
     }
@@ -57,20 +61,19 @@ namespace rt
 
             for (const auto &name : materialLoadersNames)
                 if (name == materialName)
-                    throw std::runtime_error("Material with the same name already exists: " + materialName);
+                    throw ParserExecption("Material with the same name already exists", materialName);
 
             try {
                 materialLoaders.emplace_back(getLibPathFromMainBinary(materials[i]["lib"]), "createComponent");
                 materialLoadersNames.emplace_back(materialName);
             } catch (const utils::DLLoader<IMaterial>::DLLoaderException &e) {
-                std::cerr << e.what() << std::endl;
-                continue;
+                throw ParserExecption("Invalid path", materials[i]["lib"]);
             }
 
-            const auto createComponent = reinterpret_cast<IMaterial *(*)(libconfig::Setting &)>
-                (materialLoaders.back().get());
+            const auto createComponent =
+                reinterpret_cast<IMaterial *(*)(libconfig::Setting &)>(materialLoaders.back().get());
             if (createComponent == nullptr)
-                throw std::runtime_error("Failed to load material component");
+                throw ParserExecption("Failed to load material component");
 
             _materials.emplace(materialName, createComponent(materials[i]));
         }
@@ -84,18 +87,17 @@ namespace rt
             try {
                 usedMaterial = _materials.at((primitives[i]["material"]));
             } catch (const std::out_of_range &) {
-                throw std::runtime_error("Material not found: " + static_cast<std::string>(primitives[i]["material"]));
+                throw ParserExecption("Material not found", primitives[i]["material"]);
             }
 
             try {
                 primitiveLoaders.emplace_back(getLibPathFromMainBinary(primitives[i]["lib"]), "createComponent");
             } catch (const utils::DLLoader<IPrimitive>::DLLoaderException &e) {
-                std::cerr << e.what() << std::endl;
-                continue;
+                throw ParserExecption("Invalid path", primitives[i]["lib"]);
             }
 
-            std::function createComponent = reinterpret_cast<IPrimitive *(*)(libconfig::Setting &, IMaterial *)>
-                (primitiveLoaders.back().get());
+            std::function createComponent =
+                reinterpret_cast<IPrimitive *(*)(libconfig::Setting &, IMaterial *)>(primitiveLoaders.back().get());
             if (createComponent == nullptr)
                 throw std::runtime_error("Failed to load primitive component");
 
@@ -106,10 +108,14 @@ namespace rt
     void Parser::parseLights(const libconfig::Setting &lights)
     {
         for (uint8_t i = 0; i < static_cast<uint8_t>(lights.getLength()); i++) {
-            lightLoaders.emplace_back(getLibPathFromMainBinary(lights[i]["lib"]), "createComponent");
+            try {
+                lightLoaders.emplace_back(getLibPathFromMainBinary(lights[i]["lib"]), "createComponent");
+            } catch (const utils::DLLoader<ILight>::DLLoaderException &e) {
+                throw ParserExecption("Invalid path", lights[i]["lib"]);
+            }
 
-            const std::function createComponent = reinterpret_cast<ILight *(*)(libconfig::Setting &)>
-                (lightLoaders.back().get());
+            const std::function createComponent =
+                reinterpret_cast<ILight *(*)(libconfig::Setting &)>(lightLoaders.back().get());
             if (createComponent == nullptr)
                 throw std::runtime_error("Failed to load light component");
 
@@ -133,18 +139,18 @@ namespace rt
 
             std::cout << "Scene parsed successfully" << std::endl;
         } catch (const libconfig::FileIOException &fioex) {
-            std::cerr << "I/O error while reading file: " << fioex.what() << std::endl;
+            throw ParserExecption("I/O error", fioex.what());
         } catch (const libconfig::ParseException &pex) {
-            std::cerr << "Parse error at " << pex.getFile() << ":" << pex.getLine()
-                << " - " << pex.getError() << std::endl;
+            throw ParserExecption("Parse error",
+                                  std::string(pex.getError()) + " at line " + std::to_string(pex.getLine()));
         } catch (const libconfig::SettingNotFoundException &nfex) {
-            std::cerr << "Setting not found: " << nfex.getPath() << std::endl;
+            throw ParserExecption("Setting not found", nfex.getPath());
         } catch (const libconfig::SettingTypeException &stex) {
-            std::cerr << "Setting type error: " << stex.getPath() << std::endl;
+            throw ParserExecption("Setting type error", stex.getPath());
         } catch (const std::exception &e) {
-            std::cerr << "ERROR : " << e.what() << std::endl;
+            throw ParserExecption("Unknown error", e.what());
         }
 
         return this;
     }
-}
+} // namespace rt

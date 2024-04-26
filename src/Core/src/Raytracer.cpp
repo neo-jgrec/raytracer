@@ -22,7 +22,12 @@ namespace rt
     void Raytracer::run() const
     {
         Parser parser;
-        parser.parseScene(_sceneName);
+        try {
+            parser.parseScene(_sceneName);
+        } catch (const Parser::ParserExecption &e) {
+            std::cerr << e.what() << std::endl;
+            return;
+        }
 
         const auto image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights());
         const std::string imageName{"image.out.ppm"};
