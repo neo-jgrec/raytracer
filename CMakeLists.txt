@@ -107,5 +107,6 @@ endif (DOXYGEN_FOUND)
 option(_SKIP_SRC "Option to skip the src directory" OFF) # OFF by default
 
 if(NOT _SKIP_SRC)
+	add_subdirectory(libs/cmake/imgui)
     add_subdirectory(src)
 endif()
