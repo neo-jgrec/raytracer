@@ -15,19 +15,18 @@ namespace rt
 {
     class Camera final : public ICamera {
     private:
+        math::Vector3<float> _origin;
         int _width = 256;
         int _height = 256;
+        int _fov = 75;
 
-        float _aspectRatio = static_cast<float>(_width) / static_cast<float>(_height);
+        float _aspectRatio = 0;
         float _viewportHeight = 2.f;
-        float _viewportWidth = _aspectRatio * _viewportHeight;
-        float _focalLength = 1.f;
+        float _viewportWidth = 0;
 
-        math::Vector3<float> _origin{0, 0, 0};
-        math::Vector3<float> _horizontal{_viewportWidth, 0, 0};
-        math::Vector3<float> _vertical{0, _viewportHeight, 0};
-        math::Vector3<float> _bottomLeft =
-            _origin - _horizontal / 2 - _vertical / 2 - math::Vector3<float>{0, 0, _focalLength};
+        math::Vector3<float> _horizontal;
+        math::Vector3<float> _vertical;
+        math::Vector3<float> _bottomLeft;
 
         void generateImageChunk(uint32_t startHeight, uint32_t endHeight, uint32_t startWidth, uint32_t endWidth,
                                 const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
@@ -45,6 +44,10 @@ namespace rt
         [[nodiscard]] const math::Vector3<float> &getOrigin() const override { return _origin; }
         void setOrigin(const math::Vector3<float> &origin) override { _origin = origin; }
 
+        [[nodiscard]] int getFieldOfView() const { return _fov; }
+        void setFieldOfView(const int fov) { _fov = fov; }
+
+        void reload();
         [[nodiscard]] std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(std::list<IPrimitive *> primitives,
                                                                                    std::list<ILight *> lights) override;
     };
@@ -55,11 +58,12 @@ extern "C" {
     {
         auto *newCamera = new rt::Camera();
 
-        newCamera->setOrigin(math::Vector3{static_cast<float>(camera["position"]["x"].operator int()),
-                                           static_cast<float>(camera["position"]["y"].operator int()),
-                                           static_cast<float>(camera["position"]["z"].operator int())});
+        newCamera->setOrigin(math::Vector3{static_cast<float>(camera["origin"]["x"].operator int()),
+                                           static_cast<float>(camera["origin"]["y"].operator int()),
+                                           static_cast<float>(camera["origin"]["z"].operator int())});
         newCamera->setResolution(camera["resolution"]["width"].operator int(),
                                  camera["resolution"]["height"].operator int());
+        newCamera->setFieldOfView(camera["fieldOfView"].operator int());
 
         return newCamera;
     }

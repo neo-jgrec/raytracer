@@ -17,13 +17,6 @@ namespace rt
     {
         _width = width;
         _height = height;
-        _aspectRatio = static_cast<float>(_width) / static_cast<float>(_height);
-
-        _viewportWidth = _aspectRatio * _viewportHeight;
-
-        _horizontal = math::Vector3<float>{_viewportWidth, 0, 0};
-        _vertical = math::Vector3<float>{0, _viewportHeight, 0};
-        _bottomLeft = _origin - _horizontal / 2 - _vertical / 2 - math::Vector3<float>{0, 0, _focalLength};
     }
 
     void Camera::generateImageChunk(const uint32_t startHeight, const uint32_t endHeight, const uint32_t startWidth,
@@ -62,9 +55,23 @@ namespace rt
         }
     }
 
+    void Camera::reload()
+    {
+        _aspectRatio = static_cast<float>(_width) / static_cast<float>(_height);
+        _viewportWidth = _aspectRatio * _viewportHeight;
+
+        _horizontal = math::Vector3<float>{_viewportWidth, 0, 0};
+        _vertical = math::Vector3<float>{0, _viewportHeight, 0};
+        const auto focalLength = static_cast<float>(1 / std::tan(static_cast<float>(_fov) / 2 * M_PI / 180));
+
+        _bottomLeft = _origin - _horizontal / 2 - _vertical / 2 - math::Vector3<float>{0, 0, focalLength};
+    }
+
     std::tuple<int, int, std::shared_ptr<uint8_t>> Camera::generateImage(const std::list<IPrimitive *> primitives,
                                                                          const std::list<ILight *> lights)
     {
+        reload();
+
         const auto pixels =
             std::shared_ptr<uint8_t>(new uint8_t[_width * _height * 3], std::default_delete<uint8_t[]>());
 
