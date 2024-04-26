@@ -21,4 +21,4 @@ You can achieve some cool images like this one:
 ## Features 🎉
 
 The list of features is still to be defined, but to use the features, you'll need to configure a scene with a `.cfg` having our configuration needs.
-You can learn more about the configuration in the [Configuration](/docs/configuration) section.
+You can learn more about the configuration in the [Configuration](/configuration) section.
