@@ -14,22 +14,21 @@ namespace rt
         return 0;
     }
 
-    const std::string Plane::getAxis() const
-    {
-        return _axis;
-    }
-
-    void Plane::setAxis(const std::string axis)
-    {
-        _axis = axis;
-    }
-
-    float Plane::getPosition() const
+    math::Vector3<float> Plane::getPosition() const
     {
         return _position;
     }
-    void Plane::setPosition(const float position)
+    void Plane::setPosition(const math::Vector3<float> &position)
     {
         _position = position;
+    }
+
+    math::Vector3<float> Plane::getLimit() const
+    {
+        return _position;
+    }
+    void Plane::setLimit(const math::Vector3<float> &limit)
+    {
+        _limit = limit;
     }
 }

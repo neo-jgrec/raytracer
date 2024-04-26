@@ -15,8 +15,8 @@ namespace rt
 {
     class Plane : public APrimitive {
         private:
-            std::string _axis;
-            float _position;
+            math::Vector3<float> _position = {0, 0, 0}; // Top left
+            math::Vector3<float> _limit = {0, 0, 0}; // Bottom right
         public:
             class PlaneException final : public APrimitiveException {
             public:
@@ -26,11 +26,11 @@ namespace rt
 
             [[nodiscard]] float hit(const math::Ray &ray) const override;
 
-            [[nodiscard]] const std::string getAxis() const;
-            [[nodiscard]] float getPosition() const;
+            [[nodiscard]] math::Vector3<float> getPosition() const;
+            [[nodiscard]] math::Vector3<float> getLimit() const;
 
-            void setAxis(const std::string axis);
-            void setPosition(const float radius);
+            void setPosition(const math::Vector3<float> &position);
+            void setLimit(const math::Vector3<float> &limit);
         };
 } // namespace rt
 
@@ -38,8 +38,16 @@ extern "C" {
     rt::IPrimitive *createComponent(libconfig::Setting &plane, rt::IMaterial *material)
     {
         auto *newPlane = new rt::Plane();
-        newPlane->setAxis((plane["axis"].operator std::string()));
-        newPlane->setPosition(static_cast<float>(plane["position"].operator int()));
+        newPlane->setPosition(math::Vector3{
+            static_cast<float>(plane["x"].operator int()),
+            static_cast<float>(plane["y"].operator int()),
+            static_cast<float>(plane["z"].operator int())
+        });
+        newPlane->setLimit(math::Vector3{
+            static_cast<float>(plane["limit"]["x"].operator int()),
+            static_cast<float>(plane["limit"]["y"].operator int()),
+            static_cast<float>(plane["limit"]["z"].operator int())
+        });
         newPlane->setMaterial(material);
         return newPlane;
     }
