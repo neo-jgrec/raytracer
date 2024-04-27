@@ -9,7 +9,6 @@
 #include "imgui-SFML.h"
 #include "imgui.h"
 
-
 namespace rt
 {
     SFML::SFML(const uint32_t width, const uint32_t height, const std::string &title)
@@ -29,11 +28,14 @@ namespace rt
 
     void SFML::run(Parser &parser)
     {
-        const auto image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights(), true);
+        ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        auto image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights(), true);
 
         sf::Texture texture;
+        parser.getCamera()->getMutex().lock();
         texture.create(std::get<0>(image), std::get<1>(image));
         texture.update(std::get<2>(image).get());
+        parser.getCamera()->getMutex().unlock();
         sf::Sprite sprite(texture);
 
         sf::Clock deltaClock;
@@ -46,20 +48,30 @@ namespace rt
                     _window.close();
                 }
             }
-
             ImGui::SFML::Update(_window, deltaClock.restart());
 
-            ImGui::Begin("Super Raytracer");
+            ImGui::BeginMainMenuBar();
+            if (ImGui::BeginMenu("File")) {
+                if (ImGui::MenuItem("Open")) {
+                }
+            }
+            ImGui::EndMainMenuBar();
+
+            ImGui::Begin("Raytracer");
             ImGui::Text("Hello, world!");
+            ImGui::End();
+
+            parser.getCamera()->getMutex().lock();
+            texture.update(std::get<2>(image).get());
+            parser.getCamera()->getMutex().unlock();
+
+            ImGui::Begin("Image");
+            ImGui::Image(sprite);
             ImGui::End();
 
             _window.clear();
             ImGui::SFML::Render(_window);
-            parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights(), true);
-            _window.draw(sprite);
             _window.display();
         }
-
-        ImGui::SFML::Shutdown();
     }
 } // namespace rt
