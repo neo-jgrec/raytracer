@@ -31,6 +31,11 @@ namespace rt
         ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
         auto image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights(), true);
 
+        bool isSaving = false;
+        bool isOpeningCfgFile = false;
+        static char filename[256] = {0};
+        float zoomInImage = 0.5f;
+
         sf::Texture texture;
         parser.getCamera()->getMutex().lock();
         texture.create(std::get<0>(image), std::get<1>(image));
@@ -52,21 +57,97 @@ namespace rt
 
             ImGui::BeginMainMenuBar();
             if (ImGui::BeginMenu("File")) {
-                if (ImGui::MenuItem("Open")) {
+                if (ImGui::MenuItem("Save image as")) {
+                    isSaving = true;
                 }
+                if (ImGui::MenuItem("Open cfg file")) {
+                    isOpeningCfgFile = true;
+                }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Quit")) {
+                    _window.close();
+                }
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("View")) {
+                if (ImGui::MenuItem("Reset layout")) {
+
+                }
+                if (ImGui::MenuItem("Camera", nullptr, false, false)) {
+                }
+                if (ImGui::MenuItem("Lights", nullptr, false, false)) {
+                }
+                if (ImGui::MenuItem("Primitives", nullptr, false, false)) {
+                }
+                ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();
 
-            ImGui::Begin("Raytracer");
-            ImGui::Text("Hello, world!");
-            ImGui::End();
+            ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
+            if (isSaving) {
+                ImGui::SetNextWindowSize(ImVec2(350, 100));
+                ImGui::SetNextWindowPos(ImVec2(static_cast<float>(_window.getSize().x) / 2 - 175, static_cast<float>(_window.getSize().y) / 2 - 50));
+                ImGui::Begin("Save image as PNG", &isSaving, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+                ImGui::InputText("Filename", filename, IM_ARRAYSIZE(filename));
+                if (ImGui::Button("Save")) {
+                    texture.copyToImage().saveToFile(filename);
+                    isSaving = false;
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Close")) {
+                    isSaving = false;
+                }
+                ImGui::End();
+            }
+
+            if (isOpeningCfgFile) {
+                ImGui::SetNextWindowSize(ImVec2(350, 100));
+                ImGui::SetNextWindowPos(ImVec2(static_cast<float>(_window.getSize().x) / 2 - 175, static_cast<float>(_window.getSize().y) / 2 - 50));
+                ImGui::Begin("Open cfg file", &isOpeningCfgFile, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+                ImGui::InputText("Filename", filename, IM_ARRAYSIZE(filename));
+                ImGui::Text("Warning: This will close the current scene");
+                if (ImGui::Button("Open")) {
+                    parser.parseScene(std::string(filename));
+                    image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights(), true);
+                    texture.create(std::get<0>(image), std::get<1>(image));
+                    texture.update(std::get<2>(image).get());
+                    isOpeningCfgFile = false;
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Close")) {
+                    isOpeningCfgFile = false;
+                }
+                ImGui::End();
+            }
+
+            ImGui::Begin("Image", nullptr, ImGuiWindowFlags_NoResize);
             parser.getCamera()->getMutex().lock();
             texture.update(std::get<2>(image).get());
             parser.getCamera()->getMutex().unlock();
-
-            ImGui::Begin("Image");
+            ImGui::SliderFloat("Zoom", &zoomInImage, 0.1f, 2.0f);
+            sprite.setScale(zoomInImage, zoomInImage);
             ImGui::Image(sprite);
+            ImGui::End();
+
+            ImGui::Begin("Camera");
+            ImGui::Text("Camera origin: %f %f %f", parser.getCamera()->getOrigin().x, parser.getCamera()->getOrigin().y, parser.getCamera()->getOrigin().z);
+            ImGui::Text("Camera resolution: %d %d", parser.getCamera()->getResolution().first, parser.getCamera()->getResolution().second);
+            ImGui::End();
+
+            ImGui::Begin("Lights");
+            for (auto &light : parser.getLights()) {
+                ImGui::Text("Light origin: %f %f %f", light->getOrigin().x, light->getOrigin().y, light->getOrigin().z);
+                ImGui::Separator();
+            }
+            ImGui::End();
+
+            ImGui::Begin("Primitives");
+            for (auto &primitive : parser.getPrimitives()) {
+                (void)primitive;
+                ImGui::Text("Primitive origin: mdr romain j'ai pas de data");
+                ImGui::Separator();
+            }
             ImGui::End();
 
             _window.clear();
