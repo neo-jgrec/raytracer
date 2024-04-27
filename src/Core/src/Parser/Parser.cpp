@@ -56,70 +56,70 @@ namespace rt
 
     void Parser::parseMaterials(const libconfig::Setting &materials)
     {
-        for (uint8_t i = 0; i < static_cast<uint8_t>(materials.getLength()); i++) {
-            auto materialName = static_cast<std::string>(materials[i]["name"]);
+        for (auto& material : materials) {
+            auto materialName = static_cast<std::string>(material["name"]);
 
             for (const auto &name : materialLoadersNames)
                 if (name == materialName)
                     throw ParserExecption("Material with the same name already exists", materialName);
 
             try {
-                materialLoaders.emplace_back(getLibPathFromMainBinary(materials[i]["lib"]), "createComponent");
+                materialLoaders.emplace_back(getLibPathFromMainBinary(material["lib"]), "createComponent");
                 materialLoadersNames.emplace_back(materialName);
             } catch (const utils::DLLoader<IMaterial>::DLLoaderException &e) {
-                throw ParserExecption("Invalid path", materials[i]["lib"]);
+                throw ParserExecption("Invalid path", material["lib"]);
             }
 
             const auto createComponent =
-                reinterpret_cast<IMaterial *(*)(libconfig::Setting &)>(materialLoaders.back().get());
+                reinterpret_cast<IMaterial *(*)(const libconfig::Setting &)>(materialLoaders.back().get());
             if (createComponent == nullptr)
                 throw ParserExecption("Failed to load material component");
 
-            _materials.emplace(materialName, createComponent(materials[i]));
+            _materials.emplace(materialName, createComponent(static_cast<const libconfig::Setting &>(material)));
         }
     }
 
     void Parser::parsePrimitives(const libconfig::Setting &primitives)
     {
-        for (uint8_t i = 0; i < static_cast<uint8_t>(primitives.getLength()); i++) {
+        for (auto& primitive : primitives) {
             IMaterial *usedMaterial;
 
             try {
-                usedMaterial = _materials.at((primitives[i]["material"]));
+                usedMaterial = _materials.at((primitive["material"]));
             } catch (const std::out_of_range &) {
-                throw ParserExecption("Material not found", primitives[i]["material"]);
+                throw ParserExecption("Material not found", primitive["material"]);
             }
 
             try {
-                primitiveLoaders.emplace_back(getLibPathFromMainBinary(primitives[i]["lib"]), "createComponent");
+                primitiveLoaders.emplace_back(getLibPathFromMainBinary(primitive["lib"]), "createComponent");
             } catch (const utils::DLLoader<IPrimitive>::DLLoaderException &e) {
-                throw ParserExecption("Invalid path", primitives[i]["lib"]);
+                throw ParserExecption("Invalid path", primitive["lib"]);
             }
 
             std::function createComponent =
-                reinterpret_cast<IPrimitive *(*)(libconfig::Setting &, IMaterial *)>(primitiveLoaders.back().get());
+                reinterpret_cast<IPrimitive *(*)(const libconfig::Setting &, IMaterial *)>(primitiveLoaders.back().get());
             if (createComponent == nullptr)
                 throw std::runtime_error("Failed to load primitive component");
 
-            _primitives.emplace_back(createComponent(primitives[i], usedMaterial));
+            _primitives.emplace_back(createComponent(static_cast<const libconfig::Setting &>(primitive), usedMaterial));
         }
     }
 
     void Parser::parseLights(const libconfig::Setting &lights)
     {
-        for (uint8_t i = 0; i < static_cast<uint8_t>(lights.getLength()); i++) {
+        for (auto& light : lights) {
             try {
-                lightLoaders.emplace_back(getLibPathFromMainBinary(lights[i]["lib"]), "createComponent");
+                lightLoaders.emplace_back(getLibPathFromMainBinary(light["lib"]), "createComponent");
             } catch (const utils::DLLoader<ILight>::DLLoaderException &e) {
-                throw ParserExecption("Invalid path", lights[i]["lib"]);
+                throw ParserExecption("Invalid path", light["lib"]);
             }
 
             const std::function createComponent =
-                reinterpret_cast<ILight *(*)(libconfig::Setting &)>(lightLoaders.back().get());
+                reinterpret_cast<ILight *(*)(const libconfig::Setting &)>(lightLoaders.back().get());
             if (createComponent == nullptr)
-                throw std::runtime_error("Failed to load light component");
+                throw ParserExecption("Failed to load light component");
 
-            _lights.emplace_back(createComponent(lights[i]));
+            _lights.emplace_back(createComponent(static_cast<const libconfig::Setting &>(light)));
         }
     }
 
