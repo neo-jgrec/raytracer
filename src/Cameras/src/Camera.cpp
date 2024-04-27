@@ -8,8 +8,8 @@
 #include "Camera.hpp"
 
 #include <cstring>
-#include <iostream>
 #include <thread>
+#include <mutex>
 #include <vector>
 
 namespace rt
@@ -23,7 +23,7 @@ namespace rt
     void Camera::generateImageChunk(const uint32_t startHeight, const uint32_t endHeight, const uint32_t startWidth,
                                     const uint32_t endWidth, const std::list<IPrimitive *> &primitives,
                                     const std::list<ILight *> &lights, const std::shared_ptr<uint8_t> &pixels,
-                                    const bool rgba) const
+                                    const bool rgba)
     {
         for (uint32_t j = startHeight; j < endHeight; ++j) {
             for (uint32_t i = startWidth; i < endWidth; ++i) {
@@ -49,6 +49,7 @@ namespace rt
                         light->illuminate(ray.at(t), color);
                 }
 
+                _mutex.lock();
                 if (rgba) {
                     const int index = static_cast<int>((_height - j - 1) * _width * 4 + i * 4);
                     pixels.get()[index] = static_cast<uint8_t>(255.999f * color.r);
@@ -61,6 +62,7 @@ namespace rt
                     pixels.get()[index + 1] = static_cast<uint8_t>(255.999f * color.g);
                     pixels.get()[index + 2] = static_cast<uint8_t>(255.999f * color.b);
                 }
+                _mutex.unlock();
             }
         }
     }
@@ -82,26 +84,33 @@ namespace rt
     std::tuple<int, int, std::shared_ptr<uint8_t>> Camera::getImages() const { return {_width, _height, _pixels}; }
 
     std::tuple<int, int, std::shared_ptr<uint8_t>>
-    Camera::generateImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights, const bool rgba)
+    Camera::generateImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights, const bool rgba, bool waiting)
     {
         reload(rgba);
 
         const auto nbThreads = std::thread::hardware_concurrency();
-        std::vector<std::thread> threads;
         const uint16_t height = _height / nbThreads;
+        std::vector<std::thread> threads;
 
         for (uint8_t i = 0; i < nbThreads; ++i) {
             if (i == nbThreads - 1) {
-                threads.emplace_back(&Camera::generateImageChunk, this, i * height, _height, 0, _width, primitives,
-                                     lights, std::ref(_pixels), rgba);
+                threads.emplace_back(&Camera::generateImageChunk, this, i * height, _height, 0, _width, primitives, lights,
+                            std::ref(_pixels), rgba);
             } else {
-                threads.emplace_back(&Camera::generateImageChunk, this, i * height, (i + 1) * height, 0, _width,
-                                     primitives, lights, std::ref(_pixels), rgba);
+                threads.emplace_back(&Camera::generateImageChunk, this, i * height, (i + 1) * height, 0, _width, primitives, lights,
+                            std::ref(_pixels), rgba);
             }
         }
-        for (auto &thread : threads)
-            thread.join();
 
+        if (waiting) {
+            for (auto &thread : threads) {
+                thread.join();
+            }
+        } else {
+            for (auto &thread : threads) {
+                thread.detach();
+            }
+        }
         return {_width, _height, _pixels};
     }
 } // namespace rt

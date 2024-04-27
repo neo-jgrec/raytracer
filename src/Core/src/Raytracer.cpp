@@ -20,7 +20,7 @@ namespace rt
 {
     void Raytracer::toPPM(const std::string &filename)
     {
-        const auto image = _parser.getCamera()->generateImage(_parser.getPrimitives(), _parser.getLights());
+        const auto image = _parser.getCamera()->generateImage(_parser.getPrimitives(), _parser.getLights(), false, true);
 
         std::ofstream file(filename);
         file << "P6\n" << std::get<0>(image) << " " << std::get<1>(image) << "\n255\n";
