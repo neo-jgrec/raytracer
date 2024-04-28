@@ -139,34 +139,13 @@ namespace rt
 
         Parser() = default;
 
-        ~Parser()
-        {
-            delete _camera;
-            for (const auto &material : _materials) {
-                delete material.second;
-            }
-            for (const auto &primitive : _primitives) {
-                delete primitive;
-            }
-            for (const auto &light : _lights) {
-                delete light;
-            }
-        }
-
         [[nodiscard]] ICamera *getCamera() const { return _camera; }
         std::list<IPrimitive *> getPrimitives() { return _primitives; }
         std::list<ILight *> getLights() { return _lights; }
 
-        Parser *parseScene(const std::string &path)
+        Parser(const std::string &path)
         {
             const std::string abs_path = std::filesystem::absolute(path);
-
-            _camera = nullptr;
-            _materials.clear();
-            _primitives.clear();
-            _lights.clear();
-
-            materialLoadersNames.clear();
 
             try {
                 libconfig::Config cfg;
@@ -191,8 +170,6 @@ namespace rt
             } catch (const std::exception &e) {
                 throw ParserExecption("Unknown error", e.what());
             }
-
-            return this;
         }
     };
 } // namespace rt

@@ -53,7 +53,7 @@ namespace rt
     void Raytracer::run()
     {
         try {
-            _parser.parseScene(_sceneName);
+            _parser = Parser(_sceneName);
         } catch (const Parser::ParserExecption &e) {
             std::cerr << e.what() << std::endl;
         }

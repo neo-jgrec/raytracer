@@ -61,7 +61,7 @@ namespace rt
                 if (ImGui::MenuItem("Save image as")) {
                     isSaving = true;
                 }
-                if (ImGui::MenuItem("Open cfg file")) {
+                if (ImGui::MenuItem("Open cfg file", nullptr, false, false)) {
                     isOpeningCfgFile = true;
                 }
                 ImGui::Separator();
@@ -112,7 +112,7 @@ namespace rt
                         texture.create(1, 1);
                         sf::Uint8 black[4] = {0, 0, 0, 255};
                         texture.update(black);
-                        parser.parseScene(std::filesystem::absolute(filename).string());
+                        parser = Parser(std::filesystem::absolute(filename).string());
                         image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights(), true);
                         texture.create(std::get<0>(image), std::get<1>(image));
                         texture.update(std::get<2>(image).get());

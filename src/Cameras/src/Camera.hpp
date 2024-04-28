@@ -76,8 +76,6 @@ extern "C" {
 
         return newCamera;
     }
-
-    void destroy(const rt::ICamera *ptr) { delete ptr; }
 }
 
 #endif /* !CAMERA_HPP_ */
