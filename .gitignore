@@ -70,3 +70,6 @@ vgcore.*
 .vscode/
 .idea/
 .cache
+
+# IMGUI
+imgui.ini

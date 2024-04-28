@@ -5,7 +5,7 @@
 [submodule "libs/imgui"]
 	path = libs/imgui
 	url = https://github.com/ocornut/imgui.git
-	branch = v1.90.5
+	branch = v1.90.5-docking
 [submodule "libs/imgui-sfml"]
 	path = libs/imgui-sfml
 	url = https://github.com/SFML/imgui-sfml.git

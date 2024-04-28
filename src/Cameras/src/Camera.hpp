@@ -11,9 +11,11 @@
 #include <libconfig.h++>
 #include "../ICamera.hpp"
 
+#include <mutex>
+
 namespace rt
 {
-    class Camera final : public ICamera {
+    class Camera : public ICamera {
     private:
         math::Vector3<float> _origin;
         int _width = 256;
@@ -28,9 +30,14 @@ namespace rt
         math::Vector3<float> _vertical;
         math::Vector3<float> _bottomLeft;
 
+        std::mutex _mutex;
+
+        std::shared_ptr<uint8_t> _pixels{new uint8_t[_width * _height * 4], std::default_delete<uint8_t[]>()};
+
+        void reload(bool rgba);
         void generateImageChunk(uint32_t startHeight, uint32_t endHeight, uint32_t startWidth, uint32_t endWidth,
                                 const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
-                                const std::shared_ptr<uint8_t> &pixels) const;
+                                const std::shared_ptr<uint8_t> &pixels, bool rgba);
 
     public:
         class CameraException final : public ICameraException {
@@ -38,8 +45,10 @@ namespace rt
             CameraException(const std::string &message) : ICameraException("Camera", message) {}
         };
 
-        [[nodiscard]] std::pair<int, int> getResolution() const { return {_width, _height}; }
-        void setResolution(int width, int height);
+        std::mutex &getMutex() override { return _mutex; }
+
+        [[nodiscard]] std::pair<int, int> getResolution() const override { return {_width, _height}; }
+        void setResolution(int width, int height) override;
 
         [[nodiscard]] const math::Vector3<float> &getOrigin() const override { return _origin; }
         void setOrigin(const math::Vector3<float> &origin) override { _origin = origin; }
@@ -47,9 +56,9 @@ namespace rt
         [[nodiscard]] int getFieldOfView() const { return _fov; }
         void setFieldOfView(const int fov) { _fov = fov; }
 
-        void reload();
-        [[nodiscard]] std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(std::list<IPrimitive *> primitives,
-                                                                                   std::list<ILight *> lights) override;
+        [[nodiscard]] std::tuple<int, int, std::shared_ptr<uint8_t>> getImages() const override;
+        std::tuple<int, int, std::shared_ptr<uint8_t>>
+        generateImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights, bool rgba, bool waiting) override;
     };
 } // namespace rt
 
@@ -67,8 +76,6 @@ extern "C" {
 
         return newCamera;
     }
-
-    void destroy(const rt::ICamera *ptr) { delete ptr; }
 }
 
 #endif /* !CAMERA_HPP_ */
