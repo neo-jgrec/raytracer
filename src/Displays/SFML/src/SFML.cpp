@@ -8,6 +8,7 @@
 #include "SFML.hpp"
 #include "imgui-SFML.h"
 #include "imgui.h"
+#include "../../../Core/src/Parser/Parser.hpp"
 
 namespace rt
 {
@@ -71,7 +72,6 @@ namespace rt
             }
             if (ImGui::BeginMenu("View")) {
                 if (ImGui::MenuItem("Reset layout")) {
-
                 }
                 if (ImGui::MenuItem("Camera", nullptr, false, false)) {
                 }
@@ -108,10 +108,17 @@ namespace rt
                 ImGui::InputText("Filename", filename, IM_ARRAYSIZE(filename));
                 ImGui::Text("Warning: This will close the current scene");
                 if (ImGui::Button("Open")) {
-                    parser.parseScene(std::string(filename));
-                    image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights(), true);
-                    texture.create(std::get<0>(image), std::get<1>(image));
-                    texture.update(std::get<2>(image).get());
+                    try {
+                        texture.create(1, 1);
+                        sf::Uint8 black[4] = {0, 0, 0, 255};
+                        texture.update(black);
+                        parser.parseScene(std::filesystem::absolute(filename).string());
+                        image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights(), true);
+                        texture.create(std::get<0>(image), std::get<1>(image));
+                        texture.update(std::get<2>(image).get());
+                    } catch (const std::exception &e) {
+                        std::cerr << e.what() << std::endl;
+                    }
                     isOpeningCfgFile = false;
                 }
                 ImGui::SameLine();
@@ -122,31 +129,39 @@ namespace rt
             }
 
             ImGui::Begin("Image", nullptr, ImGuiWindowFlags_NoResize);
-            parser.getCamera()->getMutex().lock();
-            texture.update(std::get<2>(image).get());
-            parser.getCamera()->getMutex().unlock();
+            if (parser.getCamera() != nullptr) {
+                parser.getCamera()->getMutex().lock();
+                texture.update(std::get<2>(image).get());
+                parser.getCamera()->getMutex().unlock();
+            }
             ImGui::SliderFloat("Zoom", &zoomInImage, 0.1f, 2.0f);
             sprite.setScale(zoomInImage, zoomInImage);
             ImGui::Image(sprite);
             ImGui::End();
 
             ImGui::Begin("Camera");
-            ImGui::Text("Camera origin: %f %f %f", parser.getCamera()->getOrigin().x, parser.getCamera()->getOrigin().y, parser.getCamera()->getOrigin().z);
-            ImGui::Text("Camera resolution: %d %d", parser.getCamera()->getResolution().first, parser.getCamera()->getResolution().second);
+            if (parser.getCamera()) {
+                ImGui::Text("Camera origin: %f %f %f", parser.getCamera()->getOrigin().x, parser.getCamera()->getOrigin().y, parser.getCamera()->getOrigin().z);
+                ImGui::Text("Camera resolution: %d %d", parser.getCamera()->getResolution().first, parser.getCamera()->getResolution().second);
+            }
             ImGui::End();
 
             ImGui::Begin("Lights");
-            for (auto &light : parser.getLights()) {
-                ImGui::Text("Light origin: %f %f %f", light->getOrigin().x, light->getOrigin().y, light->getOrigin().z);
-                ImGui::Separator();
+            if (!parser.getLights().empty()) {
+                for (auto &light : parser.getLights()) {
+                    ImGui::Text("Light origin: %f %f %f", light->getOrigin().x, light->getOrigin().y, light->getOrigin().z);
+                    ImGui::Separator();
+                }
             }
             ImGui::End();
 
             ImGui::Begin("Primitives");
-            for (auto &primitive : parser.getPrimitives()) {
-                (void)primitive;
-                ImGui::Text("Primitive origin: mdr romain j'ai pas de data");
-                ImGui::Separator();
+            if (!parser.getPrimitives().empty()) {
+                for (auto &primitive : parser.getPrimitives()) {
+                    (void)primitive;
+                    ImGui::Text("Primitive origin: mdr romain j'ai pas de data");
+                    ImGui::Separator();
+                }
             }
             ImGui::End();
 

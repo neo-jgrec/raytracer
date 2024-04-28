@@ -8,7 +8,6 @@
 #ifndef RAYTRACER_HPP
 #define RAYTRACER_HPP
 
-#include "../Utils/Utils.hpp"
 #include "Parser/Parser.hpp"
 
 namespace rt
