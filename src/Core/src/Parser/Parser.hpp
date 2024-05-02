@@ -60,7 +60,7 @@ namespace rt
 
         void parseMaterials(const libconfig::Setting &materials)
         {
-            for (auto& material : materials) {
+            for (auto &material : materials) {
                 auto materialName = static_cast<std::string>(material["name"]);
 
                 for (const auto &name : materialLoadersNames)
@@ -85,7 +85,7 @@ namespace rt
 
         void parsePrimitives(const libconfig::Setting &primitives)
         {
-            for (auto& primitive : primitives) {
+            for (auto &primitive : primitives) {
                 IMaterial *usedMaterial;
 
                 try {
@@ -101,17 +101,18 @@ namespace rt
                 }
 
                 std::function createComponent =
-                    reinterpret_cast<IPrimitive *(*)(const libconfig::Setting &, IMaterial *)>(primitiveLoaders.back().get());
+                    reinterpret_cast<IPrimitive *(*)(const libconfig::Setting &, IMaterial *)>(
+                        primitiveLoaders.back().get());
                 if (createComponent == nullptr)
-                    throw std::runtime_error("Failed to load primitive component");
+                    throw ParserExecption("Failed to load primitive component");
 
-                _primitives.emplace_back(createComponent(static_cast<const libconfig::Setting &>(primitive), usedMaterial));
+                _primitives.emplace_back(createComponent(primitive, usedMaterial));
             }
         }
 
         void parseLights(const libconfig::Setting &lights)
         {
-            for (auto& light : lights) {
+            for (auto &light : lights) {
                 try {
                     lightLoaders.emplace_back(getLibPathFromMainBinary(light["lib"]), "createComponent");
                 } catch (const utils::DLLoader<ILight>::DLLoaderException &e) {
@@ -123,7 +124,7 @@ namespace rt
                 if (createComponent == nullptr)
                     throw ParserExecption("Failed to load light component");
 
-                _lights.emplace_back(createComponent(static_cast<const libconfig::Setting &>(light)));
+                _lights.emplace_back(createComponent(light));
             }
         }
 
@@ -162,7 +163,7 @@ namespace rt
                 throw ParserExecption("I/O error", fioex.what());
             } catch (const libconfig::ParseException &pex) {
                 throw ParserExecption("Parse error",
-                                    std::string(pex.getError()) + " at line " + std::to_string(pex.getLine()));
+                                      std::string(pex.getError()) + " at line " + std::to_string(pex.getLine()));
             } catch (const libconfig::SettingNotFoundException &nfex) {
                 throw ParserExecption("Setting not found", nfex.getPath());
             } catch (const libconfig::SettingTypeException &stex) {

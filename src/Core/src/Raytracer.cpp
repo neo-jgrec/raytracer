@@ -20,7 +20,8 @@ namespace rt
 {
     void Raytracer::toPPM(const std::string &filename)
     {
-        const auto image = _parser.getCamera()->generateImage(_parser.getPrimitives(), _parser.getLights(), false, true);
+        const auto image =
+            _parser.getCamera()->generateImage(_parser.getPrimitives(), _parser.getLights(), false, true);
 
         std::ofstream file(filename);
         file << "P6\n" << std::get<0>(image) << " " << std::get<1>(image) << "\n255\n";
@@ -55,14 +56,14 @@ namespace rt
         try {
             _parser = Parser(_sceneName);
         } catch (const Parser::ParserExecption &e) {
-            std::cerr << e.what() << std::endl;
+            throw RaytracerException(e.what());
         }
 
         if (!_saveAs.empty()) {
             try {
                 toPPM(_saveAs);
             } catch (const RaytracerException &e) {
-                std::cerr << e.what() << std::endl;
+                throw RaytracerException(e.what());
             }
         }
         if (!_graphicalPlugin.empty()) {

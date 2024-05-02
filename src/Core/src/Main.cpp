@@ -57,8 +57,10 @@ static bool handleOpt(const int ac, char **av)
         }
     }
 
-    if (optind != ac - 1)
+    if (optind != ac - 1) {
+        displayHelp(av[0]);
         return false;
+    }
 
     try {
         rt::Raytracer raytracer(av[optind], saveAs, displayLib);
