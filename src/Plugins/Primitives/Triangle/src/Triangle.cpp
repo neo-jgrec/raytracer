@@ -40,4 +40,10 @@ namespace rt
         const float t = ray.direction.dot(cross_edge1) * invDet;
         return t > epsilon ? t : -1;
     }
+
+    math::Vector3<float> Triangle::getNormal(const math::Vector3<float> &point) const
+    {
+        const math::Vector3<float> normal = (_v1 - _v0).cross(_v2 - _v0);
+        return normal.normalize();
+    }
 } // namespace rt

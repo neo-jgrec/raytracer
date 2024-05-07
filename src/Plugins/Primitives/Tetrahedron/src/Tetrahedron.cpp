@@ -48,4 +48,20 @@ namespace rt
         }
         return t_min;
     }
+
+    math::Vector3<float> Tetrahedron::getNormal(const math::Vector3<float> &point) const
+    {
+        const std::vector<std::tuple<math::Vector3<float>, math::Vector3<float>, math::Vector3<float>>> edges = {
+            {_v0, _v1, _v2}, {_v0, _v1, _v3}, {_v0, _v2, _v3}, {_v1, _v2, _v3}};
+        math::Vector3<float> normal;
+
+        for (uint8_t i = 0; i < 4; i++) {
+            const math::Vector3<float> edge1 = std::get<1>(edges[i]) - std::get<0>(edges[i]);
+            const math::Vector3<float> edge2 = std::get<2>(edges[i]) - std::get<0>(edges[i]);
+            normal = edge1.cross(edge2).normalize();
+            if (normal.dot(point - std::get<0>(edges[i])) > 0)
+                return normal;
+        }
+        return normal;
+    }
 } // namespace rt

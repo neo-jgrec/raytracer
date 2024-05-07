@@ -19,4 +19,9 @@ namespace rt
         const auto descriminant = b * b - 4 * a * c;
         return descriminant < 0 ? -1 : (-b - std::sqrt(descriminant)) / (2 * a);
     }
+
+    math::Vector3<float> Sphere::getNormal(const math::Vector3<float> &point) const
+    {
+        return (point - _origin).normalize();
+    }
 } // namespace rt

@@ -25,7 +25,14 @@ namespace rt
 
         virtual ~IPrimitive() = default;
 
+        /**
+         * @brief compute if the ray pass though the primitive or not
+         * @param Ray the ray to compute
+         * @return -1 if the ray doesn't pass through the primitive or
+         * a float corresponding to the distance between the origin of the ray and the hit point
+        */
         [[nodiscard]] virtual float hit(const math::Ray &ray) const = 0;
+        [[nodiscard]] virtual math::Vector3<float> getNormal(const math::Vector3<float> &point) const = 0;
 
         virtual void setMaterial(IMaterial *material) = 0;
         [[nodiscard]] virtual IMaterial *getMaterial() const = 0;

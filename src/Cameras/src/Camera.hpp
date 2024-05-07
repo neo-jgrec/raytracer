@@ -15,9 +15,10 @@
 
 namespace rt
 {
-    class Camera : public ICamera {
+    class Camera final : public ICamera {
     private:
         math::Vector3<float> _origin;
+        math::Vector3<float> _direction{0, 0, -1};
         int _width = 256;
         int _height = 256;
         int _fov = 75;
@@ -53,12 +54,16 @@ namespace rt
         [[nodiscard]] const math::Vector3<float> &getOrigin() const override { return _origin; }
         void setOrigin(const math::Vector3<float> &origin) override { _origin = origin; }
 
-        [[nodiscard]] int getFieldOfView() const { return _fov; }
+        [[nodiscard]] const math::Vector3<float> &getDirection() const override { return _direction; }
+        void setDirection(const math::Vector3<float> &direction) override { _direction = direction; }
+
+        [[nodiscard]] int getFieldOfView() const override { return _fov; }
         void setFieldOfView(const int fov) { _fov = fov; }
 
         [[nodiscard]] std::tuple<int, int, std::shared_ptr<uint8_t>> getImages() const override;
-        std::tuple<int, int, std::shared_ptr<uint8_t>>
-        generateImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights, bool rgba, bool waiting) override;
+        std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(const std::list<IPrimitive *> &primitives,
+                                                                     const std::list<ILight *> &lights, bool rgba,
+                                                                     bool waiting) override;
     };
 } // namespace rt
 
@@ -70,6 +75,9 @@ extern "C" {
         newCamera->setOrigin(math::Vector3{static_cast<float>(camera["origin"]["x"].operator int()),
                                            static_cast<float>(camera["origin"]["y"].operator int()),
                                            static_cast<float>(camera["origin"]["z"].operator int())});
+        newCamera->setDirection(math::Vector3{static_cast<float>(camera["direction"]["x"].operator int()),
+                                              static_cast<float>(camera["direction"]["y"].operator int()),
+                                              static_cast<float>(camera["direction"]["z"].operator int())});
         newCamera->setResolution(camera["resolution"]["width"].operator int(),
                                  camera["resolution"]["height"].operator int());
         newCamera->setFieldOfView(camera["fieldOfView"].operator int());

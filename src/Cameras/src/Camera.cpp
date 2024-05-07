@@ -8,8 +8,9 @@
 #include "Camera.hpp"
 
 #include <cstring>
-#include <thread>
+#include <iostream>
 #include <mutex>
+#include <thread>
 #include <vector>
 
 namespace rt
@@ -34,19 +35,37 @@ namespace rt
                                      - _origin}};
 
                 float t = -1;
+                math::Vector3<float> normal;
                 const IPrimitive *closestPrimitive = nullptr;
-                for (const auto &primitive : primitives) {
+                for (const auto &primitive : primitives)
                     if (const auto tmp = primitive->hit(ray); tmp > 0 && (t < 0 || tmp < t)) {
                         t = tmp;
+                        normal = primitive->getNormal(ray.at(t));
                         closestPrimitive = primitive;
                     }
-                }
 
                 utils::Color color;
                 if (closestPrimitive) {
-                    color = closestPrimitive->getMaterial()->getColor(ray.at(t));
-                    for (const auto &light : lights)
-                        light->illuminate(ray.at(t), color);
+                    if (lights.empty())
+                        color = closestPrimitive->getMaterial()->getColor(ray.at(t));
+                    else
+                        for (const auto &light : lights) {
+                            math::Ray shadowRay{ray.at(t), (light->getOrigin() - ray.at(t)).normalize()};
+                            const float max = ray.at(t).distance(light->getOrigin());
+                            bool visible = true;
+
+                            for (const auto &primitive : primitives)
+                                if (const auto tmp = primitive->hit(shadowRay); tmp > 0.0005f && tmp < max) {
+                                    visible = false;
+                                    break;
+                                }
+
+                            if (!visible)
+                                continue;
+
+                            color = (closestPrimitive->getMaterial()->getColor(ray.at(t)) * light->illuminate(normal))
+                                        .clamp();
+                        }
                 }
 
                 _mutex.lock();
@@ -72,19 +91,20 @@ namespace rt
         _aspectRatio = static_cast<float>(_width) / static_cast<float>(_height);
         _viewportWidth = _aspectRatio * _viewportHeight;
 
-        _horizontal = math::Vector3<float>{_viewportWidth, 0, 0};
-        _vertical = math::Vector3<float>{0, _viewportHeight, 0};
+        _horizontal = {_viewportWidth, 0, 0};
+        _vertical = {0, _viewportHeight, 0};
         const auto focalLength = static_cast<float>(1 / std::tan(static_cast<float>(_fov) / 2 * M_PI / 180));
 
-        _bottomLeft = _origin - _horizontal / 2 - _vertical / 2 - math::Vector3<float>{0, 0, focalLength};
+        _bottomLeft = _origin - _horizontal / 2 - _vertical / 2 - _direction * -focalLength;
         _pixels.reset(new uint8_t[_width * _height * (rgba ? 4 : 3)], std::default_delete<uint8_t[]>());
         std::memset(_pixels.get(), 0, _width * _height * 3);
     }
 
     std::tuple<int, int, std::shared_ptr<uint8_t>> Camera::getImages() const { return {_width, _height, _pixels}; }
 
-    std::tuple<int, int, std::shared_ptr<uint8_t>>
-    Camera::generateImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights, const bool rgba, bool waiting)
+    std::tuple<int, int, std::shared_ptr<uint8_t>> Camera::generateImage(const std::list<IPrimitive *> &primitives,
+                                                                         const std::list<ILight *> &lights,
+                                                                         const bool rgba, const bool waiting)
     {
         reload(rgba);
 
@@ -92,25 +112,21 @@ namespace rt
         const uint16_t height = _height / nbThreads;
         std::vector<std::thread> threads;
 
-        for (uint8_t i = 0; i < nbThreads; ++i) {
-            if (i == nbThreads - 1) {
-                threads.emplace_back(&Camera::generateImageChunk, this, i * height, _height, 0, _width, primitives, lights,
-                            std::ref(_pixels), rgba);
-            } else {
-                threads.emplace_back(&Camera::generateImageChunk, this, i * height, (i + 1) * height, 0, _width, primitives, lights,
-                            std::ref(_pixels), rgba);
-            }
-        }
+        for (uint8_t i = 0; i < nbThreads; ++i)
+            if (i == nbThreads - 1)
+                threads.emplace_back(&Camera::generateImageChunk, this, i * height, _height, 0, _width, primitives,
+                                     lights, _pixels, rgba);
+            else
+                threads.emplace_back(&Camera::generateImageChunk, this, i * height, (i + 1) * height, 0, _width,
+                                     primitives, lights, _pixels, rgba);
 
-        if (waiting) {
-            for (auto &thread : threads) {
+        if (waiting)
+            for (auto &thread : threads)
                 thread.join();
-            }
-        } else {
-            for (auto &thread : threads) {
+        else
+            for (auto &thread : threads)
                 thread.detach();
-            }
-        }
+
         return {_width, _height, _pixels};
     }
 } // namespace rt
