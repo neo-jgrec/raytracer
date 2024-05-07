@@ -22,25 +22,28 @@ namespace rt
             return -1;
 
         discriminant = sqrt(discriminant);
-        float t0 = -b - discriminant;
-        float t1 = -b + discriminant;
+        float t0 = (-b - discriminant) / (2.0 * a);
+        float t1 = (-b + discriminant) / (2.0 * a);
 
         if (t0 > t1)
             std::swap(t0, t1);
 
-        if (t0 < 0) {
-            t0 = t1;
-            if (t0 < 0)
-                return -1;
-        }
+        float t = t0;
+        math::Vector3 pt = ray.origin + ray.direction * t;
+        if (pt.dot(_direction.normalize()) < 0 || pt.dot(_direction.normalize()) > _height)
+            t = t1;
 
-        return t0 / (2.0 * a);
+        pt = ray.origin + ray.direction * t;
+        if (pt.dot(_direction.normalize()) < 0 || pt.dot(_direction.normalize()) > _height)
+            return -1;
+
+        return t;
     }
 
     math::Vector3<float> Cylinder::getNormal(const math::Vector3<float> &point) const
     {
         math::Vector3<float> normal = point - _origin;
-        normal = normal - _direction * normal.dot(_direction);
+        normal = normal - _direction.normalize() * normal.dot(_direction.normalize());
         normal = normal.normalize();
         return normal;
     }
