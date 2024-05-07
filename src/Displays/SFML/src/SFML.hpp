@@ -21,7 +21,7 @@ namespace rt
         SFML(uint32_t width = 800, uint32_t height = 600, const std::string &title = "Raytracer");
         ~SFML() override;
 
-        void run(Parser &parser) override;
+        void run(std::shared_ptr<Parser> parser) override;
     };
 } // namespace rt
 

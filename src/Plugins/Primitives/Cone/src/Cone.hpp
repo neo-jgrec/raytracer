@@ -31,6 +31,7 @@ namespace rt
         [[nodiscard]] const math::Vector3<float> &getOrigin() const { return _origin; }
         [[nodiscard]] float getRadius() const { return _radius; }
         [[nodiscard]] math::Vector3<float> getNormal(const math::Vector3<float> &point) const override;
+        [[nodiscard]] math::Vector3<float> getOriginPoint() const override { return _origin; }
 
         void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
         void setRadius(const float radius) { _radius = radius; }
