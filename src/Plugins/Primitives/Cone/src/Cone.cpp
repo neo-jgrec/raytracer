@@ -2,20 +2,22 @@
 ** EPITECH PROJECT, 2024
 ** raytracer
 ** File description:
-** Cylinder
+** Cone
 */
 
-#include "Cylinder.hpp"
+#include "Cone.hpp"
 #include <iostream>
 
 namespace rt
 {
-    float Cylinder::hit(const math::Ray &ray) const
+    float Cone::hit(const math::Ray &ray) const
     {
         math::Vector3 oc = ray.origin - _origin;
-        float a = ray.direction.dot(ray.direction) - pow(ray.direction.dot(_direction.normalize()), 2);
-        float b = 2.0 * (ray.direction.dot(oc) - (ray.direction.dot(_direction.normalize()) * oc.dot(_direction.normalize())));
-        float c = oc.dot(oc) - pow(oc.dot(_direction.normalize()), 2) - _radius * _radius;
+        float k = _radius;
+
+        float a = ray.direction.dot(ray.direction) - (1 + k * k) * pow(ray.direction.dot(_direction.normalize()), 2);
+        float b = 2.0 * (ray.direction.dot(oc) - (1 + k * k) * ray.direction.dot(_direction.normalize()) * oc.dot(_direction.normalize()));
+        float c = oc.dot(oc) - (1 + k * k) * pow(oc.dot(_direction.normalize()), 2);
 
         float discriminant = b * b - 4 * a * c;
         if (discriminant < 0)
