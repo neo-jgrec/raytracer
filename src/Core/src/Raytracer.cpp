@@ -21,7 +21,7 @@ namespace rt
     void Raytracer::toPPM(const std::string &filename)
     {
         const auto image =
-            _parser.getCamera()->generateImage(_parser.getPrimitives(), _parser.getLights(), false, true);
+            _parser->getCamera()->generateImage(_parser->getPrimitives(), _parser->getLights(), false, true);
 
         std::ofstream file(filename);
         file << "P6\n" << std::get<0>(image) << " " << std::get<1>(image) << "\n255\n";
@@ -36,7 +36,7 @@ namespace rt
         const std::function create_display =
             reinterpret_cast<IDisplay *(*)(uint32_t, uint32_t, const std::string &)>(graphicalPluginLoader.get());
 
-        const auto [width, height] = _parser.getCamera()->getResolution();
+        const auto [width, height] = _parser->getCamera()->getResolution();
         const std::unique_ptr<IDisplay> display(create_display(width, height, "Raytracer"));
         display->run(_parser);
     }
@@ -54,7 +54,7 @@ namespace rt
     void Raytracer::run()
     {
         try {
-            _parser = Parser(_sceneName);
+            _parser = std::make_shared<Parser>(_sceneName);
         } catch (const Parser::ParserExecption &e) {
             throw RaytracerException(e.what());
         }
