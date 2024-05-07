@@ -11,14 +11,10 @@
 
 namespace rt
 {
-    // TODO: handle multiple lights
-    void DirectionalLight::illuminate(const math::Vector3<float> &point, utils::Color &color) const
+    utils::Color DirectionalLight::illuminate(const math::Vector3<float> &point) const
     {
-        const auto lightDirection = (_origin - point + _direction).normalize();
-        const float d = point.dot({-lightDirection.x, -lightDirection.y, -lightDirection.z});
-        const auto max = std::max(d * 2.0f, 0.f);
-
-        color *= max * _intensity;
-        color.clamp();
+        const auto lightDir = _direction.normalize() * -1;
+        const float lightPower = std::max(0.f, point.dot(lightDir)) * _intensity;
+        return _color * lightPower;
     }
 } // namespace rt

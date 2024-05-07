@@ -7,6 +7,8 @@
 
 #include "Plane.hpp"
 
+#include <iostream>
+
 namespace rt
 {
     float Plane::hit(const math::Ray &ray) const
@@ -18,5 +20,10 @@ namespace rt
             if (const float t = (_origin - ray.origin).dot(normal) / denom; t >= 0)
                 return t;
         return -1;
+    }
+
+    math::Vector3<float> Plane::getNormal([[maybe_unused]] const math::Vector3<float> &point) const
+    {
+        return _direction.normalize();
     }
 } // namespace rt
