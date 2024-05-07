@@ -33,12 +33,18 @@ namespace rt
         [[nodiscard]] virtual const math::Vector3<float> &getOrigin() const = 0;
         virtual void setOrigin(const math::Vector3<float> &origin) = 0;
 
+        [[nodiscard]] virtual const math::Vector3<float> &getDirection() const = 0;
+        virtual void setDirection(const math::Vector3<float> &direction) = 0;
+
+        [[nodiscard]] virtual int getFieldOfView() const = 0;
+
         virtual std::mutex &getMutex() = 0;
 
         [[nodiscard]] virtual std::tuple<int, int, std::shared_ptr<uint8_t>> getImages() const = 0;
         virtual std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(const std::list<IPrimitive *> &primitives,
                                                                              const std::list<ILight *> &lights,
-                                                                             bool rgba = false, bool waiting = false) = 0;
+                                                                             bool rgba = false,
+                                                                             bool waiting = false) = 0;
     };
 } // namespace rt
 

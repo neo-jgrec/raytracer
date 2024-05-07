@@ -30,7 +30,7 @@ namespace rt
             DirectionalLightException(const std::string &message) : ILightException("DirectionalLight", message) {}
         };
 
-        void illuminate(const math::Vector3<float> &point, utils::Color &color) const override;
+        [[nodiscard]] utils::Color illuminate(const math::Vector3<float> &point) const override;
 
         [[nodiscard]] const math::Vector3<float> &getOrigin() const override { return _origin; }
         void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
@@ -62,7 +62,6 @@ extern "C" {
         newDirectionalLight->setDirection(math::Vector3{static_cast<float>(light["direction"]["x"].operator int()),
                                                         static_cast<float>(light["direction"]["y"].operator int()),
                                                         static_cast<float>(light["direction"]["z"].operator int())});
-        // TODO: Fix shadow with color
         newDirectionalLight->setColor(utils::Color{static_cast<float>(light["color"]["r"].operator int()) / 255.f,
                                                    static_cast<float>(light["color"]["g"].operator int()) / 255.f,
                                                    static_cast<float>(light["color"]["b"].operator int()) / 255.f});

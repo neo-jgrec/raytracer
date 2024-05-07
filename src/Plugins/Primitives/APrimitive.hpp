@@ -25,12 +25,7 @@ namespace rt
         };
 
         void setMaterial(IMaterial *material) override { _material = material; }
-        [[nodiscard]] IMaterial *getMaterial() const override
-        {
-            if (!_material)
-                throw APrimitiveException("Primitive", "Material not set");
-            return _material;
-        }
+        [[nodiscard]] IMaterial *getMaterial() const override { return _material; }
     };
 } // namespace rt
 

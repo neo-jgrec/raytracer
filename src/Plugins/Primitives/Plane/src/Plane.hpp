@@ -25,6 +25,7 @@ namespace rt
         };
 
         [[nodiscard]] float hit(const math::Ray &ray) const override;
+        [[nodiscard]] math::Vector3<float> getNormal(const math::Vector3<float> &point) const override;
 
         [[nodiscard]] math::Vector3<float> getOrigin() const { return _origin; }
         [[nodiscard]] math::Vector3<float> getDirection() const { return _direction; }
