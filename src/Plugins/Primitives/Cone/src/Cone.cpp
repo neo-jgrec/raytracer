@@ -13,7 +13,7 @@ namespace rt
     float Cone::hit(const math::Ray &ray) const
     {
         math::Vector3 oc = ray.origin - _origin;
-        float k = _radius;
+        float k = _radius;  // Cone's slant height, adjust as needed
 
         float a = ray.direction.dot(ray.direction) - (1 + k * k) * pow(ray.direction.dot(_direction.normalize()), 2);
         float b = 2.0 * (ray.direction.dot(oc) - (1 + k * k) * ray.direction.dot(_direction.normalize()) * oc.dot(_direction.normalize()));
@@ -24,25 +24,28 @@ namespace rt
             return -1;
 
         discriminant = sqrt(discriminant);
-        float t0 = -b - discriminant;
-        float t1 = -b + discriminant;
+        float t0 = (-b - discriminant) / (2.0 * a);
+        float t1 = (-b + discriminant) / (2.0 * a);
 
         if (t0 > t1)
             std::swap(t0, t1);
 
-        if (t0 < 0) {
-            t0 = t1;
-            if (t0 < 0)
-                return -1;
-        }
+        float t = t0;
+        math::Vector3 pt = ray.origin + ray.direction * t;
+        if (pt.dot(_direction.normalize()) < 0 || pt.dot(_direction.normalize()) > _height)
+            t = t1;
 
-        return t0 / (2.0 * a);
+        pt = ray.origin + ray.direction * t;
+        if (pt.dot(_direction.normalize()) < 0 || pt.dot(_direction.normalize()) > _height)
+            return -1;
+
+        return t;
     }
 
     math::Vector3<float> Cone::getNormal(const math::Vector3<float> &point) const
     {
         math::Vector3<float> normal = point - _origin;
-        normal = normal - _direction * normal.dot(_direction);
+        normal = normal - _direction.normalize() * normal.dot(_direction.normalize());
         normal = normal.normalize();
         return normal;
     }
