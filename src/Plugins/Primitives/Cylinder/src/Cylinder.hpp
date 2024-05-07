@@ -27,6 +27,7 @@ namespace rt
         };
 
         [[nodiscard]] float hit(const math::Ray &ray) const override;
+        [[nodiscard]] math::Vector3<float> getNormal(const math::Vector3<float> &point) const override;
 
         [[nodiscard]] const math::Vector3<float> &getOrigin() const { return _origin; }
         [[nodiscard]] float getRadius() const { return _radius; }
@@ -36,7 +37,7 @@ namespace rt
         void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
         void setInfinite(const bool isInfinite) { _isInfinite = isInfinite; }
 
-        float sgn(float x) { return x > 0 ? 1 : -1; }
+        static float sgn(float x) { return x > 0 ? 1 : -1; }
     };
 } // namespace rt
 

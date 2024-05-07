@@ -30,13 +30,14 @@ namespace rt
 
         [[nodiscard]] const math::Vector3<float> &getOrigin() const { return _origin; }
         [[nodiscard]] float getRadius() const { return _radius; }
+        [[nodiscard]] math::Vector3<float> getNormal(const math::Vector3<float> &point) const override;
 
         void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
         void setRadius(const float radius) { _radius = radius; }
         void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
         void setInfinite(const bool isInfinite) { _isInfinite = isInfinite; }
 
-        float sgn(float x) { return x > 0 ? 1 : -1; }
+        static float sgn(float x) { return x > 0 ? 1 : -1; }
     };
 } // namespace rt
 

@@ -38,4 +38,12 @@ namespace rt
 
         return t0 / (2.0 * a);
     }
+
+    math::Vector3<float> Cone::getNormal(const math::Vector3<float> &point) const
+    {
+        math::Vector3<float> normal = point - _origin;
+        normal = normal - _direction * normal.dot(_direction);
+        normal = normal.normalize();
+        return normal;
+    }
 } // namespace rt
