@@ -18,7 +18,7 @@ namespace rt
         math::Vector3<float> _direction = math::Vector3<float>{0, 0, 0};
         math::Vector3<float> _origin = math::Vector3<float>{0, 0, -1};
         float _radius = 0.5;
-        bool _isInfinite = true;
+        float _height = 1;
 
     public:
         class ConeException final : public APrimitiveException {
@@ -35,7 +35,7 @@ namespace rt
         void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
         void setRadius(const float radius) { _radius = radius; }
         void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
-        void setInfinite(const bool isInfinite) { _isInfinite = isInfinite; }
+        void setHeight(const float height) { _height = height; }
 
         static float sgn(float x) { return x > 0 ? 1 : -1; }
     };
@@ -54,7 +54,7 @@ extern "C" {
         newCone->setDirection(math::Vector3{static_cast<float>(cone["direction"]["x"].operator int()),
                                                 static_cast<float>(cone["direction"]["y"].operator int()),
                                                 static_cast<float>(cone["direction"]["z"].operator int())});
-        newCone->setInfinite(cone["infinite"].operator bool());
+        newCone->setHeight(cone["height"].operator float());
 
         return newCone;
     }
