@@ -8,8 +8,12 @@
 #ifndef ILIGHT_HPP
 #define ILIGHT_HPP
 
+#include <list>
+
 #include "../../Math/Math.hpp"
 #include "../../Utils/Utils.hpp"
+#include "../Primitives/IPrimitive.hpp"
+
 
 namespace rt
 {
@@ -24,7 +28,9 @@ namespace rt
         virtual ~ILight() = default;
 
         [[nodiscard]] virtual const math::Vector3<float> &getOrigin() const = 0;
-        [[nodiscard]] virtual utils::Color illuminate(const math::Vector3<float> &point) const = 0;
+        [[nodiscard]] virtual utils::Color illuminate(const math::Vector3<float> &point,
+                                                      const std::list<IPrimitive *> &primitives,
+                                                      const IPrimitive *closestPrimitive) const = 0;
     };
 } // namespace rt
 
