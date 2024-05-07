@@ -54,18 +54,23 @@ namespace rt
                             const float max = ray.at(t).distance(light->getOrigin());
                             bool visible = true;
 
-                            for (const auto &primitive : primitives)
-                                if (const auto tmp = primitive->hit(shadowRay); tmp > 0.0005f && tmp < max) {
+                            for (const auto &primitive : primitives) {
+                                if (primitive == closestPrimitive)
+                                    continue;
+
+                                if (const auto tmp = primitive->hit(shadowRay); tmp > 0 && tmp < max) {
                                     visible = false;
                                     break;
                                 }
+                            }
 
                             if (!visible)
                                 continue;
 
-                            color = (closestPrimitive->getMaterial()->getColor(ray.at(t)) * light->illuminate(normal))
-                                        .clamp();
+                            color += light->illuminate(normal);
                         }
+                    color *= closestPrimitive->getMaterial()->getColor(ray.at(t));
+                    color = color.clamp();
                 }
 
                 _mutex.lock();
