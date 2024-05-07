@@ -35,37 +35,20 @@ namespace rt
                                      - _origin}};
 
                 float t = -1;
-                math::Vector3<float> normal;
                 const IPrimitive *closestPrimitive = nullptr;
                 for (const auto &primitive : primitives)
                     if (const auto tmp = primitive->hit(ray); tmp > 0 && (t < 0 || tmp < t)) {
                         t = tmp;
-                        normal = primitive->getNormal(ray.at(t));
                         closestPrimitive = primitive;
                     }
 
                 utils::Color color;
                 if (closestPrimitive) {
-                    if (lights.empty())
-                        color = closestPrimitive->getMaterial()->getColor(ray.at(t));
-                    else
-                        for (const auto &light : lights) {
-                            math::Ray shadowRay{ray.at(t), (light->getOrigin() - ray.at(t)).normalize()};
-                            const float max = ray.at(t).distance(light->getOrigin());
-                            bool visible = true;
+                    for (const auto &light : lights)
+                        color += light->illuminate(ray.at(t), primitives, closestPrimitive);
 
-                            for (const auto &primitive : primitives)
-                                if (const auto tmp = primitive->hit(shadowRay); tmp > 0.0005f && tmp < max) {
-                                    visible = false;
-                                    break;
-                                }
-
-                            if (!visible)
-                                continue;
-
-                            color = (closestPrimitive->getMaterial()->getColor(ray.at(t)) * light->illuminate(normal))
-                                        .clamp();
-                        }
+                    color *= closestPrimitive->getMaterial()->getColor(ray.at(t));
+                    color = color.clamp();
                 }
 
                 _mutex.lock();
