@@ -36,6 +36,7 @@ namespace rt
         void setRadius(const float radius) { _radius = radius; }
         void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
         void setInfinite(const bool isInfinite) { _isInfinite = isInfinite; }
+        void setTranslation(const math::Vector3<float> &translation) override { _origin += translation; }
 
         static float sgn(float x) { return x > 0 ? 1 : -1; }
     };

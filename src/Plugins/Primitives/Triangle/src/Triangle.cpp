@@ -46,4 +46,11 @@ namespace rt
         const math::Vector3<float> normal = (_v1 - _v0).cross(_v2 - _v0);
         return normal.normalize();
     }
+
+    void Triangle::setTranslation(const math::Vector3<float> &translation)
+    {
+        _v0 += translation;
+        _v1 += translation;
+        _v2 += translation;
+    }
 } // namespace rt

@@ -64,4 +64,12 @@ namespace rt
         }
         return normal;
     }
+
+    void Tetrahedron::setTranslation(const math::Vector3<float> &translation)
+    { 
+        _v0 += translation;
+        _v1 += translation;
+        _v2 += translation;
+        _v3 += translation;
+    }
 } // namespace rt

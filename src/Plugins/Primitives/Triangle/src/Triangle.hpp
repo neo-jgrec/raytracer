@@ -34,6 +34,8 @@ namespace rt
         [[nodiscard]] const math::Vector3<float> &getV0() const { return _v0; }
         [[nodiscard]] const math::Vector3<float> &getV1() const { return _v1; }
         [[nodiscard]] const math::Vector3<float> &getV2() const { return _v2; }
+
+        void setTranslation(const math::Vector3<float> &translation) override;
     };
 } // namespace rt
 
