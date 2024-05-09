@@ -18,7 +18,7 @@
 
 namespace rt
 {
-    class Parser {
+    class Scene {
     private:
         ICamera *_camera{};
         std::list<IPrimitive *> _primitives;
@@ -128,6 +128,25 @@ namespace rt
             }
         }
 
+        class ComponentFactory {
+        public:
+            std::map<std::string, std::function<void(libconfig::Setting &)>> parsers;
+
+            ComponentFactory(Scene* scene) {
+                parsers["camera"] = [scene](libconfig::Setting &camera) {
+                    scene->parseCamera(camera);
+                };
+                parsers["materials"] = [scene](libconfig::Setting &materials) {
+                    scene->parseMaterials(materials);
+                };
+                parsers["primitives"] = [scene](libconfig::Setting &primitives) {
+                    scene->parsePrimitives(primitives);
+                };
+                parsers["lights"] = [scene](libconfig::Setting &lights) {
+                    scene->parseLights(lights);
+                };
+            }
+        };
 
     public:
         class ParserExecption final : public utils::Exception {
@@ -138,25 +157,26 @@ namespace rt
             {}
         };
 
-        Parser() = default;
+        Scene() = default;
 
         [[nodiscard]] ICamera *getCamera() const { return _camera; }
         std::list<IPrimitive *> getPrimitives() { return _primitives; }
         std::list<ILight *> getLights() { return _lights; }
 
-        Parser(const std::string &path)
+        Scene(const std::string &path)
         {
             const std::string abs_path = std::filesystem::absolute(path);
 
             try {
                 libconfig::Config cfg;
                 cfg.readFile(abs_path);
-
                 const libconfig::Setting &root = cfg.getRoot();
-                parseCamera(root["camera"]);
-                parseMaterials(root["materials"]);
-                parsePrimitives(root["primitives"]);
-                parseLights(root["lights"]);
+
+                ComponentFactory parserMap(this);
+                for (auto &parser : parserMap.parsers) {
+                    if (root.exists(parser.first))
+                        parser.second(root[parser.first]);
+                }
 
                 std::cout << "Scene parsed successfully" << std::endl;
             } catch (const libconfig::FileIOException &fioex) {

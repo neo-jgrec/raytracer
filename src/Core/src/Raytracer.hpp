@@ -9,7 +9,7 @@
 #define RAYTRACER_HPP
 
 #include <memory>
-#include "Parser/Parser.hpp"
+#include "Scene/Scene.hpp"
 
 namespace rt
 {
@@ -18,7 +18,7 @@ namespace rt
         std::string _sceneName;
         std::string _saveAs;
         std::string _graphicalPlugin;
-        std::shared_ptr<Parser> _parser;
+        std::shared_ptr<Scene> _parser;
 
         void toPPM(const std::string &filename);
         void toGraphical();

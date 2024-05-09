@@ -14,7 +14,7 @@
 
 #include "../Displays/IDisplay.hpp"
 #include "../Utils/DLLoader.hpp"
-#include "Parser/Parser.hpp"
+#include "Scene/Scene.hpp"
 
 namespace rt
 {
@@ -54,8 +54,8 @@ namespace rt
     void Raytracer::run()
     {
         try {
-            _parser = std::make_shared<Parser>(_sceneName);
-        } catch (const Parser::ParserExecption &e) {
+            _parser = std::make_shared<Scene>(_sceneName);
+        } catch (const Scene::ParserExecption &e) {
             throw RaytracerException(e.what());
         }
 

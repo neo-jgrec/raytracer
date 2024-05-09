@@ -9,7 +9,7 @@
 #include <cstddef>
 #include "imgui-SFML.h"
 #include "imgui.h"
-#include "../../../Core/src/Parser/Parser.hpp"
+#include "../../../Core/src/Scene/Scene.hpp"
 
 namespace rt
 {
@@ -28,7 +28,7 @@ namespace rt
         ImGui::SFML::Shutdown();
     }
 
-    void SFML::run(std::shared_ptr<Parser> parser)
+    void SFML::run(std::shared_ptr<Scene> parser)
     {
         ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
         auto image = parser->getCamera()->generateImage(parser->getPrimitives(), parser->getLights(), true);
@@ -109,7 +109,7 @@ namespace rt
                         texture.create(1, 1);
                         sf::Uint8 black[4] = {0, 0, 0, 255};
                         texture.update(black);
-                        parser = std::make_shared<Parser>(std::filesystem::absolute(filename).string());
+                        parser = std::make_shared<Scene>(std::filesystem::absolute(filename).string());
                         image = parser->getCamera()->generateImage(parser->getPrimitives(), parser->getLights(), true);
                         texture.create(std::get<0>(image), std::get<1>(image));
                         texture.update(std::get<2>(image).get());

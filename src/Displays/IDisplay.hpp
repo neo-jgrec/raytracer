@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "../Core/src/Parser/Parser.hpp"
+#include "../Core/src/Scene/Scene.hpp"
 
 namespace rt
 {
@@ -25,7 +25,7 @@ namespace rt
 
         virtual ~IDisplay() = default;
 
-        virtual void run(std::shared_ptr<Parser> parser) = 0;
+        virtual void run(std::shared_ptr<Scene> parser) = 0;
     };
 } // namespace rt
 
