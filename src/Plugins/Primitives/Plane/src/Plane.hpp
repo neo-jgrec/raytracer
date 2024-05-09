@@ -34,6 +34,7 @@ namespace rt
 
         void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
         void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
+        void setTranslation(const math::Vector3<float> &translation) override { _origin += translation; }
     };
 } // namespace rt
 

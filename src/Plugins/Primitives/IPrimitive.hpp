@@ -34,6 +34,8 @@ namespace rt
         [[nodiscard]] virtual float hit(const math::Ray &ray) const = 0;
         [[nodiscard]] virtual math::Vector3<float> getNormal(const math::Vector3<float> &point) const = 0;
 
+        [[nodiscard]] virtual void setTranslation(const math::Vector3<float> &translation) = 0;
+
         virtual void setMaterial(IMaterial *material) = 0;
         [[nodiscard]] virtual IMaterial *getMaterial() const = 0;
 

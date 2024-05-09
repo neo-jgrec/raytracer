@@ -33,6 +33,7 @@ namespace rt
 
         void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
         void setRadius(const float radius) { _radius = radius; }
+        void setTranslation(const math::Vector3<float> &translation) override { _origin += translation; }
     };
 } // namespace rt
 
