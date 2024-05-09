@@ -15,6 +15,7 @@ namespace rt
 {
     class Tetrahedron final : public APrimitive {
     private:
+        math::Vector3<float> _rotation = math::Vector3<float>{0, 0, 0};
         math::Vector3<float> _v0;
         math::Vector3<float> _v1;
         math::Vector3<float> _v2;
@@ -36,6 +37,7 @@ namespace rt
         void setV1(const math::Vector3<float> &v1) { _v1 = v1; }
         void setV2(const math::Vector3<float> &v2) { _v2 = v2; }
         void setV3(const math::Vector3<float> &v3) { _v3 = v3; }
+        void setRotation(const math::Vector3<float> &rotation) { _rotation = rotation; }
         [[nodiscard]] const math::Vector3<float> &getV0() const { return _v0; }
         [[nodiscard]] const math::Vector3<float> &getV1() const { return _v1; }
         [[nodiscard]] const math::Vector3<float> &getV2() const { return _v2; }
@@ -60,6 +62,9 @@ extern "C" {
         tetrahedron->setV3({static_cast<float>(setting["v3"]["x"].operator int()),
                             static_cast<float>(setting["v3"]["y"].operator int()),
                             static_cast<float>(setting["v3"]["z"].operator int())});
+        tetrahedron->setRotation(math::Vector3{static_cast<float>(setting["rotation"]["x"].operator int()),
+                                                static_cast<float>(setting["rotation"]["y"].operator int()),
+                                                static_cast<float>(setting["rotation"]["z"].operator int())});
         tetrahedron->setMaterial(material);
 
         return tetrahedron;

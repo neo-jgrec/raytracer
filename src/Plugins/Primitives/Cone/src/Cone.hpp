@@ -15,6 +15,7 @@ namespace rt
 {
     class Cone final : public APrimitive {
     private:
+        math::Vector3<float> _rotation = math::Vector3<float>{0, 0, 0};
         math::Vector3<float> _direction = math::Vector3<float>{0, 0, 0};
         math::Vector3<float> _origin = math::Vector3<float>{0, 0, -1};
         float _radius = 0.5;
@@ -37,6 +38,7 @@ namespace rt
         void setRadius(const float radius) { _radius = radius; }
         void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
         void setHeight(const float height) { _height = height; }
+        void setRotation(const math::Vector3<float> &rotation) { _rotation = rotation; }
 
         static float sgn(float x) { return x > 0 ? 1 : -1; }
     };
@@ -55,6 +57,9 @@ extern "C" {
         newCone->setDirection(math::Vector3{static_cast<float>(cone["direction"]["x"].operator int()),
                                                 static_cast<float>(cone["direction"]["y"].operator int()),
                                                 static_cast<float>(cone["direction"]["z"].operator int())});
+        newCone->setRotation(math::Vector3{static_cast<float>(cone["rotation"]["x"].operator int()),
+                                                static_cast<float>(cone["rotation"]["y"].operator int()),
+                                                static_cast<float>(cone["rotation"]["z"].operator int())});
         newCone->setHeight(cone["height"].operator float());
 
         return newCone;

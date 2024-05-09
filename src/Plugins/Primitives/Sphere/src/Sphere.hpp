@@ -15,6 +15,7 @@ namespace rt
 {
     class Sphere final : public APrimitive {
     private:
+        math::Vector3<float> _rotation = math::Vector3<float>{0, 0, 0};
         math::Vector3<float> _origin = math::Vector3<float>{0, 0, -1};
         float _radius = 0.5;
 
@@ -33,6 +34,7 @@ namespace rt
 
         void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
         void setRadius(const float radius) { _radius = radius; }
+        void setRotation(const math::Vector3<float> &rotation) { _rotation = rotation; }
     };
 } // namespace rt
 
@@ -46,6 +48,9 @@ extern "C" {
                                            static_cast<float>(sphere["z"].operator int())});
         newSphere->setRadius((sphere["r"].operator float()));
         newSphere->setMaterial(material);
+        newSphere->setRotation(math::Vector3{static_cast<float>(sphere["rotation"]["x"].operator int()),
+                                                static_cast<float>(sphere["rotation"]["y"].operator int()),
+                                                static_cast<float>(sphere["rotation"]["z"].operator int())});
 
         return newSphere;
     }

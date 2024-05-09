@@ -15,6 +15,7 @@ namespace rt
 {
     class Triangle final : public APrimitive {
     private:
+        math::Vector3<float> _rotation = math::Vector3<float>{0, 0, 0};
         math::Vector3<float> _v0;
         math::Vector3<float> _v1;
         math::Vector3<float> _v2;
@@ -34,6 +35,7 @@ namespace rt
         void setV0(const math::Vector3<float> &v0) { _v0 = v0; }
         void setV1(const math::Vector3<float> &v1) { _v1 = v1; }
         void setV2(const math::Vector3<float> &v2) { _v2 = v2; }
+        void setRotation(const math::Vector3<float> &rotation) { _rotation = rotation; }
         [[nodiscard]] const math::Vector3<float> &getV0() const { return _v0; }
         [[nodiscard]] const math::Vector3<float> &getV1() const { return _v1; }
         [[nodiscard]] const math::Vector3<float> &getV2() const { return _v2; }
@@ -54,6 +56,9 @@ extern "C" {
         triangle->setV2({static_cast<float>(setting["v2"]["x"].operator int()),
                          static_cast<float>(setting["v2"]["y"].operator int()),
                          static_cast<float>(setting["v2"]["z"].operator int())});
+        triangle->setRotation(math::Vector3{static_cast<float>(setting["rotation"]["x"].operator int()),
+                                                static_cast<float>(setting["rotation"]["y"].operator int()),
+                                                static_cast<float>(setting["rotation"]["z"].operator int())});
         triangle->setMaterial(material);
 
         return triangle;

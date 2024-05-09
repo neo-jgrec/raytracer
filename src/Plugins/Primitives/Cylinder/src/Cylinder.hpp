@@ -15,6 +15,7 @@ namespace rt
 {
     class Cylinder final : public APrimitive {
     private:
+        math::Vector3<float> _rotation = math::Vector3<float>{0, 0, 0};
         math::Vector3<float> _direction = math::Vector3<float>{0, 0, 0};
         math::Vector3<float> _origin = math::Vector3<float>{0, 0, -1};
         float _radius = 0.5;
@@ -38,6 +39,7 @@ namespace rt
         void setRadius(const float radius) { _radius = radius; }
         void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
         void setHeight(const float height) { _height = height; }
+        void setRotation(const math::Vector3<float> &direction) { _direction = direction; }
 
         static float sgn(float x) { return x > 0 ? 1 : -1; }
     };
@@ -48,14 +50,17 @@ extern "C" {
     {
         auto *newCylinder = new rt::Cylinder();
 
-        newCylinder->setOrigin(math::Vector3{static_cast<float>(cylinder["x"].operator int()),
-                                           static_cast<float>(cylinder["y"].operator int()),
-                                           static_cast<float>(cylinder["z"].operator int())});
-        newCylinder->setRadius((cylinder["r"].operator float()));
+        newCylinder->setOrigin(math::Vector3{static_cast<float>(cylinder["origin"]["x"].operator int()),
+                                             static_cast<float>(cylinder["origin"]["y"].operator int()),
+                                             static_cast<float>(cylinder["origin"]["z"].operator int())});
+        newCylinder->setRadius((cylinder["radius"].operator float()));
         newCylinder->setMaterial(material);
         newCylinder->setDirection(math::Vector3{static_cast<float>(cylinder["direction"]["x"].operator int()),
                                                 static_cast<float>(cylinder["direction"]["y"].operator int()),
                                                 static_cast<float>(cylinder["direction"]["z"].operator int())});
+        newCylinder->setRotation(math::Vector3{static_cast<float>(cylinder["rotation"]["x"].operator int()),
+                                               static_cast<float>(cylinder["rotation"]["y"].operator int()),
+                                               static_cast<float>(cylinder["rotation"]["z"].operator int())});
         newCylinder->setHeight(cylinder["height"].operator float());
 
         return newCylinder;

@@ -15,6 +15,7 @@ namespace rt
 {
     class Plane final : public APrimitive {
     private:
+        math::Vector3<float> _rotation = math::Vector3<float>{0, 0, 0};
         math::Vector3<float> _origin;
         math::Vector3<float> _direction;
 
@@ -34,6 +35,7 @@ namespace rt
 
         void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
         void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
+        void setRotation(const math::Vector3<float> &rotation) { _rotation = rotation; }
     };
 } // namespace rt
 
@@ -48,6 +50,9 @@ extern "C" {
         plane->setDirection({static_cast<float>(setting["direction"]["x"].operator int()),
                              static_cast<float>(setting["direction"]["y"].operator int()),
                              static_cast<float>(setting["direction"]["z"].operator int())});
+        plane->setRotation(math::Vector3{static_cast<float>(setting["rotation"]["x"].operator int()),
+                                                static_cast<float>(setting["rotation"]["y"].operator int()),
+                                                static_cast<float>(setting["rotation"]["z"].operator int())});
         plane->setMaterial(material);
 
         return plane;
