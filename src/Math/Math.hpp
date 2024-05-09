@@ -10,5 +10,6 @@
 
 #include "Ray.hpp"
 #include "Vector3.hpp"
+#include "Matrix3.hpp"
 
 #endif // MATH_HPP
