@@ -64,6 +64,12 @@ extern "C" {
                             static_cast<float>(setting["v3"]["z"].operator int())});
         tetrahedron->setMaterial(material);
 
+        try {
+            tetrahedron->setTranslation({static_cast<float>(setting["translation"]["x"].operator int()),
+                                        static_cast<float>(setting["translation"]["y"].operator int()),
+                                        static_cast<float>(setting["translation"]["z"].operator int())});
+        } catch (libconfig::SettingNotFoundException &e) {}
+
         return tetrahedron;
     }
 

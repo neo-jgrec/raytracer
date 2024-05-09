@@ -58,6 +58,11 @@ extern "C" {
                                                 static_cast<float>(cone["direction"]["z"].operator int())});
         newCone->setHeight(cone["height"].operator float());
 
+        try {
+            newCone->setTranslation(math::Vector3{static_cast<float>(cone["translation"]["x"].operator int()),
+                                                static_cast<float>(cone["translation"]["y"].operator int()),
+                                                static_cast<float>(cone["translation"]["z"].operator int())});
+        } catch (libconfig::SettingNotFoundException &e) {}
         return newCone;
     }
 

@@ -51,6 +51,12 @@ extern "C" {
                              static_cast<float>(setting["direction"]["z"].operator int())});
         plane->setMaterial(material);
 
+        try {
+            plane->setTranslation({static_cast<float>(setting["translation"]["x"].operator int()),
+                                   static_cast<float>(setting["translation"]["y"].operator int()),
+                                   static_cast<float>(setting["translation"]["z"].operator int())});
+        } catch (libconfig::SettingNotFoundException &e) {}
+
         return plane;
     }
 
