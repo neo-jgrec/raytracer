@@ -39,7 +39,7 @@ namespace rt
         void setRadius(const float radius) { _radius = radius; }
         void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
         void setHeight(const float height) { _height = height; }
-        void setRotation(const math::Vector3<float> &direction) { _direction = direction; }
+        void setRotation(const math::Vector3<float> &rotation) { _rotation = rotation; }
 
         static float sgn(float x) { return x > 0 ? 1 : -1; }
     };
