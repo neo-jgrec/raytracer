@@ -6,6 +6,7 @@
 */
 
 #include "SFML.hpp"
+#include <cstddef>
 #include "imgui-SFML.h"
 #include "imgui.h"
 #include "../../../Core/src/Parser/Parser.hpp"
@@ -27,10 +28,10 @@ namespace rt
         ImGui::SFML::Shutdown();
     }
 
-    void SFML::run(Parser &parser)
+    void SFML::run(std::shared_ptr<Parser> parser)
     {
         ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-        auto image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights(), true);
+        auto image = parser->getCamera()->generateImage(parser->getPrimitives(), parser->getLights(), true);
 
         bool isSaving = false;
         bool isOpeningCfgFile = false;
@@ -38,10 +39,10 @@ namespace rt
         float zoomInImage = 0.5f;
 
         sf::Texture texture;
-        parser.getCamera()->getMutex().lock();
+        parser->getCamera()->getMutex().lock();
         texture.create(std::get<0>(image), std::get<1>(image));
         texture.update(std::get<2>(image).get());
-        parser.getCamera()->getMutex().unlock();
+        parser->getCamera()->getMutex().unlock();
         sf::Sprite sprite(texture);
 
         sf::Clock deltaClock;
@@ -61,7 +62,7 @@ namespace rt
                 if (ImGui::MenuItem("Save image as")) {
                     isSaving = true;
                 }
-                if (ImGui::MenuItem("Open cfg file", nullptr, false, false)) {
+                if (ImGui::MenuItem("Open cfg file")) {
                     isOpeningCfgFile = true;
                 }
                 ImGui::Separator();
@@ -86,8 +87,6 @@ namespace rt
             ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
             if (isSaving) {
-                ImGui::SetNextWindowSize(ImVec2(350, 100));
-                ImGui::SetNextWindowPos(ImVec2(static_cast<float>(_window.getSize().x) / 2 - 175, static_cast<float>(_window.getSize().y) / 2 - 50));
                 ImGui::Begin("Save image as PNG", &isSaving, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
                 ImGui::InputText("Filename", filename, IM_ARRAYSIZE(filename));
                 if (ImGui::Button("Save")) {
@@ -102,8 +101,6 @@ namespace rt
             }
 
             if (isOpeningCfgFile) {
-                ImGui::SetNextWindowSize(ImVec2(350, 100));
-                ImGui::SetNextWindowPos(ImVec2(static_cast<float>(_window.getSize().x) / 2 - 175, static_cast<float>(_window.getSize().y) / 2 - 50));
                 ImGui::Begin("Open cfg file", &isOpeningCfgFile, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
                 ImGui::InputText("Filename", filename, IM_ARRAYSIZE(filename));
                 ImGui::Text("Warning: This will close the current scene");
@@ -112,8 +109,8 @@ namespace rt
                         texture.create(1, 1);
                         sf::Uint8 black[4] = {0, 0, 0, 255};
                         texture.update(black);
-                        parser = Parser(std::filesystem::absolute(filename).string());
-                        image = parser.getCamera()->generateImage(parser.getPrimitives(), parser.getLights(), true);
+                        parser = std::make_shared<Parser>(std::filesystem::absolute(filename).string());
+                        image = parser->getCamera()->generateImage(parser->getPrimitives(), parser->getLights(), true);
                         texture.create(std::get<0>(image), std::get<1>(image));
                         texture.update(std::get<2>(image).get());
                     } catch (const std::exception &e) {
@@ -129,10 +126,10 @@ namespace rt
             }
 
             ImGui::Begin("Image", nullptr, ImGuiWindowFlags_NoResize);
-            if (parser.getCamera() != nullptr) {
-                parser.getCamera()->getMutex().lock();
+            if (parser->getCamera() != nullptr) {
+                parser->getCamera()->getMutex().lock();
                 texture.update(std::get<2>(image).get());
-                parser.getCamera()->getMutex().unlock();
+                parser->getCamera()->getMutex().unlock();
             }
             ImGui::SliderFloat("Zoom", &zoomInImage, 0.1f, 2.0f);
             sprite.setScale(zoomInImage, zoomInImage);
@@ -140,27 +137,30 @@ namespace rt
             ImGui::End();
 
             ImGui::Begin("Camera");
-            if (parser.getCamera()) {
-                ImGui::Text("Camera origin: %f %f %f", parser.getCamera()->getOrigin().x, parser.getCamera()->getOrigin().y, parser.getCamera()->getOrigin().z);
-                ImGui::Text("Camera resolution: %d %d", parser.getCamera()->getResolution().first, parser.getCamera()->getResolution().second);
+            if (parser->getCamera()) {
+                ImGui::Text("Camera origin: %f %f %f", parser->getCamera()->getOrigin().x, parser->getCamera()->getOrigin().y, parser->getCamera()->getOrigin().z);
+                ImGui::Text("Camera resolution: %d %d", parser->getCamera()->getResolution().first, parser->getCamera()->getResolution().second);
             }
             ImGui::End();
 
             ImGui::Begin("Lights");
-            if (!parser.getLights().empty()) {
-                for (auto &light : parser.getLights()) {
-                    ImGui::Text("Light origin: %f %f %f", light->getOrigin().x, light->getOrigin().y, light->getOrigin().z);
+            if (!parser->getLights().empty()) {
+                std::size_t lightCounter = 1;
+                for (auto &light : parser->getLights()) {
+                    ImGui::Text("Light %lu : (%f %f %f)", lightCounter, light->getOrigin().x, light->getOrigin().y, light->getOrigin().z);
                     ImGui::Separator();
+                    lightCounter++;
                 }
             }
             ImGui::End();
 
             ImGui::Begin("Primitives");
-            if (!parser.getPrimitives().empty()) {
-                for (auto &primitive : parser.getPrimitives()) {
-                    (void)primitive;
-                    ImGui::Text("Primitive origin: mdr romain j'ai pas de data");
+            if (!parser->getPrimitives().empty()) {
+                std::size_t primitiveCounter = 1;
+                for (auto &primitive : parser->getPrimitives()) {
+                    ImGui::Text("Primitive %lu : (%f %f %f)", primitiveCounter, primitive->getOriginPoint().x, primitive->getOriginPoint().y, primitive->getOriginPoint().z);
                     ImGui::Separator();
+                    primitiveCounter++;
                 }
             }
             ImGui::End();

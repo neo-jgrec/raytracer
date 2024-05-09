@@ -38,6 +38,8 @@ namespace rt
 
         virtual void setMaterial(IMaterial *material) = 0;
         [[nodiscard]] virtual IMaterial *getMaterial() const = 0;
+
+        [[nodiscard]] virtual math::Vector3<float> getOriginPoint() const = 0;
     };
 } // namespace rt
 

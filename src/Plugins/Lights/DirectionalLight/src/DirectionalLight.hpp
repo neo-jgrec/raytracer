@@ -24,13 +24,17 @@ namespace rt
 
         float _intensity = 1.f;
 
+        [[nodiscard]] utils::Color lightAtPoint(const math::Vector3<float> &point) const;
+
     public:
         class DirectionalLightException final : public ILightException {
         public:
             DirectionalLightException(const std::string &message) : ILightException("DirectionalLight", message) {}
         };
 
-        [[nodiscard]] utils::Color illuminate(const math::Vector3<float> &point) const override;
+        [[nodiscard]] utils::Color illuminate(const math::Vector3<float> &point,
+                                              const std::list<IPrimitive *> &primitives,
+                                              const IPrimitive *closestPrimitive) const override;
 
         [[nodiscard]] const math::Vector3<float> &getOrigin() const override { return _origin; }
         void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }

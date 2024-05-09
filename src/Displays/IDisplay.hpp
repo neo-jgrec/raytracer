@@ -25,7 +25,7 @@ namespace rt
 
         virtual ~IDisplay() = default;
 
-        virtual void run(Parser &parser) = 0;
+        virtual void run(std::shared_ptr<Parser> parser) = 0;
     };
 } // namespace rt
 

@@ -26,6 +26,7 @@ namespace rt
 
         [[nodiscard]] float hit(const math::Ray &ray) const override;
         [[nodiscard]] math::Vector3<float> getNormal(const math::Vector3<float> &point) const override;
+        [[nodiscard]] math::Vector3<float> getOriginPoint() const override { return _origin; }
 
         [[nodiscard]] const math::Vector3<float> &getOrigin() const { return _origin; }
         [[nodiscard]] float getRadius() const { return _radius; }

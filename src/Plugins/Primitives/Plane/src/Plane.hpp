@@ -30,6 +30,8 @@ namespace rt
         [[nodiscard]] math::Vector3<float> getOrigin() const { return _origin; }
         [[nodiscard]] math::Vector3<float> getDirection() const { return _direction; }
 
+        [[nodiscard]] math::Vector3<float> getOriginPoint() const override { return _origin; }
+
         void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
         void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
         void setTranslation(const math::Vector3<float> &translation) override { _origin += translation; }
