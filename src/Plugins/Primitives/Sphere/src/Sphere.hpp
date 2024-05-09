@@ -48,6 +48,12 @@ extern "C" {
         newSphere->setRadius((sphere["r"].operator float()));
         newSphere->setMaterial(material);
 
+        try {
+            newSphere->setTranslation({static_cast<float>(sphere["translation"]["x"].operator int()),
+                                       static_cast<float>(sphere["translation"]["y"].operator int()),
+                                       static_cast<float>(sphere["translation"]["z"].operator int())});
+        } catch (libconfig::SettingNotFoundException &e) {}
+
         return newSphere;
     }
 

@@ -59,6 +59,12 @@ extern "C" {
                                                 static_cast<float>(cylinder["direction"]["z"].operator int())});
         newCylinder->setHeight(cylinder["height"].operator float());
 
+        try {
+            newCylinder->setTranslation(math::Vector3{static_cast<float>(cylinder["translation"]["x"].operator int()),
+                                                static_cast<float>(cylinder["translation"]["y"].operator int()),
+                                                static_cast<float>(cylinder["translation"]["z"].operator int())});
+        } catch (libconfig::SettingNotFoundException &e) {}
+
         return newCylinder;
     }
 

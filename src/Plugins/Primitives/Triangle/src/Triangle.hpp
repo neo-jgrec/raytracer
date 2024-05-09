@@ -58,6 +58,12 @@ extern "C" {
                          static_cast<float>(setting["v2"]["z"].operator int())});
         triangle->setMaterial(material);
 
+        try {
+            triangle->setTranslation({static_cast<float>(setting["translation"]["x"].operator int()),
+                                      static_cast<float>(setting["translation"]["y"].operator int()),
+                                      static_cast<float>(setting["translation"]["z"].operator int())});
+        } catch (libconfig::SettingNotFoundException &e) {}
+
         return triangle;
     }
 
