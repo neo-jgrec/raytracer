@@ -14,7 +14,6 @@ namespace rt
 {
     class Cone final : public APrimitive {
     private:
-        math::Vector3<float> _direction;
         float _radius = 0.5;
         float _height = 1;
 
@@ -24,16 +23,15 @@ namespace rt
             ConeException(const std::string &message) : APrimitiveException("Cone", message) {}
         };
 
-        Cone(const std::vector<math::Vector3<float>> &vertices) : APrimitive(vertices) {}
+        Cone(const std::vector<math::Vector3<float>> &vertices, const std::vector<math::Vector3<float>> &directions) :
+            APrimitive(vertices, directions)
+        {}
 
         [[nodiscard]] float hit(const math::Ray &ray) const override;
         [[nodiscard]] math::Vector3<float> getNormal(const math::Vector3<float> &point) const override;
 
         void setRadius(const float radius) { _radius = radius; }
         [[nodiscard]] float getRadius() const { return _radius; }
-
-        void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
-        [[nodiscard]] math::Vector3<float> getDirection() const { return _direction; }
 
         void setHeight(const float height) { _height = height; }
         [[nodiscard]] float getHeight() const { return _height; }
@@ -47,13 +45,13 @@ extern "C" {
     {
         auto *ptr = new rt::Cone(
             std::vector{math::Vector3{setting["origin"]["x"].operator float(), setting["origin"]["y"].operator float(),
-                                      setting["origin"]["z"].operator float()}});
+                                      setting["origin"]["z"].operator float()}},
+            std::vector{math::Vector3{setting["direction"]["x"].operator float(),
+                                      setting["direction"]["y"].operator float(),
+                                      setting["direction"]["z"].operator float()}});
 
         ptr->setRadius(setting["radius"].operator float());
         ptr->setHeight(setting["height"].operator float());
-        ptr->setDirection(math::Vector3{setting["direction"]["x"].operator float(),
-                                        setting["direction"]["y"].operator float(),
-                                        setting["direction"]["z"].operator float()});
 
         ptr->settingsTransform(setting);
         ptr->setMaterial(material);

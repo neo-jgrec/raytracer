@@ -18,7 +18,6 @@ namespace rt
     private:
         float _radius = 0.5;
         float _height = 1;
-        math::Vector3<float> _direction;
 
     public:
         class CylinderException final : public APrimitiveException {
@@ -26,7 +25,9 @@ namespace rt
             CylinderException(const std::string &message) : APrimitiveException("Cylinder", message) {}
         };
 
-        Cylinder(const std::vector<math::Vector3<float>> &vertices) : APrimitive(vertices) {}
+        Cylinder(const std::vector<math::Vector3<float>> &vertices,
+                 const std::vector<math::Vector3<float>> &directions) : APrimitive(vertices, directions)
+        {}
 
         [[nodiscard]] float hit(const math::Ray &ray) const override;
         [[nodiscard]] math::Vector3<float> getNormal(const math::Vector3<float> &point) const override;
@@ -36,9 +37,6 @@ namespace rt
 
         void setHeight(const float height) { _height = height; }
         [[nodiscard]] float getHeight() const { return _height; }
-
-        void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
-        [[nodiscard]] math::Vector3<float> getDirection() const { return _direction; }
     };
 } // namespace rt
 
@@ -47,13 +45,13 @@ extern "C" {
     {
         auto *ptr = new rt::Cylinder(
             std::vector{math::Vector3{setting["origin"]["x"].operator float(), setting["origin"]["y"].operator float(),
-                                      setting["origin"]["z"].operator float()}});
+                                      setting["origin"]["z"].operator float()}},
+            std::vector{math::Vector3{setting["direction"]["x"].operator float(),
+                                      setting["direction"]["y"].operator float(),
+                                      setting["direction"]["z"].operator float()}});
 
         ptr->setRadius(setting["radius"].operator float());
         ptr->setHeight(setting["height"].operator float());
-        ptr->setDirection(math::Vector3{setting["direction"]["x"].operator float(),
-                                        setting["direction"]["y"].operator float(),
-                                        setting["direction"]["z"].operator float()});
 
         ptr->settingsTransform(setting);
         ptr->setMaterial(material);
