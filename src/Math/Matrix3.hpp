@@ -15,44 +15,64 @@ namespace math
 {
     class Matrix3 final {
     public:
-        float m[3][3];
+        float matrix[3][3];
 
-        Matrix3() {
-            for (int i = 0; i < 3; ++i)
-                for (int j = 0; j < 3; ++j)
-                    m[i][j] = (i == j) ? 1.0f : 0.0f;
+        Matrix3()
+        {
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    this->matrix[i][j] = 0;
+                }
+            }
         }
-
-        static Matrix3 rotation(const Vector3<float>& axis, float angle) {
-            Matrix3 rot;
-            float c = cos(angle);
-            float s = sin(angle);
-            float t = 1.0f - c;
-            float x = axis.x, y = axis.y, z = axis.z;
-
-            // First row
-            rot.m[0][0] = t*x*x + c;
-            rot.m[0][1] = t*x*y - s*z;
-            rot.m[0][2] = t*x*z + s*y;
-
-            // Second row
-            rot.m[1][0] = t*x*y + s*z;
-            rot.m[1][1] = t*y*y + c;
-            rot.m[1][2] = t*y*z - s*x;
-
-            // Third row
-            rot.m[2][0] = t*x*z - s*y;
-            rot.m[2][1] = t*y*z + s*x;
-            rot.m[2][2] = t*z*z + c;
-
-            return rot;
+        Matrix3(const float a, const float b, const float c,
+                const float d, const float e, const float f,
+                const float g, const float h, const float i)
+        {
+            this->matrix[0][0] = a;
+            this->matrix[0][1] = b;
+            this->matrix[0][2] = c;
+            this->matrix[1][0] = d;
+            this->matrix[1][1] = e;
+            this->matrix[1][2] = f;
+            this->matrix[2][0] = g;
+            this->matrix[2][1] = h;
+            this->matrix[2][2] = i;
         }
+        static Matrix3 eulerToMatrix(const Vector3<float> &euler)
+        {
+            float c1 = cos(euler.z);
+            float s1 = sin(euler.z);
+            float c2 = cos(euler.y);
+            float s2 = sin(euler.y);
+            float c3 = cos(euler.x);
+            float s3 = sin(euler.x);
 
-        Vector3<float> operator*(const Vector3<float>& v) const {
-            return Vector3(
-                m[0][0]*v.x + m[0][1]*v.y + m[0][2]*v.z,
-                m[1][0]*v.x + m[1][1]*v.y + m[1][2]*v.z,
-                m[2][0]*v.x + m[2][1]*v.y + m[2][2]*v.z
+            return Matrix3(
+                c1 * c2, -s1 * c2, s2,
+                c1 * s2 * s3 + s1 * c3, -s1 * s2 * s3 + c1 * c3, -c2 * s3,
+                -c1 * s2 * c3 + s1 * s3, s1 * s2 * c3 + c1 * s3, c2 * c3
+            );
+        }
+        Matrix3 operator*(const Matrix3 &matrix) const
+        {
+            Matrix3 result;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    result.matrix[i][j] = 0;
+                    for (int k = 0; k < 3; k++) {
+                        result.matrix[i][j] += this->matrix[i][k] * matrix.matrix[k][j];
+                    }
+                }
+            }
+            return result;
+        }
+        Vector3<float> operator*(const Vector3<float> &vector) const
+        {
+            return Vector3<float>(
+                matrix[0][0] * vector.x + matrix[0][1] * vector.y + matrix[0][2] * vector.z,
+                matrix[1][0] * vector.x + matrix[1][1] * vector.y + matrix[1][2] * vector.z,
+                matrix[2][0] * vector.x + matrix[2][1] * vector.y + matrix[2][2] * vector.z
             );
         }
     };
