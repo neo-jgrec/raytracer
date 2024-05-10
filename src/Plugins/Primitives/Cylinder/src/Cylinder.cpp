@@ -12,9 +12,17 @@ namespace rt
 {
     float Cylinder::hit(const math::Ray &ray) const
     {
-        math::Vector3 oc = ray.origin - _origin;
-        float a = ray.direction.dot(ray.direction) - pow(ray.direction.dot(_direction.normalize()), 2);
-        float b = 2.0 * (ray.direction.dot(oc) - (ray.direction.dot(_direction.normalize()) * oc.dot(_direction.normalize())));
+        // Convert Euler angles to rotation matrix
+        math::Matrix3 rotationMatrix = math::Matrix3::eulerToMatrix(_rotation * M_PI / 180);
+
+        // Rotate the ray
+        math::Ray rotatedRay;
+        rotatedRay.origin = rotationMatrix * (ray.origin - _origin);
+        rotatedRay.direction = rotationMatrix * ray.direction;
+
+        math::Vector3 oc = rotatedRay.origin;
+        float a = rotatedRay.direction.dot(rotatedRay.direction) - pow(rotatedRay.direction.dot(_direction.normalize()), 2);
+        float b = 2.0 * (rotatedRay.direction.dot(oc) - (rotatedRay.direction.dot(_direction.normalize()) * oc.dot(_direction.normalize())));
         float c = oc.dot(oc) - pow(oc.dot(_direction.normalize()), 2) - _radius * _radius;
 
         float discriminant = b * b - 4 * a * c;
@@ -29,13 +37,15 @@ namespace rt
             std::swap(t0, t1);
 
         float t = t0;
-        math::Vector3 pt = ray.origin + ray.direction * t;
-        if (pt.dot(_direction.normalize()) < 0 || pt.dot(_direction.normalize()) > _height)
-            t = t1;
+        if (_height >= 0) {
+            math::Vector3 pt = rotatedRay.origin + rotatedRay.direction * t;
+            if (pt.dot(_direction.normalize()) < 0 || pt.dot(_direction.normalize()) > _height)
+                t = t1;
 
-        pt = ray.origin + ray.direction * t;
-        if (pt.dot(_direction.normalize()) < 0 || pt.dot(_direction.normalize()) > _height)
-            return -1;
+            pt = rotatedRay.origin + rotatedRay.direction * t;
+            if (pt.dot(_direction.normalize()) < 0 || pt.dot(_direction.normalize()) > _height)
+                return -1;
+        }
 
         return t;
     }
