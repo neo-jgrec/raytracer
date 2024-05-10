@@ -21,6 +21,10 @@ namespace rt
 
     protected:
         std::vector<math::Vector3<float>> _vertices;
+        std::vector<math::Vector3<float>> _directions;
+
+        void setVertices(const std::vector<math::Vector3<float>> &vertices) { _vertices = vertices; }
+        void setDirections(const std::vector<math::Vector3<float>> &directions) { _directions = directions; }
 
     public:
         class APrimitiveException : public IPrimitiveException {
@@ -31,6 +35,12 @@ namespace rt
         };
 
         APrimitive(const std::vector<math::Vector3<float>> &vertices) : _vertices(vertices) {}
+        APrimitive(const std::vector<math::Vector3<float>> &vertices,
+                   const std::vector<math::Vector3<float>> &directions) : _vertices(vertices), _directions(directions)
+        {}
+
+        [[nodiscard]] float hit(const math::Ray &ray) const override = 0;
+        [[nodiscard]] math::Vector3<float> getNormal(const math::Vector3<float> &point) const override = 0;
 
         void setMaterial(IMaterial *material) override { _material = material; }
         [[nodiscard]] IMaterial *getMaterial() const override { return _material; }
@@ -63,6 +73,13 @@ namespace rt
                 vertex.x = tmp.x * matrixRotation[0].x + tmp.y * matrixRotation[1].x + tmp.z * matrixRotation[2].x;
                 vertex.y = tmp.x * matrixRotation[0].y + tmp.y * matrixRotation[1].y + tmp.z * matrixRotation[2].y;
                 vertex.z = tmp.x * matrixRotation[0].z + tmp.y * matrixRotation[1].z + tmp.z * matrixRotation[2].z;
+            }
+
+            for (auto &direction : _directions) {
+                const math::Vector3<float> tmp = direction;
+                direction.x = tmp.x * matrixRotation[0].x + tmp.y * matrixRotation[1].x + tmp.z * matrixRotation[2].x;
+                direction.y = tmp.x * matrixRotation[0].y + tmp.y * matrixRotation[1].y + tmp.z * matrixRotation[2].y;
+                direction.z = tmp.x * matrixRotation[0].z + tmp.y * matrixRotation[1].z + tmp.z * matrixRotation[2].z;
             }
         }
 

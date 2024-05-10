@@ -17,11 +17,11 @@ namespace rt
         const float k = _radius; // Cone's slant height, adjust as needed
 
         const float a = static_cast<float>(ray.direction.dot(ray.direction) -
-                                           (1 + k * k) * pow(ray.direction.dot(_direction.normalize()), 2));
+                                           (1 + k * k) * pow(ray.direction.dot(_directions[0].normalize()), 2));
         const float b = 2.f *
             (ray.direction.dot(oc) -
-             (1 + k * k) * ray.direction.dot(_direction.normalize()) * oc.dot(_direction.normalize()));
-        const float c = static_cast<float>(oc.dot(oc) - (1 + k * k) * pow(oc.dot(_direction.normalize()), 2));
+             (1 + k * k) * ray.direction.dot(_directions[0].normalize()) * oc.dot(_directions[0].normalize()));
+        const float c = static_cast<float>(oc.dot(oc) - (1 + k * k) * pow(oc.dot(_directions[0].normalize()), 2));
 
         float discriminant = b * b - 4 * a * c;
         if (discriminant < 0)
@@ -36,11 +36,11 @@ namespace rt
 
         float t = t0;
         math::Vector3 pt = ray.origin + ray.direction * t;
-        if (pt.dot(_direction.normalize()) < 0 || pt.dot(_direction.normalize()) > _height)
+        if (pt.dot(_directions[0].normalize()) < 0 || pt.dot(_directions[0].normalize()) > _height)
             t = t1;
 
         pt = ray.origin + ray.direction * t;
-        if (pt.dot(_direction.normalize()) < 0 || pt.dot(_direction.normalize()) > _height)
+        if (pt.dot(_directions[0].normalize()) < 0 || pt.dot(_directions[0].normalize()) > _height)
             return -1;
 
         return t;
@@ -49,7 +49,7 @@ namespace rt
     math::Vector3<float> Cone::getNormal(const math::Vector3<float> &point) const
     {
         math::Vector3<float> normal = point - _vertices[0];
-        normal = normal - _direction.normalize() * normal.dot(_direction.normalize());
+        normal = normal - _directions[0].normalize() * normal.dot(_directions[0].normalize());
         normal = normal.normalize();
         return normal;
     }
