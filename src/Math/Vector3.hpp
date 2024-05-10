@@ -31,7 +31,7 @@ namespace math
             z *= scalar;
             return *this;
         }
-        T operator*=(const Vector3 &other)
+        Vector3 operator*=(const Vector3 &other)
         {
             x *= other.x;
             y *= other.y;

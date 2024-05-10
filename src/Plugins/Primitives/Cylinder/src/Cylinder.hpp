@@ -9,16 +9,16 @@
 #define CYLINDER_HPP
 
 #include <libconfig.h++>
+
 #include "../../APrimitive.hpp"
 
 namespace rt
 {
     class Cylinder final : public APrimitive {
     private:
-        math::Vector3<float> _direction = math::Vector3<float>{0, 0, 0};
-        math::Vector3<float> _origin = math::Vector3<float>{0, 0, -1};
         float _radius = 0.5;
         float _height = 1;
+        math::Vector3<float> _direction;
 
     public:
         class CylinderException final : public APrimitiveException {
@@ -26,49 +26,40 @@ namespace rt
             CylinderException(const std::string &message) : APrimitiveException("Cylinder", message) {}
         };
 
+        Cylinder(const std::vector<math::Vector3<float>> &vertices) : APrimitive(vertices) {}
+
         [[nodiscard]] float hit(const math::Ray &ray) const override;
         [[nodiscard]] math::Vector3<float> getNormal(const math::Vector3<float> &point) const override;
 
-        [[nodiscard]] const math::Vector3<float> &getOrigin() const { return _origin; }
+        void setRadius(const float radius) { _radius = radius; }
         [[nodiscard]] float getRadius() const { return _radius; }
 
-        [[nodiscard]] math::Vector3<float> getOriginPoint() const override { return _origin; }
-
-        void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
-        void setRadius(const float radius) { _radius = radius; }
-        void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
         void setHeight(const float height) { _height = height; }
-        void setTranslation(const math::Vector3<float> &translation) override { _origin += translation; }
+        [[nodiscard]] float getHeight() const { return _height; }
 
-        static float sgn(float x) { return x > 0 ? 1 : -1; }
+        void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
+        [[nodiscard]] math::Vector3<float> getDirection() const { return _direction; }
     };
 } // namespace rt
 
 extern "C" {
-    rt::IPrimitive *createComponent(libconfig::Setting &cylinder, rt::IMaterial *material)
+    rt::IPrimitive *createComponent(const libconfig::Setting &setting, rt::IMaterial *material)
     {
-        auto *newCylinder = new rt::Cylinder();
+        auto *ptr = new rt::Cylinder(
+            std::vector{math::Vector3{setting["origin"]["x"].operator float(), setting["origin"]["y"].operator float(),
+                                      setting["origin"]["z"].operator float()}});
 
-        newCylinder->setOrigin(math::Vector3{static_cast<float>(cylinder["x"].operator int()),
-                                           static_cast<float>(cylinder["y"].operator int()),
-                                           static_cast<float>(cylinder["z"].operator int())});
-        newCylinder->setRadius((cylinder["r"].operator float()));
-        newCylinder->setMaterial(material);
-        newCylinder->setDirection(math::Vector3{static_cast<float>(cylinder["direction"]["x"].operator int()),
-                                                static_cast<float>(cylinder["direction"]["y"].operator int()),
-                                                static_cast<float>(cylinder["direction"]["z"].operator int())});
-        newCylinder->setHeight(cylinder["height"].operator float());
+        ptr->setRadius(setting["radius"].operator float());
+        ptr->setHeight(setting["height"].operator float());
+        ptr->setDirection(math::Vector3{setting["direction"]["x"].operator float(),
+                                        setting["direction"]["y"].operator float(),
+                                        setting["direction"]["z"].operator float()});
 
-        try {
-            newCylinder->setTranslation(math::Vector3{static_cast<float>(cylinder["translation"]["x"].operator int()),
-                                                static_cast<float>(cylinder["translation"]["y"].operator int()),
-                                                static_cast<float>(cylinder["translation"]["z"].operator int())});
-        } catch (libconfig::SettingNotFoundException &e) {}
+        ptr->settingsTransform(setting);
+        ptr->setMaterial(material);
 
-        return newCylinder;
+        return ptr;
     }
-
-    void destroy(const rt::IPrimitive *ptr) { delete ptr; }
 }
 
 #endif // CYLINDER_HPP

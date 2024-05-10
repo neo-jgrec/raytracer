@@ -7,8 +7,6 @@
 
 #include "Plane.hpp"
 
-#include <iostream>
-
 namespace rt
 {
     float Plane::hit(const math::Ray &ray) const
@@ -17,7 +15,7 @@ namespace rt
         const auto normal = _direction.normalize();
 
         if (const float denom = normal.dot(ray.direction); std::abs(denom) > epsilon)
-            if (const float t = (_origin - ray.origin).dot(normal) / denom; t >= 0)
+            if (const float t = (_vertices[0] - ray.origin).dot(normal) / denom; t >= 0)
                 return t;
         return -1;
     }

@@ -6,26 +6,30 @@
 */
 
 #include "Cone.hpp"
-#include <iostream>
+
+#include <cmath>
 
 namespace rt
 {
     float Cone::hit(const math::Ray &ray) const
     {
-        math::Vector3 oc = ray.origin - _origin;
-        float k = _radius;  // Cone's slant height, adjust as needed
+        const math::Vector3 oc = ray.origin - _vertices[0];
+        const float k = _radius; // Cone's slant height, adjust as needed
 
-        float a = ray.direction.dot(ray.direction) - (1 + k * k) * pow(ray.direction.dot(_direction.normalize()), 2);
-        float b = 2.0 * (ray.direction.dot(oc) - (1 + k * k) * ray.direction.dot(_direction.normalize()) * oc.dot(_direction.normalize()));
-        float c = oc.dot(oc) - (1 + k * k) * pow(oc.dot(_direction.normalize()), 2);
+        const float a = static_cast<float>(ray.direction.dot(ray.direction) -
+                                           (1 + k * k) * pow(ray.direction.dot(_direction.normalize()), 2));
+        const float b = 2.f *
+            (ray.direction.dot(oc) -
+             (1 + k * k) * ray.direction.dot(_direction.normalize()) * oc.dot(_direction.normalize()));
+        const float c = static_cast<float>(oc.dot(oc) - (1 + k * k) * pow(oc.dot(_direction.normalize()), 2));
 
         float discriminant = b * b - 4 * a * c;
         if (discriminant < 0)
             return -1;
 
-        discriminant = sqrt(discriminant);
-        float t0 = (-b - discriminant) / (2.0 * a);
-        float t1 = (-b + discriminant) / (2.0 * a);
+        discriminant = std::sqrt(discriminant);
+        auto t0 = static_cast<float>((-b - discriminant) / (2.0 * a));
+        auto t1 = static_cast<float>((-b + discriminant) / (2.0 * a));
 
         if (t0 > t1)
             std::swap(t0, t1);
@@ -44,7 +48,7 @@ namespace rt
 
     math::Vector3<float> Cone::getNormal(const math::Vector3<float> &point) const
     {
-        math::Vector3<float> normal = point - _origin;
+        math::Vector3<float> normal = point - _vertices[0];
         normal = normal - _direction.normalize() * normal.dot(_direction.normalize());
         normal = normal.normalize();
         return normal;

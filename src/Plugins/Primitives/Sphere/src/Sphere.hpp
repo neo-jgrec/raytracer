@@ -8,14 +8,12 @@
 #ifndef SPHERE_HPP
 #define SPHERE_HPP
 
-#include <libconfig.h++>
 #include "../../APrimitive.hpp"
 
 namespace rt
 {
     class Sphere final : public APrimitive {
     private:
-        math::Vector3<float> _origin = math::Vector3<float>{0, 0, -1};
         float _radius = 0.5;
 
     public:
@@ -24,40 +22,30 @@ namespace rt
             SphereException(const std::string &message) : APrimitiveException("Sphere", message) {}
         };
 
+        Sphere(const std::vector<math::Vector3<float>> &vertices) : APrimitive(vertices) {}
+
         [[nodiscard]] float hit(const math::Ray &ray) const override;
         [[nodiscard]] math::Vector3<float> getNormal(const math::Vector3<float> &point) const override;
-        [[nodiscard]] math::Vector3<float> getOriginPoint() const override { return _origin; }
 
-        [[nodiscard]] const math::Vector3<float> &getOrigin() const { return _origin; }
         [[nodiscard]] float getRadius() const { return _radius; }
-
-        void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
         void setRadius(const float radius) { _radius = radius; }
-        void setTranslation(const math::Vector3<float> &translation) override { _origin += translation; }
     };
 } // namespace rt
 
 extern "C" {
-    rt::IPrimitive *createComponent(libconfig::Setting &sphere, rt::IMaterial *material)
+    rt::IPrimitive *createComponent(const libconfig::Setting &setting, rt::IMaterial *material)
     {
-        auto *newSphere = new rt::Sphere();
+        auto *ptr = new rt::Sphere(
+            std::vector{math::Vector3{setting["origin"]["x"].operator float(), setting["origin"]["y"].operator float(),
+                                      setting["origin"]["z"].operator float()}});
 
-        newSphere->setOrigin(math::Vector3{static_cast<float>(sphere["x"].operator int()),
-                                           static_cast<float>(sphere["y"].operator int()),
-                                           static_cast<float>(sphere["z"].operator int())});
-        newSphere->setRadius((sphere["r"].operator float()));
-        newSphere->setMaterial(material);
+        ptr->setRadius(setting["radius"].operator float());
 
-        try {
-            newSphere->setTranslation({static_cast<float>(sphere["translation"]["x"].operator int()),
-                                       static_cast<float>(sphere["translation"]["y"].operator int()),
-                                       static_cast<float>(sphere["translation"]["z"].operator int())});
-        } catch (libconfig::SettingNotFoundException &e) {}
+        ptr->settingsTransform(setting);
+        ptr->setMaterial(material);
 
-        return newSphere;
+        return ptr;
     }
-
-    void destroy(const rt::IPrimitive *ptr) { delete ptr; }
 }
 
 #endif // SPHERE_HPP

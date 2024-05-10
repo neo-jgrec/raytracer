@@ -13,8 +13,8 @@ namespace rt
     {
         constexpr float epsilon = std::numeric_limits<float>::epsilon();
 
-        const math::Vector3<float> edge1 = _v1 - _v0;
-        const math::Vector3<float> edge2 = _v2 - _v0;
+        const math::Vector3<float> edge1 = _vertices[1] - _vertices[0];
+        const math::Vector3<float> edge2 = _vertices[2] - _vertices[0];
         const math::Vector3<float> cross_edge2 = ray.direction.cross(edge2);
         const float det = edge1.dot(cross_edge2);
 
@@ -24,7 +24,7 @@ namespace rt
 
         // Ray intersects the rectangle containing the triangle
         const float invDet = 1.0f / det;
-        const math::Vector3<float> tvec = ray.origin - _v0;
+        const math::Vector3<float> tvec = ray.origin - _vertices[0];
         const float u = tvec.dot(cross_edge2) * invDet;
 
         if (u < 0 || u > 1)
@@ -41,16 +41,9 @@ namespace rt
         return t > epsilon ? t : -1;
     }
 
-    math::Vector3<float> Triangle::getNormal(const math::Vector3<float> &point) const
+    math::Vector3<float> Triangle::getNormal([[maybe_unused]] const math::Vector3<float> &point) const
     {
-        const math::Vector3<float> normal = (_v1 - _v0).cross(_v2 - _v0);
+        const math::Vector3<float> normal = (_vertices[1] - _vertices[0]).cross(_vertices[2] - _vertices[0]);
         return normal.normalize();
-    }
-
-    void Triangle::setTranslation(const math::Vector3<float> &translation)
-    {
-        _v0 += translation;
-        _v1 += translation;
-        _v2 += translation;
     }
 } // namespace rt

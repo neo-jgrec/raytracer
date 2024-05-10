@@ -15,7 +15,10 @@ namespace rt
     {
         constexpr float epsilon = std::numeric_limits<float>::epsilon();
         const std::vector<std::tuple<math::Vector3<float>, math::Vector3<float>, math::Vector3<float>>> edges = {
-            {_v0, _v1, _v2}, {_v0, _v1, _v3}, {_v0, _v2, _v3}, {_v1, _v2, _v3}};
+            {_vertices[0], _vertices[1], _vertices[2]},
+            {_vertices[0], _vertices[1], _vertices[3]},
+            {_vertices[0], _vertices[2], _vertices[3]},
+            {_vertices[1], _vertices[2], _vertices[3]}};
         float t_min = -1;
 
         for (uint8_t i = 0; i < 4; i++) {
@@ -52,7 +55,10 @@ namespace rt
     math::Vector3<float> Tetrahedron::getNormal(const math::Vector3<float> &point) const
     {
         const std::vector<std::tuple<math::Vector3<float>, math::Vector3<float>, math::Vector3<float>>> edges = {
-            {_v0, _v1, _v2}, {_v0, _v1, _v3}, {_v0, _v2, _v3}, {_v1, _v2, _v3}};
+            {_vertices[0], _vertices[1], _vertices[2]},
+            {_vertices[0], _vertices[1], _vertices[3]},
+            {_vertices[0], _vertices[2], _vertices[3]},
+            {_vertices[1], _vertices[2], _vertices[3]}};
         math::Vector3<float> normal;
 
         for (uint8_t i = 0; i < 4; i++) {
@@ -63,13 +69,5 @@ namespace rt
                 return normal;
         }
         return normal;
-    }
-
-    void Tetrahedron::setTranslation(const math::Vector3<float> &translation)
-    { 
-        _v0 += translation;
-        _v1 += translation;
-        _v2 += translation;
-        _v3 += translation;
     }
 } // namespace rt
