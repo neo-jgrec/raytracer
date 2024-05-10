@@ -12,14 +12,21 @@ namespace rt
 {
     float Cone::hit(const math::Ray &ray) const
     {
-        math::Vector3 oc = ray.origin - _origin;
-        float k = _radius;
-        math::Vector3 newDirection = _direction.normalize() + _rotation / 360;
-        newDirection = newDirection.normalize();
+        // Convert rotation angles to rotation matrix
+        math::Matrix3 rotationMatrix = math::Matrix3::eulerToMatrix(_rotation * M_PI / 180);
 
-        float a = ray.direction.dot(ray.direction) - (1 + k * k) * pow(ray.direction.dot(newDirection.normalize()), 2);
-        float b = 2.0 * (ray.direction.dot(oc) - (1 + k * k) * ray.direction.dot(newDirection.normalize()) * oc.dot(newDirection.normalize()));
-        float c = oc.dot(oc) - (1 + k * k) * pow(oc.dot(newDirection.normalize()), 2);
+        // create a new ray with the origin and direction rotated
+        math::Ray rotatedRay;
+        rotatedRay.origin = rotationMatrix * (ray.origin - _origin);
+        rotatedRay.direction = rotationMatrix * ray.direction;
+
+        // create aliases to make the code more readable
+        math::Vector3 rayO = rotatedRay.origin;
+        math::Vector3 normDir = _direction.normalize();
+
+        float a = rotatedRay.direction.dot(rotatedRay.direction) - (1 + _radius * _radius) * pow(rotatedRay.direction.dot(normDir), 2);
+        float b = 2.0 * (rotatedRay.direction.dot(rayO) - (1 + _radius * _radius) * rotatedRay.direction.dot(normDir) * rayO.dot(normDir));
+        float c = rayO.dot(rayO) - (1 + _radius * _radius) * pow(rayO.dot(normDir), 2);
 
         float discriminant = b * b - 4 * a * c;
         if (discriminant < 0)
@@ -33,23 +40,29 @@ namespace rt
             std::swap(t0, t1);
 
         float t = t0;
-        math::Vector3 pt = ray.origin + ray.direction * t;
-        if (pt.dot(newDirection.normalize()) < 0 || pt.dot(newDirection.normalize()) > _height)
-            t = t1;
+        if (_height >= 0) {
+            math::Vector3 pt = rotatedRay.origin + rotatedRay.direction * t;
+            if (pt.dot(normDir) < 0 || pt.dot(normDir) > _height)
+                t = t1;
 
-        pt = ray.origin + ray.direction * t;
-        if (pt.dot(newDirection.normalize()) < 0 || pt.dot(newDirection.normalize()) > _height)
-            return -1;
+            pt = rotatedRay.origin + rotatedRay.direction * t;
+            if (pt.dot(normDir) < 0 || pt.dot(normDir) > _height)
+                return -1;
+        }
 
         return t;
     }
 
     math::Vector3<float> Cone::getNormal(const math::Vector3<float> &point) const
     {
-        math::Vector3 newDirection = _direction.normalize() * 360 + _rotation;
+        math::Matrix3 rotationMatrix = math::Matrix3::eulerToMatrix(_rotation);
+
+        math::Vector3 normDir = _direction.normalize();
         math::Vector3<float> normal = point - _origin;
-        normal = normal - newDirection.normalize() * normal.dot(newDirection.normalize());
+        normal = normal - normDir * normal.dot(normDir);
+        normal = rotationMatrix * normal;
         normal = normal.normalize();
+
         return normal;
     }
 } // namespace rt

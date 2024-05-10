@@ -49,17 +49,17 @@ extern "C" {
     {
         auto *newCone = new rt::Cone();
 
-        newCone->setOrigin(math::Vector3{static_cast<float>(cone["x"].operator int()),
-                                           static_cast<float>(cone["y"].operator int()),
-                                           static_cast<float>(cone["z"].operator int())});
-        newCone->setRadius((cone["r"].operator float()));
+        newCone->setOrigin(math::Vector3{static_cast<float>(cone["origin"]["x"].operator int()),
+                                         static_cast<float>(cone["origin"]["y"].operator int()),
+                                         static_cast<float>(cone["origin"]["z"].operator int())});
+        newCone->setRadius((cone["radius"].operator float()));
         newCone->setMaterial(material);
         newCone->setDirection(math::Vector3{static_cast<float>(cone["direction"]["x"].operator int()),
-                                                static_cast<float>(cone["direction"]["y"].operator int()),
-                                                static_cast<float>(cone["direction"]["z"].operator int())});
+                                            static_cast<float>(cone["direction"]["y"].operator int()),
+                                            static_cast<float>(cone["direction"]["z"].operator int())});
         newCone->setRotation(math::Vector3{static_cast<float>(cone["rotation"]["x"].operator int()),
-                                                static_cast<float>(cone["rotation"]["y"].operator int()),
-                                                static_cast<float>(cone["rotation"]["z"].operator int())});
+                                           static_cast<float>(cone["rotation"]["y"].operator int()),
+                                           static_cast<float>(cone["rotation"]["z"].operator int())});
         newCone->setHeight(cone["height"].operator float());
 
         return newCone;
