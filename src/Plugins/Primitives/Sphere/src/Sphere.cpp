@@ -11,7 +11,7 @@ namespace rt
 {
     float Sphere::hit(const math::Ray &ray) const
     {
-        const math::Vector3<float> oc = ray.origin - _origin;
+        const math::Vector3<float> oc = ray.origin - _vertices[0];
         const auto a = ray.direction.dot(ray.direction);
         const auto b = 2.0f * oc.dot(ray.direction);
         const auto c = oc.dot(oc) - _radius * _radius;
@@ -22,6 +22,6 @@ namespace rt
 
     math::Vector3<float> Sphere::getNormal(const math::Vector3<float> &point) const
     {
-        return (point - _origin).normalize();
+        return (point - _vertices[0]).normalize();
     }
 } // namespace rt

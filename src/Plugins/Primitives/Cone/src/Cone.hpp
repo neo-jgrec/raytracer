@@ -8,15 +8,13 @@
 #ifndef CONE_HPP
 #define CONE_HPP
 
-#include <libconfig.h++>
 #include "../../APrimitive.hpp"
 
 namespace rt
 {
     class Cone final : public APrimitive {
     private:
-        math::Vector3<float> _direction = math::Vector3<float>{0, 0, 0};
-        math::Vector3<float> _origin = math::Vector3<float>{0, 0, -1};
+        math::Vector3<float> _direction;
         float _radius = 0.5;
         float _height = 1;
 
@@ -26,47 +24,42 @@ namespace rt
             ConeException(const std::string &message) : APrimitiveException("Cone", message) {}
         };
 
+        Cone(const std::vector<math::Vector3<float>> &vertices) : APrimitive(vertices) {}
+
         [[nodiscard]] float hit(const math::Ray &ray) const override;
-
-        [[nodiscard]] const math::Vector3<float> &getOrigin() const { return _origin; }
-        [[nodiscard]] float getRadius() const { return _radius; }
         [[nodiscard]] math::Vector3<float> getNormal(const math::Vector3<float> &point) const override;
-        [[nodiscard]] math::Vector3<float> getOriginPoint() const override { return _origin; }
 
-        void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
         void setRadius(const float radius) { _radius = radius; }
-        void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
-        void setHeight(const float height) { _height = height; }
-        void setTranslation(const math::Vector3<float> &translation) override { _origin += translation; }
+        [[nodiscard]] float getRadius() const { return _radius; }
 
-        static float sgn(float x) { return x > 0 ? 1 : -1; }
+        void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
+        [[nodiscard]] math::Vector3<float> getDirection() const { return _direction; }
+
+        void setHeight(const float height) { _height = height; }
+        [[nodiscard]] float getHeight() const { return _height; }
+
+        static float sgn(const float x) { return x > 0 ? 1 : -1; }
     };
 } // namespace rt
 
 extern "C" {
-    rt::IPrimitive *createComponent(libconfig::Setting &cone, rt::IMaterial *material)
+    rt::IPrimitive *createComponent(const libconfig::Setting &setting, rt::IMaterial *material)
     {
-        auto *newCone = new rt::Cone();
+        auto *ptr = new rt::Cone(
+            std::vector{math::Vector3{setting["origin"]["x"].operator float(), setting["origin"]["y"].operator float(),
+                                      setting["origin"]["z"].operator float()}});
 
-        newCone->setOrigin(math::Vector3{static_cast<float>(cone["x"].operator int()),
-                                           static_cast<float>(cone["y"].operator int()),
-                                           static_cast<float>(cone["z"].operator int())});
-        newCone->setRadius((cone["r"].operator float()));
-        newCone->setMaterial(material);
-        newCone->setDirection(math::Vector3{static_cast<float>(cone["direction"]["x"].operator int()),
-                                                static_cast<float>(cone["direction"]["y"].operator int()),
-                                                static_cast<float>(cone["direction"]["z"].operator int())});
-        newCone->setHeight(cone["height"].operator float());
+        ptr->setRadius(setting["radius"].operator float());
+        ptr->setHeight(setting["height"].operator float());
+        ptr->setDirection(math::Vector3{setting["direction"]["x"].operator float(),
+                                        setting["direction"]["y"].operator float(),
+                                        setting["direction"]["z"].operator float()});
 
-        try {
-            newCone->setTranslation(math::Vector3{static_cast<float>(cone["translation"]["x"].operator int()),
-                                                static_cast<float>(cone["translation"]["y"].operator int()),
-                                                static_cast<float>(cone["translation"]["z"].operator int())});
-        } catch (libconfig::SettingNotFoundException &e) {}
-        return newCone;
+        ptr->settingsTransform(setting);
+        ptr->setMaterial(material);
+
+        return ptr;
     }
-
-    void destroy(const rt::IPrimitive *ptr) { delete ptr; }
 }
 
 #endif // CONE_HPP
