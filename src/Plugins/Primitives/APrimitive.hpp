@@ -68,12 +68,14 @@ namespace rt
                 {-std::sin(rotationRad.y), std::sin(rotationRad.x) * std::cos(rotationRad.y),
                  std::cos(rotationRad.x) * std::cos(rotationRad.y)}};
 
+            const auto originBefore = getOriginPoint();
             for (auto &vertex : _vertices) {
                 const math::Vector3<float> tmp = vertex;
                 vertex.x = tmp.x * matrixRotation[0].x + tmp.y * matrixRotation[1].x + tmp.z * matrixRotation[2].x;
                 vertex.y = tmp.x * matrixRotation[0].y + tmp.y * matrixRotation[1].y + tmp.z * matrixRotation[2].y;
                 vertex.z = tmp.x * matrixRotation[0].z + tmp.y * matrixRotation[1].z + tmp.z * matrixRotation[2].z;
             }
+            setTranslation(originBefore - getOriginPoint());
 
             for (auto &direction : _directions) {
                 const math::Vector3<float> tmp = direction;
