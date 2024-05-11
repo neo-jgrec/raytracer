@@ -95,6 +95,7 @@ namespace rt
         const uint16_t height = _height / nbThreads;
         std::vector<std::thread> threads;
 
+        std::cout << "Rendering with " << nbThreads << " threads" << std::endl;
         for (uint8_t i = 0; i < nbThreads; ++i)
             if (i == nbThreads - 1)
                 threads.emplace_back(&Camera::generateImageChunk, this, i * height, _height, 0, _width, primitives,
