@@ -35,6 +35,7 @@ namespace rt
 
         bool isSaving = false;
         bool isOpeningCfgFile = false;
+        bool isPreviewing = false;
         static char filename[256] = {0};
         float zoomInImage = 0.5f;
 
@@ -87,8 +88,9 @@ namespace rt
             ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
             if (isSaving) {
-                ImGui::Begin("Save image as PNG", &isSaving, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+                ImGui::Begin("Save image as", &isSaving, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
                 ImGui::InputText("Filename", filename, IM_ARRAYSIZE(filename));
+                ImGui::Text("You must provide a file extension in the filename");
                 if (ImGui::Button("Save")) {
                     texture.copyToImage().saveToFile(filename);
                     isSaving = false;
@@ -101,8 +103,9 @@ namespace rt
             }
 
             if (isOpeningCfgFile) {
-                ImGui::Begin("Open cfg file", &isOpeningCfgFile, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+                ImGui::Begin("Open cfg file", &isOpeningCfgFile, ImGuiWindowFlags_NoCollapse);
                 ImGui::InputText("Filename", filename, IM_ARRAYSIZE(filename));
+                ImGui::Checkbox("Preview", &isPreviewing);
                 ImGui::Text("Warning: This will close the current scene");
                 if (ImGui::Button("Open")) {
                     try {
@@ -110,6 +113,11 @@ namespace rt
                         sf::Uint8 black[4] = {0, 0, 0, 255};
                         texture.update(black);
                         parser = std::make_shared<Scene>(std::filesystem::absolute(filename).string());
+                        if (isPreviewing) {
+                            auto ratio = parser->getCamera()->getResolution().first / parser->getCamera()->getResolution().second;
+                            parser->getCamera()->setResolution(400, 400 / ratio);
+                            zoomInImage = 1.0f;
+                        }
                         image = parser->getCamera()->generateImage(parser->getPrimitives(), parser->getLights(), true);
                         texture.create(std::get<0>(image), std::get<1>(image));
                         texture.update(std::get<2>(image).get());
