@@ -91,6 +91,25 @@ namespace rt
                 vertex *= scale;
         }
 
+        void setMatrix(const math::Vector3<math::Vector3<float>> &matrix) override
+        {
+            const auto originBefore = getOriginPoint();
+            for (auto &vertex : _vertices) {
+                const math::Vector3<float> tmp = vertex;
+                vertex.x = tmp.x * matrix.x.x + tmp.y * matrix.y.x + tmp.z * matrix.z.x;
+                vertex.y = tmp.x * matrix.x.y + tmp.y * matrix.y.y + tmp.z * matrix.z.y;
+                vertex.z = tmp.x * matrix.x.z + tmp.y * matrix.y.z + tmp.z * matrix.z.z;
+            }
+            setTranslation(originBefore - getOriginPoint());
+
+            for (auto &direction : _directions) {
+                const math::Vector3<float> tmp = direction;
+                direction.x = tmp.x * matrix.x.x + tmp.y * matrix.y.x + tmp.z * matrix.z.x;
+                direction.y = tmp.x * matrix.x.y + tmp.y * matrix.y.y + tmp.z * matrix.z.y;
+                direction.z = tmp.x * matrix.x.z + tmp.y * matrix.y.z + tmp.z * matrix.z.z;
+            }
+        }
+
         [[nodiscard]] math::Vector3<float> getOriginPoint() const override
         {
             math::Vector3<float> origin;
@@ -118,6 +137,30 @@ namespace rt
                 setScale(math::Vector3{setting["transform"]["scale"]["x"].operator float(),
                                        setting["transform"]["scale"]["y"].operator float(),
                                        setting["transform"]["scale"]["z"].operator float()});
+            } catch (libconfig::SettingNotFoundException &_) {
+            }
+            try {
+                // setMatrix(math::Vector3<math::Vector3<float>>{{setting["transform"]["matrix"][0][0].operator float(),
+                //                                                setting["transform"]["matrix"][0][1].operator float(),
+                //                                                setting["transform"]["matrix"][0][2].operator
+                //                                                float()},
+                //                                               {setting["transform"]["matrix"][1][0].operator float(),
+                //                                                setting["transform"]["matrix"][1][1].operator float(),
+                //                                                setting["transform"]["matrix"][1][2].operator
+                //                                                float()},
+                //                                               {setting["transform"]["matrix"][2][0].operator float(),
+                //                                                setting["transform"]["matrix"][2][1].operator float(),
+                //                                                setting["transform"]["matrix"][2][2].operator
+                //                                                float()}});
+                setMatrix(math::Vector3<math::Vector3<float>>{{setting["transform"]["matrix"][0].operator float(),
+                                                               setting["transform"]["matrix"][1].operator float(),
+                                                               setting["transform"]["matrix"][2].operator float()},
+                                                              {setting["transform"]["matrix"][3].operator float(),
+                                                               setting["transform"]["matrix"][4].operator float(),
+                                                               setting["transform"]["matrix"][5].operator float()},
+                                                              {setting["transform"]["matrix"][6].operator float(),
+                                                               setting["transform"]["matrix"][7].operator float(),
+                                                               setting["transform"]["matrix"][8].operator float()}});
             } catch (libconfig::SettingNotFoundException &_) {
             }
         }

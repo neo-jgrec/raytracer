@@ -37,6 +37,7 @@ namespace rt
         virtual void setTranslation(const math::Vector3<float> &translation) = 0;
         virtual void setRotation(const math::Vector3<float> &rotation) = 0;
         virtual void setScale(const math::Vector3<float> &scale) = 0;
+        virtual void setMatrix(const math::Vector3<math::Vector3<float>> &matrix) = 0;
 
         virtual void setMaterial(IMaterial *material) = 0;
         [[nodiscard]] virtual IMaterial *getMaterial() const = 0;
