@@ -59,6 +59,9 @@ namespace rt
             throw RaytracerException(e.what());
         }
 
+        if (_parser->getCamera() == nullptr)
+            throw RaytracerException("No camera found in the scene");
+
         if (!_saveAs.empty()) {
             try {
                 toPPM(_saveAs);

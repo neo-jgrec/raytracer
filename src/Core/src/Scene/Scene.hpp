@@ -33,6 +33,8 @@ namespace rt
         std::list<std::string> materialLoadersNames;
         std::list<utils::DLLoader<IMaterial>> materialLoaders;
 
+        std::list<std::string> importedScenes;
+
         static std::string getLibPathFromMainBinary(const std::string &path)
         {
             const std::string binaryPath = std::filesystem::read_symlink("/proc/self/exe");
@@ -128,11 +130,52 @@ namespace rt
             }
         }
 
+        void parseImports(const libconfig::Setting &imports)
+        {
+            for (int i = 0; i < imports.getLength(); ++i)
+            {
+                std::string importPath = imports[i];
+                std::cout << "Importing scene from " << importPath << std::endl;
+
+                if (std::find(importedScenes.begin(), importedScenes.end(), importPath) != importedScenes.end())
+                    std::cerr << "Scene already imported (" << importPath << ")" << std::endl;
+
+                importedScenes.emplace_back(importPath);
+
+                try {
+                    libconfig::Config cfg;
+                    cfg.readFile(importPath);
+                    const libconfig::Setting &root = cfg.getRoot();
+
+                    ComponentFactory parserMap(this);
+                    for (auto &parser : parserMap.parsers) {
+                        if (root.exists(parser.first))
+                            parser.second(root[parser.first]);
+                    }
+
+                } catch (const libconfig::FileIOException &fioex) {
+                    throw ParserExecption("I/O error", fioex.what());
+                } catch (const libconfig::ParseException &pex) {
+                    throw ParserExecption("Parse error",
+                                        std::string(pex.getError()) + " at line " + std::to_string(pex.getLine()));
+                } catch (const libconfig::SettingNotFoundException &nfex) {
+                    throw ParserExecption("Setting not found", nfex.getPath());
+                } catch (const libconfig::SettingTypeException &stex) {
+                    throw ParserExecption("Setting type error", stex.getPath());
+                } catch (const std::exception &e) {
+                    throw ParserExecption("Unknown error", e.what());
+                }
+            }
+        }
+
         class ComponentFactory {
         public:
             std::map<std::string, std::function<void(libconfig::Setting &)>> parsers;
 
             ComponentFactory(Scene* scene) {
+                parsers["imports"] = [scene](libconfig::Setting &imports) {
+                    scene->parseImports(imports);
+                };
                 parsers["camera"] = [scene](libconfig::Setting &camera) {
                     scene->parseCamera(camera);
                 };
@@ -157,11 +200,20 @@ namespace rt
             {}
         };
 
-        Scene() = default;
-
         [[nodiscard]] ICamera *getCamera() const { return _camera; }
         std::list<IPrimitive *> getPrimitives() { return _primitives; }
         std::list<ILight *> getLights() { return _lights; }
+
+        ~Scene()
+        {
+            for (auto primitive : _primitives)
+                delete primitive;
+            _primitives.clear();
+
+            for (auto light : _lights)
+                delete light;
+            _lights.clear();
+        }
 
         Scene(const std::string &path)
         {
@@ -178,12 +230,16 @@ namespace rt
                         parser.second(root[parser.first]);
                 }
 
+                std::cout << "Primitives: " << _primitives.size() << std::endl;
+                std::cout << "Lights: " << _lights.size() << std::endl;
+                std::cout << "Materials: " << _materials.size() << std::endl;
+                std::cout << "Camera: " << _camera << std::endl;
                 std::cout << "Scene parsed successfully" << std::endl;
             } catch (const libconfig::FileIOException &fioex) {
                 throw ParserExecption("I/O error", fioex.what());
             } catch (const libconfig::ParseException &pex) {
                 throw ParserExecption("Parse error",
-                                      std::string(pex.getError()) + " at line " + std::to_string(pex.getLine()));
+                                    std::string(pex.getError()) + " at line " + std::to_string(pex.getLine()));
             } catch (const libconfig::SettingNotFoundException &nfex) {
                 throw ParserExecption("Setting not found", nfex.getPath());
             } catch (const libconfig::SettingTypeException &stex) {
@@ -193,6 +249,6 @@ namespace rt
             }
         }
     };
-} // namespace rt
+}  // namespace rt
 
 #endif /* !PARSER_HPP_ */
