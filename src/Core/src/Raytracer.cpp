@@ -42,8 +42,9 @@ namespace rt
     }
 
 
-    Raytracer::Raytracer(std::string sceneName, std::string saveAs, std::string graphicalPlugin) :
-        _sceneName(std::move(sceneName)), _saveAs(std::move(saveAs)), _graphicalPlugin(std::move(graphicalPlugin))
+    Raytracer::Raytracer(std::string sceneName, std::string saveAs, std::string graphicalPlugin, bool preview) :
+        _sceneName(std::move(sceneName)), _saveAs(std::move(saveAs)), _graphicalPlugin(std::move(graphicalPlugin)),
+        _preview(preview)
     {
         if (_sceneName.empty())
             throw RaytracerException("No scene provided");
@@ -61,6 +62,12 @@ namespace rt
 
         if (_parser->getCamera() == nullptr)
             throw RaytracerException("No camera found in the scene");
+
+        if (_preview) {
+            auto ratio = _parser->getCamera()->getResolution().first / _parser->getCamera()->getResolution().second;
+            _parser->getCamera()->setResolution(400, 400 / ratio);
+            std::cout << "Previewing enabled, resolution set to 400x" << 400 / ratio << std::endl;
+        }
 
         if (!_saveAs.empty()) {
             try {

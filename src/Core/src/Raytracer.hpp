@@ -19,6 +19,7 @@ namespace rt
         std::string _saveAs;
         std::string _graphicalPlugin;
         std::shared_ptr<Scene> _parser;
+        bool _preview = false;
 
         void toPPM(const std::string &filename);
         void toGraphical();
@@ -29,7 +30,7 @@ namespace rt
             RaytracerException(const std::string &message) : Exception("Raytracer", message) {}
         };
 
-        Raytracer(std::string sceneName, std::string saveAs = "", std::string graphicalPlugin = "");
+        Raytracer(std::string sceneName, std::string saveAs = "", std::string graphicalPlugin = "", bool preview = false);
 
         void run();
     };

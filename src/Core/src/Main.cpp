@@ -5,80 +5,129 @@
 ** Main
 */
 
+#include <cstddef>
 #include <getopt.h>
 #include <iostream>
+#include <iostream>
+#include <optional>
+#include <string>
+#include <map>
+#include <tuple>
 
 #include "Raytracer.hpp"
 
+class CommandLineParser {
+public:
+    CommandLineParser(int argc, char **argv)
+    {
+        args.assign(argv, argv + argc);
+    }
 
-static void displayHelp(const std::string_view binaryName)
-{
-    std::cerr << "Usage: " << binaryName << " scene.cfg\n"
-              << " -p, --ppm [output.ppm]              Save the scene to a PPM file\n"
-                 " -d, --display [graphical_plugin.so] Display the scene using the graphical plugin\n"
-                 " -h, --help                          Display this help message"
-              << std::endl;
-}
+    void addOption(const std::string& longOpt, const std::string& shortOpt, const std::string& description)
+    {
+        options[longOpt] = std::make_tuple(shortOpt, description, std::nullopt);
+    }
 
-static bool handleOpt(const int ac, char **av)
-{
-    const auto shortOpt = "p:d:h";
-    constexpr option longOpt[] = {{"ppm", required_argument, nullptr, 'p'},
-                                  {"display", required_argument, nullptr, 'd'},
-                                  {"help", no_argument, nullptr, 'h'},
-                                  {nullptr, 0, nullptr, 0}};
+    void parse()
+    {
+        for (std::size_t i = 1; i < args.size(); ++i) {
+            if (args[i][0] != '-')
+                continue;
+            std::string option = args[i];
+            std::string argument;
 
-    std::string saveAs;
-    std::string displayLib;
+            bool optionFound = false;
+            for (const auto& opt : options) {
+                if (option == opt.first || std::get<0>(opt.second) == option) {
+                    option = (opt.first == option) ? option : (std::get<0>(opt.second) == option) ? opt.first : option;
+                    if (i + 1 < args.size() && args[i + 1][0] != '-') {
+                        argument = args[i + 1];
+                        ++i;
+                    }
+                    optionFound = true;
+                    break;
+                }
+            }
 
-    while (true) {
-        const auto opt = getopt_long(ac, av, shortOpt, longOpt, nullptr);
+            if (!optionFound)
+                throw std::runtime_error("Unknown option: " + option);
 
-        if (opt == -1)
-            break;
-
-        switch (opt) {
-        case 'p':
-            if (!saveAs.empty())
-                return false;
-            saveAs = optarg;
-            break;
-        case 'd':
-            if (!displayLib.empty())
-                return false;
-            displayLib = optarg;
-            break;
-        case 'h':
-            displayHelp(av[0]);
-            break;
-        default:
-            displayHelp(av[0]);
-            return false;
+            options[option] = std::make_tuple(std::get<0>(options[option]), std::get<1>(options[option]), argument);
         }
     }
 
-    if (optind != ac - 1) {
-        displayHelp(av[0]);
-        return false;
+    [[nodiscard]] std::optional<std::string> getOption(const std::string& longOpt) const
+    {
+        if (options.find(longOpt) == options.end()) {
+            return std::nullopt;
+        }
+        return std::get<2>(options.at(longOpt));
     }
+
+    void displayHelp(const std::string& binaryName) const
+    {
+        std::cout << "Usage: " << binaryName << " [scene.cfg]\n";
+        for (const auto& opt : options) {
+            std::string longOpt = opt.first;
+            std::string shortOpt = std::get<0>(opt.second);
+            std::string description = std::get<1>(opt.second);
+            std::cout << " ";
+            if (!shortOpt.empty()) std::cout << std::setw(2) << shortOpt << ", ";
+            std::cout << std::setw(10) << longOpt << " [";
+            if (!description.empty()) std::cout << description;
+            std::cout << "]\n";
+        }
+    }
+
+private:
+    std::vector<std::string> args;
+    std::map<std::string, std::tuple<std::string, std::string, std::optional<std::string>>> options;
+};
+
+int main(int argc, char **argv)
+{
+    CommandLineParser parser(argc, argv);
+    parser.addOption("--output", "-o", "The output file that will contain the rendered image. e.g. image.ppm");
+    parser.addOption("--display", "-d", "The graphical plugin to use to display the image. e.g. libsfml.so");
+    parser.addOption("--preview", "-p", "Display a preview of the image");
+    parser.addOption("--help", "-h", "Display this help message");
 
     try {
-        rt::Raytracer raytracer(av[optind], saveAs, displayLib);
-        raytracer.run();
-    } catch (const rt::Raytracer::RaytracerException &e) {
+        parser.parse();
+    } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-int main(const int ac, char **av)
-{
-    if (ac < 2) {
-        displayHelp(av[0]);
         return 84;
     }
 
-    return handleOpt(ac, av) ? 0 : 84;
+    if (parser.getOption("--help") != std::nullopt) {
+        parser.displayHelp(argv[0]);
+        return 0;
+    }
+
+    std::string sceneName;
+
+    if (argc > 1) {
+        sceneName = argv[1];
+    } else {
+        std::cerr << "No scene provided\n";
+        return 84;
+    }
+
+    std::string saveAs = parser.getOption("--output").value_or("");
+    std::string graphicalPlugin = parser.getOption("--display").value_or("");
+    bool preview = parser.getOption("--preview").has_value();
+
+    std::cout << "Scene: " << sceneName << std::endl;
+    std::cout << "Save as: " << (saveAs.empty() ? "No output" : saveAs) << std::endl;
+    std::cout << "Graphical plugin: " << (graphicalPlugin.empty() ? "No graphical plugin" : graphicalPlugin) << std::endl;
+    std::cout << "Preview: " << std::boolalpha << preview << std::endl;
+
+    try {
+        rt::Raytracer raytracer(sceneName, saveAs, graphicalPlugin, preview);
+        raytracer.run();
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return 84;
+    }
+    return 0;
 }
