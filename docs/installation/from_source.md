@@ -18,7 +18,7 @@ git clone git@github.com:neo-jgrec/raytracer.git
 git submodule update --init --recursive
 cd raytracer
 ./build_me.sh
-./arcade [configuration_file_path]
+./raytracer [configuration_file_path]
 ```
 
 ## If you want to do everything manually
@@ -33,7 +33,7 @@ With that aside, you can compile the project using `cmake` or your favorite comp
 Finally, you can run the project with the following command:
 
 ```bash
-./arcade [configuration_file_path]
+./raytracer [configuration_file_path]
 ```
 
 ---
