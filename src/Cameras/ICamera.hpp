@@ -10,6 +10,8 @@
 
 #include <list>
 #include <mutex>
+#include <thread>
+#include <vector>
 
 #include "../Plugins/Lights/ILight.hpp"
 #include "../Plugins/Primitives/IPrimitive.hpp"
@@ -39,6 +41,7 @@ namespace rt
         [[nodiscard]] virtual int getFieldOfView() const = 0;
 
         virtual std::mutex &getMutex() = 0;
+        virtual std::vector<std::thread> &getThreads() = 0;
 
         [[nodiscard]] virtual std::tuple<int, int, std::shared_ptr<uint8_t>> getImages() const = 0;
         virtual std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(const std::list<IPrimitive *> &primitives,

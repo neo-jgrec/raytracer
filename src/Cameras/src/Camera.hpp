@@ -32,6 +32,7 @@ namespace rt
         math::Vector3<float> _bottomLeft;
 
         std::mutex _mutex;
+        std::vector<std::thread> _threads;
 
         std::shared_ptr<uint8_t> _pixels{new uint8_t[_width * _height * 4], std::default_delete<uint8_t[]>()};
 
@@ -64,6 +65,7 @@ namespace rt
         std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(const std::list<IPrimitive *> &primitives,
                                                                      const std::list<ILight *> &lights, bool rgba,
                                                                      bool waiting) override;
+        std::vector<std::thread> &getThreads() override { return _threads; }
     };
 } // namespace rt
 

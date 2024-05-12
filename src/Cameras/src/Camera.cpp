@@ -93,23 +93,19 @@ namespace rt
 
         const auto nbThreads = std::thread::hardware_concurrency();
         const uint16_t height = _height / nbThreads;
-        std::vector<std::thread> threads;
 
         std::cout << "Rendering with " << nbThreads << " threads" << std::endl;
         for (uint8_t i = 0; i < nbThreads; ++i)
             if (i == nbThreads - 1)
-                threads.emplace_back(&Camera::generateImageChunk, this, i * height, _height, 0, _width, primitives,
+                _threads.emplace_back(&Camera::generateImageChunk, this, i * height, _height, 0, _width, primitives,
                                      lights, _pixels, rgba);
             else
-                threads.emplace_back(&Camera::generateImageChunk, this, i * height, (i + 1) * height, 0, _width,
+                _threads.emplace_back(&Camera::generateImageChunk, this, i * height, (i + 1) * height, 0, _width,
                                      primitives, lights, _pixels, rgba);
 
         if (waiting)
-            for (auto &thread : threads)
+            for (auto &thread : _threads)
                 thread.join();
-        else
-            for (auto &thread : threads)
-                thread.detach();
 
         return {_width, _height, _pixels};
     }

@@ -6,7 +6,7 @@
 */
 
 #include "SFML.hpp"
-#include <cstddef>
+#include <SFML/Graphics/Sprite.hpp>
 #include "imgui-SFML.h"
 #include "imgui.h"
 #include "../../../Core/src/Scene/Scene.hpp"
@@ -26,6 +26,15 @@ namespace rt
     {
         _window.close();
         ImGui::SFML::Shutdown();
+    }
+
+    void SFML::waitThreads(std::vector<std::thread> &threads)
+    {
+        for (auto &thread : threads) {
+            if (thread.joinable()) {
+                thread.join();
+            }
+        }
     }
 
     void SFML::run(std::shared_ptr<Scene> parser)
@@ -177,5 +186,6 @@ namespace rt
             ImGui::SFML::Render(_window);
             _window.display();
         }
+        waitThreads(parser->getCamera()->getThreads());
     }
 } // namespace rt
