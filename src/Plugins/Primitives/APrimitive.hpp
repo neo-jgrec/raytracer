@@ -140,18 +140,6 @@ namespace rt
             } catch (libconfig::SettingNotFoundException &_) {
             }
             try {
-                // setMatrix(math::Vector3<math::Vector3<float>>{{setting["transform"]["matrix"][0][0].operator float(),
-                //                                                setting["transform"]["matrix"][0][1].operator float(),
-                //                                                setting["transform"]["matrix"][0][2].operator
-                //                                                float()},
-                //                                               {setting["transform"]["matrix"][1][0].operator float(),
-                //                                                setting["transform"]["matrix"][1][1].operator float(),
-                //                                                setting["transform"]["matrix"][1][2].operator
-                //                                                float()},
-                //                                               {setting["transform"]["matrix"][2][0].operator float(),
-                //                                                setting["transform"]["matrix"][2][1].operator float(),
-                //                                                setting["transform"]["matrix"][2][2].operator
-                //                                                float()}});
                 setMatrix(math::Vector3<math::Vector3<float>>{{setting["transform"]["matrix"][0].operator float(),
                                                                setting["transform"]["matrix"][1].operator float(),
                                                                setting["transform"]["matrix"][2].operator float()},
