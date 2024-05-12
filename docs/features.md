@@ -1,6 +1,6 @@
 ---
 title: Features
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 Here are the asked features of the raytracer project:
