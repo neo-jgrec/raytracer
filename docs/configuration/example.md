@@ -73,3 +73,7 @@ lights:
     },
 );
 ```
+
+Resulting image:
+
+![Example default](/img/example_default.png)
