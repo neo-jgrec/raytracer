@@ -26,7 +26,8 @@ namespace rt
         };
 
         Cylinder(const std::vector<math::Vector3<float>> &vertices,
-                 const std::vector<math::Vector3<float>> &directions) : APrimitive(vertices, directions)
+                 const std::vector<math::Vector3<float>> &directions) :
+            APrimitive(vertices, directions)
         {}
 
         [[nodiscard]] float hit(const math::Ray &ray) const override;

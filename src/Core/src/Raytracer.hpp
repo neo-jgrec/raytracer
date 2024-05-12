@@ -30,7 +30,8 @@ namespace rt
             RaytracerException(const std::string &message) : Exception("Raytracer", message) {}
         };
 
-        Raytracer(std::string sceneName, std::string saveAs = "", std::string graphicalPlugin = "", bool preview = false);
+        Raytracer(std::string sceneName, std::string saveAs = "", std::string graphicalPlugin = "",
+                  bool preview = false);
 
         void run();
     };

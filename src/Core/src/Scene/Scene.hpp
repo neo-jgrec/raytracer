@@ -132,8 +132,7 @@ namespace rt
 
         void parseImports(const libconfig::Setting &imports)
         {
-            for (int i = 0; i < imports.getLength(); ++i)
-            {
+            for (int i = 0; i < imports.getLength(); ++i) {
                 std::string importPath = imports[i];
                 std::cout << "Importing scene from " << importPath << std::endl;
 
@@ -157,7 +156,7 @@ namespace rt
                     throw ParserExecption("I/O error", fioex.what());
                 } catch (const libconfig::ParseException &pex) {
                     throw ParserExecption("Parse error",
-                                        std::string(pex.getError()) + " at line " + std::to_string(pex.getLine()));
+                                          std::string(pex.getError()) + " at line " + std::to_string(pex.getLine()));
                 } catch (const libconfig::SettingNotFoundException &nfex) {
                     throw ParserExecption("Setting not found", nfex.getPath());
                 } catch (const libconfig::SettingTypeException &stex) {
@@ -172,22 +171,13 @@ namespace rt
         public:
             std::map<std::string, std::function<void(libconfig::Setting &)>> parsers;
 
-            ComponentFactory(Scene* scene) {
-                parsers["imports"] = [scene](libconfig::Setting &imports) {
-                    scene->parseImports(imports);
-                };
-                parsers["camera"] = [scene](libconfig::Setting &camera) {
-                    scene->parseCamera(camera);
-                };
-                parsers["materials"] = [scene](libconfig::Setting &materials) {
-                    scene->parseMaterials(materials);
-                };
-                parsers["primitives"] = [scene](libconfig::Setting &primitives) {
-                    scene->parsePrimitives(primitives);
-                };
-                parsers["lights"] = [scene](libconfig::Setting &lights) {
-                    scene->parseLights(lights);
-                };
+            ComponentFactory(Scene *scene)
+            {
+                parsers["imports"] = [scene](libconfig::Setting &imports) { scene->parseImports(imports); };
+                parsers["camera"] = [scene](libconfig::Setting &camera) { scene->parseCamera(camera); };
+                parsers["materials"] = [scene](libconfig::Setting &materials) { scene->parseMaterials(materials); };
+                parsers["primitives"] = [scene](libconfig::Setting &primitives) { scene->parsePrimitives(primitives); };
+                parsers["lights"] = [scene](libconfig::Setting &lights) { scene->parseLights(lights); };
             }
         };
 
@@ -239,7 +229,7 @@ namespace rt
                 throw ParserExecption("I/O error", fioex.what());
             } catch (const libconfig::ParseException &pex) {
                 throw ParserExecption("Parse error",
-                                    std::string(pex.getError()) + " at line " + std::to_string(pex.getLine()));
+                                      std::string(pex.getError()) + " at line " + std::to_string(pex.getLine()));
             } catch (const libconfig::SettingNotFoundException &nfex) {
                 throw ParserExecption("Setting not found", nfex.getPath());
             } catch (const libconfig::SettingTypeException &stex) {
@@ -249,6 +239,6 @@ namespace rt
             }
         }
     };
-}  // namespace rt
+} // namespace rt
 
 #endif /* !PARSER_HPP_ */
