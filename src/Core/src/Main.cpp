@@ -6,24 +6,19 @@
 */
 
 #include <cstddef>
-#include <getopt.h>
 #include <iostream>
-#include <iostream>
+#include <map>
 #include <optional>
 #include <string>
-#include <map>
 #include <tuple>
 
 #include "Raytracer.hpp"
 
 class CommandLineParser {
 public:
-    CommandLineParser(int argc, char **argv)
-    {
-        args.assign(argv, argv + argc);
-    }
+    CommandLineParser(const int argc, char **argv) { args.assign(argv, argv + argc); }
 
-    void addOption(const std::string& longOpt, const std::string& shortOpt, const std::string& description)
+    void addOption(const std::string &longOpt, const std::string &shortOpt, const std::string &description)
     {
         options[longOpt] = std::make_tuple(shortOpt, description, std::nullopt);
     }
@@ -37,9 +32,9 @@ public:
             std::string argument;
 
             bool optionFound = false;
-            for (const auto& opt : options) {
-                if (option == opt.first || std::get<0>(opt.second) == option) {
-                    option = (opt.first == option) ? option : (std::get<0>(opt.second) == option) ? opt.first : option;
+            for (const auto &[fst, snd] : options) {
+                if (option == fst || std::get<0>(snd) == option) {
+                    option = (fst == option) ? option : (std::get<0>(snd) == option) ? fst : option;
                     if (i + 1 < args.size() && args[i + 1][0] != '-') {
                         argument = args[i + 1];
                         ++i;
@@ -56,25 +51,26 @@ public:
         }
     }
 
-    [[nodiscard]] std::optional<std::string> getOption(const std::string& longOpt) const
+    [[nodiscard]] std::optional<std::string> getOption(const std::string &longOpt) const
     {
-        if (options.find(longOpt) == options.end()) {
+        if (!options.contains(longOpt))
             return std::nullopt;
-        }
         return std::get<2>(options.at(longOpt));
     }
 
-    void displayHelp(const std::string& binaryName) const
+    void displayHelp(const std::string &binaryName) const
     {
         std::cout << "Usage: " << binaryName << " [scene.cfg]\n";
-        for (const auto& opt : options) {
-            std::string longOpt = opt.first;
-            std::string shortOpt = std::get<0>(opt.second);
-            std::string description = std::get<1>(opt.second);
+        for (const auto &[fst, snd] : options) {
+            std::string longOpt = fst;
+            std::string shortOpt = std::get<0>(snd);
+            std::string description = std::get<1>(snd);
             std::cout << " ";
-            if (!shortOpt.empty()) std::cout << std::setw(2) << shortOpt << ", ";
-            std::cout << std::setw(10) << longOpt << " [";
-            if (!description.empty()) std::cout << description;
+            if (!shortOpt.empty())
+                std::cout << std::setw(2) << shortOpt << ", ";
+            std::cout << std::setw(10) << std::left << longOpt << " [";
+            if (!description.empty())
+                std::cout << description;
             std::cout << "]\n";
         }
     }
@@ -119,7 +115,8 @@ int main(int argc, char **argv)
 
     std::cout << "Scene: " << sceneName << std::endl;
     std::cout << "Save as: " << (saveAs.empty() ? "No output" : saveAs) << std::endl;
-    std::cout << "Graphical plugin: " << (graphicalPlugin.empty() ? "No graphical plugin" : graphicalPlugin) << std::endl;
+    std::cout << "Graphical plugin: " << (graphicalPlugin.empty() ? "No graphical plugin" : graphicalPlugin)
+              << std::endl;
     std::cout << "Preview: " << std::boolalpha << preview << std::endl;
 
     try {
