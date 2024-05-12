@@ -1,0 +1,75 @@
+---
+title: Example
+sidebar_position: 5
+---
+
+To configure a raytracer scene, you need to create a `.cfg`.
+
+Some files are provided in the `scenes` folder of the project.
+    - `default.cfg`
+    - `fast.cfg`
+    - `import.cfg`
+    - `sphere.cfg`
+    - `sphere_light.cfg`
+    - `translation.cfg`
+
+Here's a sample that can be found in the `scenes` folder:
+
+
+```cfg title="default.cfg"
+# Configuration of the camera
+camera:
+{
+    lib = "raytracer_camera.so";
+    resolution = { width = 1920; height = 1080; };
+    origin = { x = 0; y = 20; z = -100; };
+    direction = { x = 0; y = 0; z = 1; };
+    fieldOfView = 72;
+};
+
+materials:
+(
+    { lib = "raytracer_flatcolor.so"; name = "red";   color = { r = 255; g = 64; b = 64; }; },
+    { lib = "raytracer_flatcolor.so"; name = "green"; color = { r = 64; g = 255; b = 64; }; },
+    { lib = "raytracer_flatcolor.so"; name = "blue";  color = { r = 64; g = 64; b = 255; }; }
+);
+
+# Primitives in the scene
+primitives:
+(
+    {
+        lib = "raytracer_sphere.so";
+        material = "red";
+        origin = { x = 60.0; y = 40.0; z = 5.0; };
+        radius = 25.0;
+    },
+    {
+        lib = "raytracer_sphere.so";
+        material = "green";
+        origin = { x = -40.0; y = -10.0; z = 20.0; };
+        radius = 35.0;
+    },
+    {
+        lib = "raytracer_plane.so";
+        material = "blue";
+        origin = { x = 0.0; y = -20.0; z = 0.0; };
+        direction = { x = 0.0; y = 1.0; z = 0.0; };
+    }
+);
+
+# Light configuration
+lights:
+(
+    {
+        lib = "raytracer_ambientlight.so";
+        color = { r = 255; g = 255; b = 255; };
+        intensity = 0.4;
+    },
+    {
+        lib = "raytracer_pointlight.so";
+        origin = { x = 400; y = 500; z = 100; };
+        color = { r = 255; g = 255; b = 255; };
+        intensity = 0.6;
+    },
+);
+```
