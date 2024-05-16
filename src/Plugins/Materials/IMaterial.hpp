@@ -8,8 +8,11 @@
 #ifndef IMATERIAL_HPP
 #define IMATERIAL_HPP
 
+#include <list>
+
 #include "../../Math/Math.hpp"
 #include "../../Utils/Utils.hpp"
+#include "../Primitives/IPrimitive.hpp"
 
 namespace rt
 {
@@ -24,7 +27,8 @@ namespace rt
 
         virtual ~IMaterial() = default;
 
-        [[nodiscard]] virtual utils::Color getColor(const math::Vector3<float> &point) const = 0;
+        [[nodiscard]] virtual utils::Color getColor(const IPrimitive *currentPrimitive,
+                                                    const math::Vector3<float> &point) const = 0;
     };
 } // namespace rt
 

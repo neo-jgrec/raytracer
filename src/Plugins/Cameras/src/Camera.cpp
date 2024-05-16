@@ -12,6 +12,8 @@
 #include <thread>
 #include <vector>
 
+#include "../../Materials/IMaterial.hpp"
+
 namespace rt
 {
     void Camera::setResolution(const int width, const int height)
@@ -55,10 +57,11 @@ namespace rt
 
                 utils::Color color;
                 if (closestPrimitive) {
+                    const math::Vector3<float> point = ray.at(t);
                     for (const auto &light : lights)
-                        color += light->illuminate(ray.at(t), primitives, closestPrimitive);
+                        color += light->illuminate(point, primitives, closestPrimitive);
 
-                    color *= closestPrimitive->getMaterial()->getColor(ray.at(t));
+                    color *= closestPrimitive->getMaterial()->getColor(closestPrimitive, point);
                     color = color.clamp();
                 }
 

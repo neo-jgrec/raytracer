@@ -10,10 +10,11 @@
 
 #include "../../Math/Math.hpp"
 #include "../../Utils/Utils.hpp"
-#include "../Materials/IMaterial.hpp"
 
 namespace rt
 {
+    class IMaterial;
+
     class IPrimitive {
     public:
         class IPrimitiveException : public utils::Exception {

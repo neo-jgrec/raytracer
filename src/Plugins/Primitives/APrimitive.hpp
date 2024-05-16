@@ -9,6 +9,7 @@
 #define APRIMITIVE_HPP
 
 #include "IPrimitive.hpp"
+#include "../Materials/IMaterial.hpp"
 
 #include <libconfig.h++>
 #include <vector>
@@ -36,9 +37,7 @@ namespace rt
 
         APrimitive(const std::vector<math::Vector3<float>> &vertices) : _vertices(vertices) {}
         APrimitive(const std::vector<math::Vector3<float>> &vertices,
-                   const std::vector<math::Vector3<float>> &directions) :
-            _vertices(vertices),
-            _directions(directions)
+                   const std::vector<math::Vector3<float>> &directions) : _vertices(vertices), _directions(directions)
         {}
 
         [[nodiscard]] float hit(const math::Ray &ray) const override = 0;

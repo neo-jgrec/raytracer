@@ -9,9 +9,9 @@
 
 namespace rt
 {
-    utils::Color UVColor::getColor(const math::Vector3<float> &point) const
+    utils::Color UVColor::getColor(const IPrimitive *currentPrimitive, const math::Vector3<float> &point) const
     {
-        const auto N = (point - math::Vector3<float>{0, 0, -1}).normalize();
+        const auto N = currentPrimitive->getNormal(point);
         return utils::Color{N.x, N.y, N.z} * 0.5f + 0.5f;
     }
 } // namespace rt
