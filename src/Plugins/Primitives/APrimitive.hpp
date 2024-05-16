@@ -8,8 +8,8 @@
 #ifndef APRIMITIVE_HPP
 #define APRIMITIVE_HPP
 
-#include "IPrimitive.hpp"
 #include "../Materials/IMaterial.hpp"
+#include "IPrimitive.hpp"
 
 #include <libconfig.h++>
 #include <vector>
@@ -154,10 +154,10 @@ namespace rt
             }
         }
     };
-} // namespace rt
 
-extern "C" {
-    void destroy(const rt::IPrimitive *ptr) { delete ptr; }
-}
+    extern "C" {
+        void destroy(const IPrimitive *ptr) { delete ptr; }
+    }
+} // namespace rt
 
 #endif // APRIMITIVE_HPP

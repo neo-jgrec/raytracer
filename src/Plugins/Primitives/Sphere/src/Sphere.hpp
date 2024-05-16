@@ -30,22 +30,22 @@ namespace rt
         [[nodiscard]] float getRadius() const { return _radius; }
         void setRadius(const float radius) { _radius = radius; }
     };
-} // namespace rt
 
-extern "C" {
-    rt::IPrimitive *createComponent(const libconfig::Setting &setting, rt::IMaterial *material)
-    {
-        auto *ptr = new rt::Sphere(
-            std::vector{math::Vector3{setting["origin"]["x"].operator float(), setting["origin"]["y"].operator float(),
-                                      setting["origin"]["z"].operator float()}});
+    extern "C" {
+        IPrimitive *createComponent(const libconfig::Setting &setting, IMaterial *material)
+        {
+            auto *ptr = new Sphere(std::vector{math::Vector3{setting["origin"]["x"].operator float(),
+                                                             setting["origin"]["y"].operator float(),
+                                                             setting["origin"]["z"].operator float()}});
 
-        ptr->setRadius(setting["radius"].operator float());
+            ptr->setRadius(setting["radius"].operator float());
 
-        ptr->settingsTransform(setting);
-        ptr->setMaterial(material);
+            ptr->settingsTransform(setting);
+            ptr->setMaterial(material);
 
-        return ptr;
+            return ptr;
+        }
     }
-}
+} // namespace rt
 
 #endif // SPHERE_HPP

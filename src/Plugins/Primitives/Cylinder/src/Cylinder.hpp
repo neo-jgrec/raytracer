@@ -26,8 +26,7 @@ namespace rt
         };
 
         Cylinder(const std::vector<math::Vector3<float>> &vertices,
-                 const std::vector<math::Vector3<float>> &directions) :
-            APrimitive(vertices, directions)
+                 const std::vector<math::Vector3<float>> &directions) : APrimitive(vertices, directions)
         {}
 
         [[nodiscard]] float hit(const math::Ray &ray) const override;
@@ -39,26 +38,26 @@ namespace rt
         void setHeight(const float height) { _height = height; }
         [[nodiscard]] float getHeight() const { return _height; }
     };
-} // namespace rt
 
-extern "C" {
-    rt::IPrimitive *createComponent(const libconfig::Setting &setting, rt::IMaterial *material)
-    {
-        auto *ptr = new rt::Cylinder(
-            std::vector{math::Vector3{setting["origin"]["x"].operator float(), setting["origin"]["y"].operator float(),
-                                      setting["origin"]["z"].operator float()}},
-            std::vector{math::Vector3{setting["direction"]["x"].operator float(),
-                                      setting["direction"]["y"].operator float(),
-                                      setting["direction"]["z"].operator float()}});
+    extern "C" {
+        IPrimitive *createComponent(const libconfig::Setting &setting, IMaterial *material)
+        {
+            auto *ptr = new Cylinder(std::vector{math::Vector3{setting["origin"]["x"].operator float(),
+                                                               setting["origin"]["y"].operator float(),
+                                                               setting["origin"]["z"].operator float()}},
+                                     std::vector{math::Vector3{setting["direction"]["x"].operator float(),
+                                                               setting["direction"]["y"].operator float(),
+                                                               setting["direction"]["z"].operator float()}});
 
-        ptr->setRadius(setting["radius"].operator float());
-        ptr->setHeight(setting["height"].operator float());
+            ptr->setRadius(setting["radius"].operator float());
+            ptr->setHeight(setting["height"].operator float());
 
-        ptr->settingsTransform(setting);
-        ptr->setMaterial(material);
+            ptr->settingsTransform(setting);
+            ptr->setMaterial(material);
 
-        return ptr;
+            return ptr;
+        }
     }
-}
+} // namespace rt
 
 #endif // CYLINDER_HPP

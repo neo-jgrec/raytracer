@@ -23,13 +23,12 @@ namespace rt
         [[nodiscard]] utils::Color getColor(const IPrimitive *currentPrimitive,
                                             const math::Vector3<float> &point) const override;
     };
+
+    extern "C" {
+        UVColor *createComponent([[maybe_unused]] libconfig::Setting &setting) { return new UVColor(); }
+
+        void destroy(const UVColor *ptr) { delete ptr; }
+    }
 } // namespace rt
-
-
-extern "C" {
-    rt::UVColor *createComponent([[maybe_unused]] libconfig::Setting &material) { return new rt::UVColor(); }
-
-    void destroy(const rt::UVColor *ptr) { delete ptr; }
-}
 
 #endif // UVCOLOR_HPP

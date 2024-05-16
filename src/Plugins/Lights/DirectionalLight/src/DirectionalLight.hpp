@@ -53,28 +53,28 @@ namespace rt
             _intensity = intensity;
         }
     };
-} // namespace rt
 
-extern "C" {
-    rt::DirectionalLight *createComponent(const libconfig::Setting &light)
-    {
-        auto *newDirectionalLight = new rt::DirectionalLight();
+    extern "C" {
+        DirectionalLight *createComponent(const libconfig::Setting &setting)
+        {
+            auto *ptr = new DirectionalLight();
 
-        newDirectionalLight->setOrigin(math::Vector3{static_cast<float>(light["origin"]["x"].operator int()),
-                                                     static_cast<float>(light["origin"]["y"].operator int()),
-                                                     static_cast<float>(light["origin"]["z"].operator int())});
-        newDirectionalLight->setDirection(math::Vector3{static_cast<float>(light["direction"]["x"].operator int()),
-                                                        static_cast<float>(light["direction"]["y"].operator int()),
-                                                        static_cast<float>(light["direction"]["z"].operator int())});
-        newDirectionalLight->setColor(utils::Color{static_cast<float>(light["color"]["r"].operator int()) / 255.f,
-                                                   static_cast<float>(light["color"]["g"].operator int()) / 255.f,
-                                                   static_cast<float>(light["color"]["b"].operator int()) / 255.f});
-        newDirectionalLight->setIntensity((light["intensity"].operator float()));
+            ptr->setOrigin(math::Vector3{static_cast<float>(setting["origin"]["x"].operator int()),
+                                         static_cast<float>(setting["origin"]["y"].operator int()),
+                                         static_cast<float>(setting["origin"]["z"].operator int())});
+            ptr->setDirection(math::Vector3{static_cast<float>(setting["direction"]["x"].operator int()),
+                                            static_cast<float>(setting["direction"]["y"].operator int()),
+                                            static_cast<float>(setting["direction"]["z"].operator int())});
+            ptr->setColor(utils::Color{static_cast<float>(setting["color"]["r"].operator int()) / 255.f,
+                                       static_cast<float>(setting["color"]["g"].operator int()) / 255.f,
+                                       static_cast<float>(setting["color"]["b"].operator int()) / 255.f});
+            ptr->setIntensity(setting["intensity"].operator float());
 
-        return newDirectionalLight;
+            return ptr;
+        }
+
+        void destroy(const DirectionalLight *ptr) { delete ptr; }
     }
-
-    void destroy(const rt::DirectionalLight *ptr) { delete ptr; }
-}
+} // namespace rt
 
 #endif // DIRECTIONALLIGHT_HPP

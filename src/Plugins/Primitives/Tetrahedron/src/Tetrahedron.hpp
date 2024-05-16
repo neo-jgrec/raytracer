@@ -26,26 +26,26 @@ namespace rt
         [[nodiscard]] float hit(const math::Ray &ray) const override;
         [[nodiscard]] math::Vector3<float> getNormal(const math::Vector3<float> &point) const override;
     };
-} // namespace rt
 
-extern "C" {
-    rt::IPrimitive *createComponent(const libconfig::Setting &setting, rt::IMaterial *material)
-    {
-        auto *ptr = new rt::Tetrahedron(
-            std::vector{math::Vector3{setting["v0"]["x"].operator float(), setting["v0"]["y"].operator float(),
-                                      setting["v0"]["z"].operator float()},
-                        math::Vector3{setting["v1"]["x"].operator float(), setting["v1"]["y"].operator float(),
-                                      setting["v1"]["z"].operator float()},
-                        math::Vector3{setting["v2"]["x"].operator float(), setting["v2"]["y"].operator float(),
-                                      setting["v2"]["z"].operator float()},
-                        math::Vector3{setting["v3"]["x"].operator float(), setting["v3"]["y"].operator float(),
-                                      setting["v3"]["z"].operator float()}});
+    extern "C" {
+        IPrimitive *createComponent(const libconfig::Setting &setting, IMaterial *material)
+        {
+            auto *ptr = new Tetrahedron(
+                std::vector{math::Vector3{setting["v0"]["x"].operator float(), setting["v0"]["y"].operator float(),
+                                          setting["v0"]["z"].operator float()},
+                            math::Vector3{setting["v1"]["x"].operator float(), setting["v1"]["y"].operator float(),
+                                          setting["v1"]["z"].operator float()},
+                            math::Vector3{setting["v2"]["x"].operator float(), setting["v2"]["y"].operator float(),
+                                          setting["v2"]["z"].operator float()},
+                            math::Vector3{setting["v3"]["x"].operator float(), setting["v3"]["y"].operator float(),
+                                          setting["v3"]["z"].operator float()}});
 
-        ptr->settingsTransform(setting);
-        ptr->setMaterial(material);
+            ptr->settingsTransform(setting);
+            ptr->setMaterial(material);
 
-        return ptr;
+            return ptr;
+        }
     }
-}
+} // namespace rt
 
 #endif // SPHERE_HPP

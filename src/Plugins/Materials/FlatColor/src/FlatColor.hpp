@@ -29,22 +29,21 @@ namespace rt
         [[nodiscard]] utils::Color getColor() const { return _color; }
         void setColor(const utils::Color &color) { _color = color; }
     };
-} // namespace rt
 
-extern "C" {
-    rt::FlatColor *createComponent([[maybe_unused]] const libconfig::Setting &setting)
-    {
-        auto *ptr = new rt::FlatColor();
+    extern "C" {
+        FlatColor *createComponent(const libconfig::Setting &setting)
+        {
+            auto *ptr = new FlatColor();
 
-        ptr->setColor(utils::Color{static_cast<float>(setting["color"]["r"].operator int()) / 255,
-                                   static_cast<float>(setting["color"]["g"].operator int()) / 255,
-                                   static_cast<float>(setting["color"]["b"].operator int()) / 255});
+            ptr->setColor(utils::Color{static_cast<float>(setting["color"]["r"].operator int()) / 255,
+                                       static_cast<float>(setting["color"]["g"].operator int()) / 255,
+                                       static_cast<float>(setting["color"]["b"].operator int()) / 255});
 
-        return ptr;
+            return ptr;
+        }
+
+        void destroy(const FlatColor *ptr) { delete ptr; }
     }
-
-    void destroy(const rt::FlatColor *ptr) { delete ptr; }
-}
-
+} // namespace rt
 
 #endif // FLATCOLOR_HPP

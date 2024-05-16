@@ -62,25 +62,27 @@ namespace rt
                             const IImage &image) override;
         void awaitDrawImage() override;
     };
-} // namespace rt
 
-extern "C" {
-    rt::ICamera *createComponent(const libconfig::Setting &camera)
-    {
-        auto *newCamera = new rt::Camera();
+    extern "C" {
+        ICamera *createComponent(const libconfig::Setting &setting)
+        {
+            auto *ptr = new Camera();
 
-        newCamera->setOrigin(math::Vector3{static_cast<float>(camera["origin"]["x"].operator int()),
-                                           static_cast<float>(camera["origin"]["y"].operator int()),
-                                           static_cast<float>(camera["origin"]["z"].operator int())});
-        newCamera->setDirection(math::Vector3{static_cast<float>(camera["direction"]["x"].operator int()),
-                                              static_cast<float>(camera["direction"]["y"].operator int()),
-                                              static_cast<float>(camera["direction"]["z"].operator int())});
-        newCamera->setResolution(camera["resolution"]["width"].operator int(),
-                                 camera["resolution"]["height"].operator int());
-        newCamera->setFieldOfView(camera["fieldOfView"].operator int());
+            ptr->setOrigin(math::Vector3{static_cast<float>(setting["origin"]["x"].operator int()),
+                                         static_cast<float>(setting["origin"]["y"].operator int()),
+                                         static_cast<float>(setting["origin"]["z"].operator int())});
+            ptr->setDirection(math::Vector3{static_cast<float>(setting["direction"]["x"].operator int()),
+                                            static_cast<float>(setting["direction"]["y"].operator int()),
+                                            static_cast<float>(setting["direction"]["z"].operator int())});
+            ptr->setResolution(setting["resolution"]["width"].operator int(),
+                               setting["resolution"]["height"].operator int());
+            ptr->setFieldOfView(setting["fieldOfView"].operator int());
 
-        return newCamera;
+            return ptr;
+        }
+
+        void destroy(const ICamera *ptr) { delete ptr; }
     }
-}
+} // namespace rt
 
 #endif /* !CAMERA_HPP_ */

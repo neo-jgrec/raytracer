@@ -24,15 +24,15 @@ namespace rt
 
         void run(std::shared_ptr<Scene> parser) override;
     };
-} // namespace rt
 
-extern "C" {
-    rt::IDisplay *create_display(const uint32_t width, const uint32_t height, const std::string &title)
-    {
-        return new rt::SFML(width, height, title);
+    extern "C" {
+        IDisplay *create_display(const uint32_t width, const uint32_t height, const std::string &title)
+        {
+            return new SFML{width, height, title};
+        }
+
+        void destroy(const SFML *display) { delete display; }
     }
-
-    void destroy(const rt::SFML *display) { delete display; }
-}
+} // namespace rt
 
 #endif /* !SFML_HPP_ */

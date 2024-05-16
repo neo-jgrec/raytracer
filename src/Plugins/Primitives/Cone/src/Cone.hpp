@@ -38,26 +38,26 @@ namespace rt
 
         static float sgn(const float x) { return x > 0 ? 1 : -1; }
     };
-} // namespace rt
 
-extern "C" {
-    rt::IPrimitive *createComponent(const libconfig::Setting &setting, rt::IMaterial *material)
-    {
-        auto *ptr = new rt::Cone(
-            std::vector{math::Vector3{setting["origin"]["x"].operator float(), setting["origin"]["y"].operator float(),
-                                      setting["origin"]["z"].operator float()}},
-            std::vector{math::Vector3{setting["direction"]["x"].operator float(),
-                                      setting["direction"]["y"].operator float(),
-                                      setting["direction"]["z"].operator float()}});
+    extern "C" {
+        IPrimitive *createComponent(const libconfig::Setting &setting, IMaterial *material)
+        {
+            auto *ptr = new Cone(std::vector{math::Vector3{setting["origin"]["x"].operator float(),
+                                                           setting["origin"]["y"].operator float(),
+                                                           setting["origin"]["z"].operator float()}},
+                                 std::vector{math::Vector3{setting["direction"]["x"].operator float(),
+                                                           setting["direction"]["y"].operator float(),
+                                                           setting["direction"]["z"].operator float()}});
 
-        ptr->setRadius(setting["radius"].operator float());
-        ptr->setHeight(setting["height"].operator float());
+            ptr->setRadius(setting["radius"].operator float());
+            ptr->setHeight(setting["height"].operator float());
 
-        ptr->settingsTransform(setting);
-        ptr->setMaterial(material);
+            ptr->settingsTransform(setting);
+            ptr->setMaterial(material);
 
-        return ptr;
+            return ptr;
+        }
     }
-}
+} // namespace rt
 
 #endif // CONE_HPP

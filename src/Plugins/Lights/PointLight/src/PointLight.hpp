@@ -49,25 +49,25 @@ namespace rt
             _intensity = intensity;
         }
     };
-} // namespace rt
 
-extern "C" {
-    rt::PointLight *createComponent(const libconfig::Setting &light)
-    {
-        auto *ptr = new rt::PointLight();
+    extern "C" {
+        PointLight *createComponent(const libconfig::Setting &setting)
+        {
+            auto *ptr = new PointLight();
 
-        ptr->setOrigin(math::Vector3{static_cast<float>(light["origin"]["x"].operator int()),
-                                     static_cast<float>(light["origin"]["y"].operator int()),
-                                     static_cast<float>(light["origin"]["z"].operator int())});
-        ptr->setColor(utils::Color{static_cast<float>(light["color"]["r"].operator int()) / 255.f,
-                                   static_cast<float>(light["color"]["g"].operator int()) / 255.f,
-                                   static_cast<float>(light["color"]["b"].operator int()) / 255.f});
-        ptr->setIntensity((light["intensity"].operator float()));
+            ptr->setOrigin(math::Vector3{static_cast<float>(setting["origin"]["x"].operator int()),
+                                         static_cast<float>(setting["origin"]["y"].operator int()),
+                                         static_cast<float>(setting["origin"]["z"].operator int())});
+            ptr->setColor(utils::Color{static_cast<float>(setting["color"]["r"].operator int()) / 255.f,
+                                       static_cast<float>(setting["color"]["g"].operator int()) / 255.f,
+                                       static_cast<float>(setting["color"]["b"].operator int()) / 255.f});
+            ptr->setIntensity(setting["intensity"].operator float());
 
-        return ptr;
+            return ptr;
+        }
+
+        void destroy(const PointLight *ptr) { delete ptr; }
     }
-
-    void destroy(const rt::PointLight *ptr) { delete ptr; }
-}
+} // namespace rt
 
 #endif // POINTLIGHT_HPP

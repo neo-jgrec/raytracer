@@ -42,22 +42,22 @@ namespace rt
             _intensity = intensity;
         }
     };
-} // namespace rt
 
-extern "C" {
-    rt::AmbientLight *createComponent(const libconfig::Setting &light)
-    {
-        auto *ptr = new rt::AmbientLight();
+    extern "C" {
+        AmbientLight *createComponent(const libconfig::Setting &setting)
+        {
+            auto *ptr = new AmbientLight();
 
-        ptr->setColor(utils::Color{static_cast<float>(light["color"]["r"].operator int()) / 255.f,
-                                   static_cast<float>(light["color"]["g"].operator int()) / 255.f,
-                                   static_cast<float>(light["color"]["b"].operator int()) / 255.f});
-        ptr->setIntensity((light["intensity"].operator float()));
+            ptr->setColor(utils::Color{static_cast<float>(setting["color"]["r"].operator int()) / 255.f,
+                                       static_cast<float>(setting["color"]["g"].operator int()) / 255.f,
+                                       static_cast<float>(setting["color"]["b"].operator int()) / 255.f});
+            ptr->setIntensity(setting["intensity"].operator float());
 
-        return ptr;
+            return ptr;
+        }
+
+        void destroy(const AmbientLight *ptr) { delete ptr; }
     }
-
-    void destroy(const rt::AmbientLight *ptr) { delete ptr; }
-}
+} // namespace rt
 
 #endif // AMBIENTLIGHT_HPP
