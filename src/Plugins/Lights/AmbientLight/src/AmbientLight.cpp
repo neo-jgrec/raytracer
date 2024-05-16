@@ -9,7 +9,7 @@
 
 namespace rt
 {
-    utils::Color AmbientLight::illuminate(const math::Vector3<float> &point,
+    utils::Color AmbientLight::illuminate([[maybe_unused]] const math::Vector3<float> &point,
                                           [[maybe_unused]] const std::list<IPrimitive *> &primitives,
                                           [[maybe_unused]] const IPrimitive *closestPrimitive) const
     {

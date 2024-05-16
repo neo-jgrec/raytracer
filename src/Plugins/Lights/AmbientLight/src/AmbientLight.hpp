@@ -8,11 +8,9 @@
 #ifndef AMBIENTLIGHT_HPP
 #define AMBIENTLIGHT_HPP
 
-#include "../ILight.hpp"
-
 #include <libconfig.h++>
 
-#include "../../../Math/Math.hpp"
+#include "../ILight.hpp"
 
 namespace rt
 {
@@ -28,8 +26,8 @@ namespace rt
         };
 
         [[nodiscard]] utils::Color illuminate(const math::Vector3<float> &point,
-                                              [[maybe_unused]] const std::list<IPrimitive *> &primitives,
-                                              [[maybe_unused]] const IPrimitive *closestPrimitive) const override;
+                                              const std::list<IPrimitive *> &primitives,
+                                              const IPrimitive *closestPrimitive) const override;
 
         [[nodiscard]] const math::Vector3<float> &getOrigin() const override;
 
