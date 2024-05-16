@@ -7,6 +7,8 @@
 
 #include "Sphere.hpp"
 
+#include <iostream>
+
 namespace rt
 {
     float Sphere::hit(const math::Ray &ray) const
@@ -17,7 +19,11 @@ namespace rt
         const auto c = oc.dot(oc) - _radius * _radius;
 
         const auto descriminant = b * b - 4 * a * c;
-        return descriminant < 0 ? -1 : (-b - std::sqrt(descriminant)) / (2 * a);
+        if (descriminant < 0)
+            return -1.0f;
+        if (const auto t1 = (-b - std::sqrt(descriminant)) / (2 * a); t1 > 0)
+            return t1;
+        return (-b + std::sqrt(descriminant)) / (2 * a);
     }
 
     math::Vector3<float> Sphere::getNormal(const math::Vector3<float> &point) const
