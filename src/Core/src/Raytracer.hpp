@@ -21,8 +21,8 @@ namespace rt
         std::shared_ptr<Scene> _parser;
         bool _preview = false;
 
-        void toPPM(const std::string &filename);
-        void toGraphical();
+        void toPPM(const std::string &filename) const;
+        void toGraphical() const;
 
     public:
         class RaytracerException final : public utils::Exception {

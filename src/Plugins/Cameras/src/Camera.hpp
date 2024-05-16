@@ -8,10 +8,9 @@
 #ifndef CAMERA_HPP_
 #define CAMERA_HPP_
 
-#include <libconfig.h++>
 #include "../ICamera.hpp"
 
-#include <mutex>
+#include <libconfig.h++>
 
 namespace rt
 {

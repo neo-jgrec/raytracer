@@ -8,9 +8,7 @@
 #ifndef IDISPLAY_HPP_
 #define IDISPLAY_HPP_
 
-#include <string>
-
-#include "../Core/src/Scene/Scene.hpp"
+#include "../../src/Core/src/Scene/Scene.hpp"
 
 namespace rt
 {

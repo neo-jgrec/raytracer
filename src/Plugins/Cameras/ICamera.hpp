@@ -13,8 +13,8 @@
 #include <thread>
 #include <vector>
 
-#include "../Plugins/Lights/ILight.hpp"
-#include "../Plugins/Primitives/IPrimitive.hpp"
+#include "../Lights/ILight.hpp"
+#include "../Primitives/IPrimitive.hpp"
 
 namespace rt
 {

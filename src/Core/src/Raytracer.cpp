@@ -12,13 +12,13 @@
 #include <iostream>
 #include <utility>
 
-#include "../Displays/IDisplay.hpp"
+#include "../Plugins/Displays/IDisplay.hpp"
 #include "../Utils/DLLoader.hpp"
 #include "Scene/Scene.hpp"
 
 namespace rt
 {
-    void Raytracer::toPPM(const std::string &filename)
+    void Raytracer::toPPM(const std::string &filename) const
     {
         const auto image =
             _parser->getCamera()->generateImage(_parser->getPrimitives(), _parser->getLights(), false, true);
@@ -30,7 +30,7 @@ namespace rt
         file.close();
         std::cout << "Image saved to " << filename << std::endl;
     }
-    void Raytracer::toGraphical()
+    void Raytracer::toGraphical() const
     {
         const utils::DLLoader<IDisplay> graphicalPluginLoader(_graphicalPlugin, "create_display");
         const std::function create_display =

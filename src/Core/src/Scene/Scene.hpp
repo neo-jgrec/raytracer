@@ -14,7 +14,7 @@
 #include <libconfig.h++>
 #include <map>
 
-#include "../../../Cameras/ICamera.hpp"
+#include "../../../Plugins/Cameras/ICamera.hpp"
 
 namespace rt
 {
@@ -214,7 +214,7 @@ namespace rt
                 cfg.readFile(abs_path);
                 const libconfig::Setting &root = cfg.getRoot();
 
-                ComponentFactory parserMap(this);
+                const ComponentFactory parserMap(this);
                 for (auto &parser : parserMap.parsers) {
                     if (root.exists(parser.first))
                         parser.second(root[parser.first]);

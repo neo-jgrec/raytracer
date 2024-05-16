@@ -9,6 +9,7 @@
 #define SFML_HPP_
 
 #include <SFML/Graphics.hpp>
+
 #include "../../IDisplay.hpp"
 
 namespace rt

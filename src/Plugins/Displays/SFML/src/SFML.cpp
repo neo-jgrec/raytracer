@@ -6,10 +6,9 @@
 */
 
 #include "SFML.hpp"
-#include <SFML/Graphics/Sprite.hpp>
+
 #include "imgui-SFML.h"
 #include "imgui.h"
-#include "../../../Core/src/Scene/Scene.hpp"
 
 namespace rt
 {
@@ -123,7 +122,8 @@ namespace rt
                         texture.update(black);
                         parser = std::make_shared<Scene>(std::filesystem::absolute(filename).string());
                         if (isPreviewing) {
-                            auto ratio = parser->getCamera()->getResolution().first / parser->getCamera()->getResolution().second;
+                            auto ratio = parser->getCamera()->getResolution().first /
+                                parser->getCamera()->getResolution().second;
                             parser->getCamera()->setResolution(400, 400 / ratio);
                             zoomInImage = 1.0f;
                         }
@@ -155,8 +155,10 @@ namespace rt
 
             ImGui::Begin("Camera");
             if (parser->getCamera()) {
-                ImGui::Text("Camera origin: %f %f %f", parser->getCamera()->getOrigin().x, parser->getCamera()->getOrigin().y, parser->getCamera()->getOrigin().z);
-                ImGui::Text("Camera resolution: %d %d", parser->getCamera()->getResolution().first, parser->getCamera()->getResolution().second);
+                ImGui::Text("Camera origin: %f %f %f", parser->getCamera()->getOrigin().x,
+                            parser->getCamera()->getOrigin().y, parser->getCamera()->getOrigin().z);
+                ImGui::Text("Camera resolution: %d %d", parser->getCamera()->getResolution().first,
+                            parser->getCamera()->getResolution().second);
             }
             ImGui::End();
 
@@ -164,7 +166,8 @@ namespace rt
             if (!parser->getLights().empty()) {
                 std::size_t lightCounter = 1;
                 for (auto &light : parser->getLights()) {
-                    ImGui::Text("Light %lu : (%f %f %f)", lightCounter, light->getOrigin().x, light->getOrigin().y, light->getOrigin().z);
+                    ImGui::Text("Light %lu : (%f %f %f)", lightCounter, light->getOrigin().x, light->getOrigin().y,
+                                light->getOrigin().z);
                     ImGui::Separator();
                     lightCounter++;
                 }
@@ -175,7 +178,8 @@ namespace rt
             if (!parser->getPrimitives().empty()) {
                 std::size_t primitiveCounter = 1;
                 for (auto &primitive : parser->getPrimitives()) {
-                    ImGui::Text("Primitive %lu : (%f %f %f)", primitiveCounter, primitive->getOriginPoint().x, primitive->getOriginPoint().y, primitive->getOriginPoint().z);
+                    ImGui::Text("Primitive %lu : (%f %f %f)", primitiveCounter, primitive->getOriginPoint().x,
+                                primitive->getOriginPoint().y, primitive->getOriginPoint().z);
                     ImGui::Separator();
                     primitiveCounter++;
                 }

@@ -12,7 +12,7 @@ target_sources(raytracer_camera
 
 target_include_directories(raytracer_camera
         PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
+        .
         ${CMAKE_SOURCE_DIR}/includes
 )
 

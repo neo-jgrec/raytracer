@@ -1,17 +1,17 @@
 add_library(raytracer_sfml SHARED)
 
 file(GLOB_RECURSE SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
 )
 
 target_sources(raytracer_sfml
-    PRIVATE
+        PRIVATE
         ${SOURCES}
 )
 
 target_include_directories(raytracer_sfml
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
+        PRIVATE
+        .
         ${CMAKE_SOURCE_DIR}/includes
         ${CMAKE_SOURCE_DIR}/libs/imgui
         ${CMAKE_SOURCE_DIR}/libs/imgui-sfml
@@ -20,7 +20,7 @@ target_include_directories(raytracer_sfml
 find_package(SFML COMPONENTS graphics REQUIRED)
 
 target_link_libraries(raytracer_sfml
-    PRIVATE
+        PRIVATE
         sfml-graphics
         imgui-sfml
 )

@@ -109,9 +109,9 @@ int main(int argc, char **argv)
         return 84;
     }
 
-    std::string saveAs = parser.getOption("--output").value_or("");
-    std::string graphicalPlugin = parser.getOption("--display").value_or("");
-    bool preview = parser.getOption("--preview").has_value();
+    const std::string saveAs = parser.getOption("--output").value_or("");
+    const std::string graphicalPlugin = parser.getOption("--display").value_or("");
+    const bool preview = parser.getOption("--preview").has_value();
 
     std::cout << "Scene: " << sceneName << std::endl;
     std::cout << "Save as: " << (saveAs.empty() ? "No output" : saveAs) << std::endl;
