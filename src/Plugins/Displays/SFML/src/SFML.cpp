@@ -27,19 +27,12 @@ namespace rt
         ImGui::SFML::Shutdown();
     }
 
-    void SFML::waitThreads(std::vector<std::thread> &threads)
-    {
-        for (auto &thread : threads) {
-            if (thread.joinable()) {
-                thread.join();
-            }
-        }
-    }
-
     void SFML::run(std::shared_ptr<Scene> parser)
     {
         ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-        auto image = parser->getCamera()->generateImage(parser->getPrimitives(), parser->getLights(), true);
+
+        ImageRGBA image{parser->getCamera()->getResolution()};
+        parser->getCamera()->asyncDrawImage(parser->getPrimitives(), parser->getLights(), image);
 
         bool isSaving = false;
         bool isOpeningCfgFile = false;
@@ -48,10 +41,8 @@ namespace rt
         float zoomInImage = 0.5f;
 
         sf::Texture texture;
-        parser->getCamera()->getMutex().lock();
-        texture.create(std::get<0>(image), std::get<1>(image));
-        texture.update(std::get<2>(image).get());
-        parser->getCamera()->getMutex().unlock();
+        texture.create(image.getSize().first, image.getSize().second);
+        texture.update(image.getPixels().get());
         sf::Sprite sprite(texture);
 
         sf::Clock deltaClock;
@@ -127,9 +118,10 @@ namespace rt
                             parser->getCamera()->setResolution(400, 400 / ratio);
                             zoomInImage = 1.0f;
                         }
-                        image = parser->getCamera()->generateImage(parser->getPrimitives(), parser->getLights(), true);
-                        texture.create(std::get<0>(image), std::get<1>(image));
-                        texture.update(std::get<2>(image).get());
+                        image.setSize(parser->getCamera()->getResolution());
+                        parser->getCamera()->asyncDrawImage(parser->getPrimitives(), parser->getLights(), image);
+                        texture.create(image.getSize().first, image.getSize().second);
+                        texture.update(image.getPixels().get());
                     } catch (const std::exception &e) {
                         std::cerr << e.what() << std::endl;
                     }
@@ -143,11 +135,7 @@ namespace rt
             }
 
             ImGui::Begin("Image", nullptr, ImGuiWindowFlags_NoResize);
-            if (parser->getCamera() != nullptr) {
-                parser->getCamera()->getMutex().lock();
-                texture.update(std::get<2>(image).get());
-                parser->getCamera()->getMutex().unlock();
-            }
+            texture.update(image.getPixels().get());
             ImGui::SliderFloat("Zoom", &zoomInImage, 0.1f, 2.0f);
             sprite.setScale(zoomInImage, zoomInImage);
             ImGui::Image(sprite);
@@ -190,6 +178,6 @@ namespace rt
             ImGui::SFML::Render(_window);
             _window.display();
         }
-        waitThreads(parser->getCamera()->getThreads());
+        parser->getCamera()->awaitDrawImage();
     }
 } // namespace rt

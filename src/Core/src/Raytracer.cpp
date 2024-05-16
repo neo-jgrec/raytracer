@@ -16,18 +16,20 @@
 #include "../Utils/DLLoader.hpp"
 #include "Scene/Scene.hpp"
 
+#include "Images/Images.hpp"
+
 namespace rt
 {
     void Raytracer::toPPM(const std::string &filename) const
     {
-        const auto image =
-            _parser->getCamera()->generateImage(_parser->getPrimitives(), _parser->getLights(), false, true);
+        const ImageRGB image(_parser->getCamera()->getResolution());
+        _parser->getCamera()->drawImage(_parser->getPrimitives(), _parser->getLights(), image);
 
         std::ofstream file(filename);
 
-        file << "P6\n" << std::get<0>(image) << " " << std::get<1>(image) << "\n255\n";
-        file.write(reinterpret_cast<const char *>(std::get<2>(image).get()),
-                   std::get<0>(image) * std::get<1>(image) * 3);
+        file << "P6\n" << image.getSize().first << " " << image.getSize().second << "\n255\n";
+        file.write(reinterpret_cast<const char *>(image.getPixels().get()),
+                   image.getSize().first * image.getSize().second * 3);
         file.close();
     }
     void Raytracer::toGraphical() const

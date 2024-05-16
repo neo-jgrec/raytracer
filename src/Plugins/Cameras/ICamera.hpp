@@ -9,10 +9,8 @@
 #define ICAMERA_HPP_
 
 #include <list>
-#include <mutex>
-#include <thread>
-#include <vector>
 
+#include "../../Core/src/Images/Images.hpp"
 #include "../Lights/ILight.hpp"
 #include "../Primitives/IPrimitive.hpp"
 
@@ -39,15 +37,13 @@ namespace rt
         virtual void setDirection(const math::Vector3<float> &direction) = 0;
 
         [[nodiscard]] virtual int getFieldOfView() const = 0;
+        virtual void setFieldOfView(int fov) = 0;
 
-        virtual std::mutex &getMutex() = 0;
-        virtual std::vector<std::thread> &getThreads() = 0;
-
-        [[nodiscard]] virtual std::tuple<int, int, std::shared_ptr<uint8_t>> getImages() const = 0;
-        virtual std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(const std::list<IPrimitive *> &primitives,
-                                                                             const std::list<ILight *> &lights,
-                                                                             bool rgba = false,
-                                                                             bool waiting = false) = 0;
+        virtual void drawImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
+                               const IImage &image) = 0;
+        virtual void asyncDrawImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
+                                    const IImage &image) = 0;
+        virtual void awaitDrawImage() = 0;
     };
 } // namespace rt
 

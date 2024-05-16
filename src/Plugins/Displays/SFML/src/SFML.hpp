@@ -17,7 +17,6 @@ namespace rt
     class SFML final : public IDisplay {
     private:
         sf::RenderWindow _window;
-        static void waitThreads(std::vector<std::thread> &threads);
 
     public:
         SFML(uint32_t width = 800, uint32_t height = 600, const std::string &title = "Raytracer");

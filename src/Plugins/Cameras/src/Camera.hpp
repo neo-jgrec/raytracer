@@ -11,6 +11,7 @@
 #include "../ICamera.hpp"
 
 #include <libconfig.h++>
+#include <thread>
 
 namespace rt
 {
@@ -30,23 +31,18 @@ namespace rt
         math::Vector3<float> _vertical;
         math::Vector3<float> _bottomLeft;
 
-        std::mutex _mutex;
-        std::vector<std::thread> _threads;
+        std::list<std::jthread> _threads;
 
-        std::shared_ptr<uint8_t> _pixels{new uint8_t[_width * _height * 4], std::default_delete<uint8_t[]>()};
-
-        void reload(bool rgba);
-        void generateImageChunk(uint32_t startHeight, uint32_t endHeight, uint32_t startWidth, uint32_t endWidth,
-                                const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
-                                const std::shared_ptr<uint8_t> &pixels, bool rgba);
+        void reload();
+        void drawChunk(const std::pair<uint32_t, uint32_t> &coord, const std::pair<uint32_t, uint32_t> &size,
+                       const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
+                       const IImage &image);
 
     public:
         class CameraException final : public ICameraException {
         public:
             CameraException(const std::string &message) : ICameraException("Camera", message) {}
         };
-
-        std::mutex &getMutex() override { return _mutex; }
 
         [[nodiscard]] std::pair<int, int> getResolution() const override { return {_width, _height}; }
         void setResolution(int width, int height) override;
@@ -58,13 +54,13 @@ namespace rt
         void setDirection(const math::Vector3<float> &direction) override { _direction = direction; }
 
         [[nodiscard]] int getFieldOfView() const override { return _fov; }
-        void setFieldOfView(const int fov) { _fov = fov; }
+        void setFieldOfView(const int fov) override { _fov = fov; }
 
-        [[nodiscard]] std::tuple<int, int, std::shared_ptr<uint8_t>> getImages() const override;
-        std::tuple<int, int, std::shared_ptr<uint8_t>> generateImage(const std::list<IPrimitive *> &primitives,
-                                                                     const std::list<ILight *> &lights, bool rgba,
-                                                                     bool waiting) override;
-        std::vector<std::thread> &getThreads() override { return _threads; }
+        void drawImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
+                       const IImage &image) override;
+        void asyncDrawImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
+                            const IImage &image) override;
+        void awaitDrawImage() override;
     };
 } // namespace rt
 
