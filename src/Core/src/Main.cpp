@@ -113,12 +113,6 @@ int main(int argc, char **argv)
     const std::string graphicalPlugin = parser.getOption("--display").value_or("");
     const bool preview = parser.getOption("--preview").has_value();
 
-    std::cout << "Scene: " << sceneName << std::endl;
-    std::cout << "Save as: " << (saveAs.empty() ? "No output" : saveAs) << std::endl;
-    std::cout << "Graphical plugin: " << (graphicalPlugin.empty() ? "No graphical plugin" : graphicalPlugin)
-              << std::endl;
-    std::cout << "Preview: " << std::boolalpha << preview << std::endl;
-
     try {
         rt::Raytracer raytracer(sceneName, saveAs, graphicalPlugin, preview);
         raytracer.run();

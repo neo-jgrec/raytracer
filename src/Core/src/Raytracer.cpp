@@ -24,11 +24,11 @@ namespace rt
             _parser->getCamera()->generateImage(_parser->getPrimitives(), _parser->getLights(), false, true);
 
         std::ofstream file(filename);
+
         file << "P6\n" << std::get<0>(image) << " " << std::get<1>(image) << "\n255\n";
         file.write(reinterpret_cast<const char *>(std::get<2>(image).get()),
                    std::get<0>(image) * std::get<1>(image) * 3);
         file.close();
-        std::cout << "Image saved to " << filename << std::endl;
     }
     void Raytracer::toGraphical() const
     {
@@ -42,7 +42,7 @@ namespace rt
     }
 
 
-    Raytracer::Raytracer(std::string sceneName, std::string saveAs, std::string graphicalPlugin, bool preview) :
+    Raytracer::Raytracer(std::string sceneName, std::string saveAs, std::string graphicalPlugin, const bool preview) :
         _sceneName(std::move(sceneName)), _saveAs(std::move(saveAs)), _graphicalPlugin(std::move(graphicalPlugin)),
         _preview(preview)
     {
@@ -54,24 +54,31 @@ namespace rt
 
     void Raytracer::run()
     {
+        std::cout << "Loading scene " << _sceneName << std::endl;
         try {
             _parser = std::make_shared<Scene>(_sceneName);
         } catch (const Scene::ParserExecption &e) {
             throw RaytracerException(e.what());
         }
-
         if (_parser->getCamera() == nullptr)
             throw RaytracerException("No camera found in the scene");
+        std::cout << "Scene parsed successfully" << std::endl;
 
         if (_preview) {
-            auto ratio = _parser->getCamera()->getResolution().first / _parser->getCamera()->getResolution().second;
-            _parser->getCamera()->setResolution(400, 400 / ratio);
-            std::cout << "Previewing enabled, resolution set to 400x" << 400 / ratio << std::endl;
+            ICamera *camera = _parser->getCamera();
+
+            if (const auto [width, height] = camera->getResolution(); width < 400)
+                camera->setResolution(width, height);
+            else
+                camera->setResolution(400, 400 * height / width);
+
+            std::cout << "Previewing enabled, resolution set to 400x" << camera->getResolution().second << std::endl;
         }
 
         if (!_saveAs.empty()) {
             try {
                 toPPM(_saveAs);
+                std::cout << "Image saved to " << _saveAs << std::endl;
             } catch (const RaytracerException &e) {
                 throw RaytracerException(e.what());
             }

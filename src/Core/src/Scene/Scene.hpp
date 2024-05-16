@@ -219,12 +219,6 @@ namespace rt
                     if (root.exists(parser.first))
                         parser.second(root[parser.first]);
                 }
-
-                std::cout << "Primitives: " << _primitives.size() << std::endl;
-                std::cout << "Lights: " << _lights.size() << std::endl;
-                std::cout << "Materials: " << _materials.size() << std::endl;
-                std::cout << "Camera: " << _camera << std::endl;
-                std::cout << "Scene parsed successfully" << std::endl;
             } catch (const libconfig::FileIOException &fioex) {
                 throw ParserExecption("I/O error", fioex.what());
             } catch (const libconfig::ParseException &pex) {
