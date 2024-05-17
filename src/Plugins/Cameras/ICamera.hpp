@@ -40,9 +40,9 @@ namespace rt
         virtual void setFieldOfView(int fov) = 0;
 
         virtual void drawImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
-                               const IImage &image) = 0;
+                               IImage &image) = 0;
         virtual void asyncDrawImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
-                                    const IImage &image) = 0;
+                                    IImage &image) = 0;
         virtual void awaitDrawImage() = 0;
     };
 } // namespace rt

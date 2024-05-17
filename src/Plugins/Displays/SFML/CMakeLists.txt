@@ -2,6 +2,7 @@ add_library(raytracer_sfml SHARED)
 
 file(GLOB_RECURSE SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp
 )
 
 target_sources(raytracer_sfml

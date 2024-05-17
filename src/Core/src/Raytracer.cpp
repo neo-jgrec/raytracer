@@ -22,7 +22,7 @@ namespace rt
 {
     void Raytracer::toPPM(const std::string &filename) const
     {
-        const ImageRGB image(_parser->getCamera()->getResolution());
+        ImageRGB image(_parser->getCamera()->getResolution());
         _parser->getCamera()->drawImage(_parser->getPrimitives(), _parser->getLights(), image);
 
         std::ofstream file(filename);

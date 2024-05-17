@@ -35,8 +35,7 @@ namespace rt
 
         void reload();
         void drawChunk(const std::pair<uint32_t, uint32_t> &coord, const std::pair<uint32_t, uint32_t> &size,
-                       const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
-                       const IImage &image);
+                       const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights, IImage &image);
 
     public:
         class CameraException final : public ICameraException {
@@ -57,9 +56,9 @@ namespace rt
         void setFieldOfView(const int fov) override { _fov = fov; }
 
         void drawImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
-                       const IImage &image) override;
+                       IImage &image) override;
         void asyncDrawImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
-                            const IImage &image) override;
+                            IImage &image) override;
         void awaitDrawImage() override;
     };
 

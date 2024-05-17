@@ -36,8 +36,7 @@ namespace rt
     }
 
     void Camera::drawChunk(const std::pair<uint32_t, uint32_t> &coord, const std::pair<uint32_t, uint32_t> &size,
-                           const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
-                           const IImage &image)
+                           const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights, IImage &image)
     {
         for (uint32_t y = coord.second + size.second; y > coord.second; --y) {
             for (uint32_t x = coord.first; x < coord.first + size.first; ++x) {
@@ -71,7 +70,7 @@ namespace rt
     }
 
     void Camera::asyncDrawImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
-                                const IImage &image)
+                                IImage &image)
     {
         for (auto &thread : _threads)
             thread.request_stop();
@@ -106,8 +105,7 @@ namespace rt
         _threads.clear();
     }
 
-    void Camera::drawImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights,
-                           const IImage &image)
+    void Camera::drawImage(const std::list<IPrimitive *> &primitives, const std::list<ILight *> &lights, IImage &image)
     {
         asyncDrawImage(primitives, lights, image);
         awaitDrawImage();
