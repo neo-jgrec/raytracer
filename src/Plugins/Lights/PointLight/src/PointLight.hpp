@@ -8,7 +8,7 @@
 #ifndef POINTLIGHT_HPP
 #define POINTLIGHT_HPP
 
-#include "../ILight.hpp"
+#include "../ALight.hpp"
 
 #include <libconfig.h++>
 
@@ -16,13 +16,8 @@
 
 namespace rt
 {
-    class PointLight final : public ILight {
+    class PointLight final : public ALight {
     private:
-        math::Vector3<float> _origin;
-        utils::Color _color;
-
-        float _intensity = 1.f;
-
         [[nodiscard]] utils::Color lightAtPoint(const math::Vector3<float> &point) const;
 
     public:
@@ -34,20 +29,6 @@ namespace rt
         [[nodiscard]] utils::Color illuminate(const math::Vector3<float> &point,
                                               const std::list<IPrimitive *> &primitives,
                                               const IPrimitive *closestPrimitive) const override;
-
-        [[nodiscard]] const math::Vector3<float> &getOrigin() const override { return _origin; }
-        void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
-
-        [[nodiscard]] const utils::Color &getColor() const { return _color; }
-        void setColor(const utils::Color &color) { _color = color; }
-
-        [[nodiscard]] float getIntensity() const { return _intensity; }
-        void setIntensity(const float intensity)
-        {
-            if (intensity < 0.f || intensity > 1.f)
-                throw PointLightException("Intensity must be between 0 and 1");
-            _intensity = intensity;
-        }
     };
 
     extern "C" {
@@ -65,8 +46,6 @@ namespace rt
 
             return ptr;
         }
-
-        void destroy(const PointLight *ptr) { delete ptr; }
     }
 } // namespace rt
 

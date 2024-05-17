@@ -8,7 +8,7 @@
 #ifndef DIRECTIONALLIGHT_HPP
 #define DIRECTIONALLIGHT_HPP
 
-#include "../ILight.hpp"
+#include "../ALight.hpp"
 
 #include <libconfig.h++>
 
@@ -16,13 +16,9 @@
 
 namespace rt
 {
-    class DirectionalLight final : public ILight {
+    class DirectionalLight final : public ALight {
     private:
-        math::Vector3<float> _origin;
         math::Vector3<float> _direction;
-        utils::Color _color;
-
-        float _intensity = 1.f;
 
         [[nodiscard]] utils::Color lightAtPoint(const math::Vector3<float> &point) const;
 
@@ -32,26 +28,12 @@ namespace rt
             DirectionalLightException(const std::string &message) : ILightException("DirectionalLight", message) {}
         };
 
-        [[nodiscard]] utils::Color illuminate(const math::Vector3<float> &point,
-                                              const std::list<IPrimitive *> &primitives,
-                                              const IPrimitive *closestPrimitive) const override;
-
-        [[nodiscard]] const math::Vector3<float> &getOrigin() const override { return _origin; }
-        void setOrigin(const math::Vector3<float> &origin) { _origin = origin; }
-
         [[nodiscard]] const math::Vector3<float> &getDirection() const { return _direction; }
         void setDirection(const math::Vector3<float> &direction) { _direction = direction; }
 
-        [[nodiscard]] const utils::Color &getColor() const { return _color; }
-        void setColor(const utils::Color &color) { _color = color; }
-
-        [[nodiscard]] float getIntensity() const { return _intensity; }
-        void setIntensity(const float intensity)
-        {
-            if (intensity < 0.f || intensity > 1.f)
-                throw DirectionalLightException("Intensity must be between 0 and 1");
-            _intensity = intensity;
-        }
+        [[nodiscard]] utils::Color illuminate(const math::Vector3<float> &point,
+                                              const std::list<IPrimitive *> &primitives,
+                                              const IPrimitive *closestPrimitive) const override;
     };
 
     extern "C" {
@@ -72,8 +54,6 @@ namespace rt
 
             return ptr;
         }
-
-        void destroy(const DirectionalLight *ptr) { delete ptr; }
     }
 } // namespace rt
 

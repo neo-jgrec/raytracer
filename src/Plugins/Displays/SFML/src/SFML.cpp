@@ -143,8 +143,8 @@ namespace rt
                     ImGui::Text("Light %u", lightCounter);
                     ImGui::Text("Origin: %.2f %.2f %.2f", light->getOrigin().x, light->getOrigin().y,
                                 light->getOrigin().z);
-                    // ImGui::Text("Color: %.2f %.2f %.2f", light->getColor().r, light->getColor().g,
-                    // light->getColor().b); ImGui::Text("Intensity: %.2f", light->getIntensity());
+                    ImGui::Text("Color: %.2f %.2f %.2f", light->getColor().r, light->getColor().g, light->getColor().b);
+                    ImGui::Text("Intensity: %.2f", light->getIntensity());
                     ImGui::Separator();
                     lightCounter++;
                 }
@@ -158,8 +158,6 @@ namespace rt
                     ImGui::Text("Primitive %u", primitiveCounter);
                     ImGui::Text("Origin: %.2f %.2f %.2f", primitive->getOriginPoint().x, primitive->getOriginPoint().y,
                                 primitive->getOriginPoint().z);
-                    // ImGui::Text("Color: %.2f %.2f %.2f", primitive->getMaterial()->getColor().r,
-                    //             primitive->getMaterial()->getColor().g, primitive->getMaterial()->getColor().b);
                     ImGui::Separator();
                     primitiveCounter++;
                 }

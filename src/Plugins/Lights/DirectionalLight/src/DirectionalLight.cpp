@@ -7,14 +7,12 @@
 
 #include "DirectionalLight.hpp"
 
-#include <iostream>
-
 namespace rt
 {
     utils::Color DirectionalLight::lightAtPoint(const math::Vector3<float> &point) const
     {
         const auto lightDir = (_origin - point + _direction).normalize();
-        const float lightPower = std::max(0.f, point.dot(lightDir)) * _intensity;
+        const float lightPower = std::max(0.f, point.dot(lightDir)) * getIntensity();
         return _color * lightPower;
     }
 

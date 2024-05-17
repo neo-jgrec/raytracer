@@ -10,13 +10,12 @@
 
 #include <libconfig.h++>
 
-#include "../ILight.hpp"
+#include "../ALight.hpp"
 
 namespace rt
 {
-    class AmbientLight final : public ILight {
+    class AmbientLight final : public ALight {
     private:
-        utils::Color _color;
         float _intensity = 1.f;
 
     public:
@@ -29,18 +28,8 @@ namespace rt
                                               const std::list<IPrimitive *> &primitives,
                                               const IPrimitive *closestPrimitive) const override;
 
-        [[nodiscard]] const math::Vector3<float> &getOrigin() const override;
-
-        [[nodiscard]] const utils::Color &getColor() const { return _color; }
-        void setColor(const utils::Color &color) { _color = color; }
-
-        [[nodiscard]] float getIntensity() const { return _intensity; }
-        void setIntensity(const float intensity)
-        {
-            if (intensity < 0.f || intensity > 1.f)
-                throw AmbientLightException("Intensity must be between 0 and 1");
-            _intensity = intensity;
-        }
+        // [[nodiscard]] const math::Vector3<float> &getOrigin() const override { return math::Vector3<float>{0, 0, 0};
+        // } void setOrigin([[maybe_unused]] const math::Vector3<float> &origin) override {}
     };
 
     extern "C" {
@@ -55,8 +44,6 @@ namespace rt
 
             return ptr;
         }
-
-        void destroy(const AmbientLight *ptr) { delete ptr; }
     }
 } // namespace rt
 

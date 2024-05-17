@@ -14,7 +14,6 @@
 #include "../../Utils/Utils.hpp"
 #include "../Primitives/IPrimitive.hpp"
 
-
 namespace rt
 {
     class ILight {
@@ -28,6 +27,14 @@ namespace rt
         virtual ~ILight() = default;
 
         [[nodiscard]] virtual const math::Vector3<float> &getOrigin() const = 0;
+        virtual void setOrigin(const math::Vector3<float> &origin) = 0;
+
+        [[nodiscard]] virtual const utils::Color &getColor() const = 0;
+        virtual void setColor(const utils::Color &color) = 0;
+
+        [[nodiscard]] virtual float getIntensity() const = 0;
+        virtual void setIntensity(float intensity) = 0;
+
         [[nodiscard]] virtual utils::Color illuminate(const math::Vector3<float> &point,
                                                       const std::list<IPrimitive *> &primitives,
                                                       const IPrimitive *closestPrimitive) const = 0;
